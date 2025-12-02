@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models import Avg
 # Create your models here.
 
 # 1 Generos Musicales
@@ -23,6 +23,11 @@ class Song(models.Model):
     # Metadatos
     uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_songs')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # PEGA ESTO AL FINAL DE LA CLASE SONG (respetando la indentación)
+    def average_rating(self):
+        ratings = self.ratings.all().aggregate(Avg('score'))['score__avg']
+        return round(ratings, 1) if ratings else None
 
     def __str__(self):
         return f"{self.title} - {self.artist}"

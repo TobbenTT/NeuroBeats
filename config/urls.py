@@ -20,15 +20,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # Importamos vistas de Musica y Usuarios
-from music.views import home, upload_song
-from users.views import profile   # <--- AGREGADO
+from music.views import home, upload_song, rate_song, delete_song
+from users.views import profile, edit_profile
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     path('upload/', upload_song, name='upload'),
-    path('profile/', profile, name='profile'), # <--- RUTA NUEVA
+    path('profile/', profile, name='profile'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
+    # RUTA NUEVA PARA VOTAR: Recibe el ID de la canción y la nota (1-5)
+    path('rate/<int:song_id>/<int:score>/', rate_song, name='rate_song'),
+    path('delete/<int:song_id>/', delete_song, name='delete_song'),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
