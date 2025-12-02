@@ -19,28 +19,37 @@ def upload_song(request):
         if form.is_valid():
             song = form.save(commit=False)
             
-            # --- LÓGICA DE RECORTE DE AUDIO ---
+            # --- LÓGICA DE RECORTE CON ONDAS ---
             uploaded_audio = request.FILES['audio_file']
-            start_sec = form.cleaned_data['start_second']
             
-            # Usamos pydub para cargar el audio (automáticamente detecta mp3, wav, etc)
+            # Obtenemos los datos exactos del formulario visual
+            start_sec = form.cleaned_data.get('start_time', 0)
+            end_sec = form.cleaned_data.get('end_time', 30)
+            
+            # Validacion de seguridad: Que no dure más de 30s
+            if (end_sec - start_sec) > 32: # Damos 2s de margen por lag
+                end_sec = start_sec + 30
+
+            # Procesamiento con PyDub
             audio = AudioSegment.from_file(uploaded_audio)
             
-            # Calculamos tiempos en milisegundos
+            # Convertir segundos a milisegundos
             start_ms = start_sec * 1000
-            end_ms = start_ms + 30000  # 30 segundos después
+            end_ms = end_sec * 1000
             
-            # Cortamos (Si la canción es más corta que 30s, toma hasta el final)
+            # Cortar
             cut_audio = audio[start_ms:end_ms]
             
-            # Sobrescribimos el archivo temporalmente para guardarlo
-            filename = uploaded_audio.name
-            cut_audio.export(f"media/tracks/{filename}", format="mp3")
+            # Guardar
+            filename = f"cut_{uploaded_audio.name}" # Cambiamos nombre para evitar caché
+            save_path = f"media/tracks/{filename}"
             
-            # Actualizamos el campo para que apunte al archivo cortado
+            # Asegurar que el directorio existe
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            
+            cut_audio.export(save_path, format="mp3")
+            
             song.audio_file = f"tracks/{filename}"
-            # ----------------------------------
-
             song.uploader = request.user
             song.save()
             return redirect('home')

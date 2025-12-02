@@ -1,34 +1,108 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Subir Música - NeuroBeats</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>body { background-color: #121212; color: white; }</style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="container mt-5">
+{% block content %}
+<style>
+    /* Hacer que los inputs sean oscuros */
+    .form-control, .form-select {
+        background-color: #2b2b2b; /* Gris oscuro */
+        border: 1px solid #444; /* Borde sutil */
+        color: #e0e0e0; /* Texto claro */
+    }
+    /* Al hacer clic en un input */
+    .form-control:focus, .form-select:focus {
+        background-color: #333;
+        border-color: #7c4dff; /* Borde morado NeuroBeats */
+        box-shadow: 0 0 0 0.25rem rgba(124, 77, 255, 0.25);
+        color: white;
+    }
+    /* Etiquetas de los formularios */
+    .form-label {
+        color: #b0b0b0; /* Gris claro para etiquetas */
+        font-weight: 500;
+    }
+    /* Contenedor del Waveform */
+    #waveform-container {
+        background-color: #1a1a1a; /* Fondo casi negro */
+        border: 1px solid #333;
+    }
+</style>
+
+<div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card bg-dark text-white border-secondary shadow">
-                <div class="card-header border-secondary">
-                    <h3 class="mb-0">🚀 Subir Nueva Canción</h3>
+        <div class="col-lg-8 col-md-10">
+            <div class="card bg-dark text-white border-0 shadow-lg rounded-4 overflow-hidden">
+                
+                <div class="card-header p-4" style="background: linear-gradient(45deg, #3a1c71, #d76d77, #ffaf7b);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0 fw-bold text-white"><i class="fas fa-rocket me-2"></i> Estudio de Subida</h3>
+                        <span class="badge bg-black bg-opacity-50 rounded-pill px-3 py-2">
+                            <i class="fas fa-wave-square me-1"></i> Modo Editor
+                        </span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
+
+                <div class="card-body p-4 p-md-5" style="background-color: #121212;">
+                    <form method="post" enctype="multipart/form-data" id="upload-form">
                         {% csrf_token %}
                         
-                        {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label">{{ field.label }}</label>
-                            {{ field }}
+                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-info-circle me-2"></i> Información de la Canción</h5>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label">Título</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Artista</label>
+                                {{ form.artist }}
+                            </div>
                         </div>
-                        {% endfor %}
 
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success fw-bold">Publicar Canción</button>
-                            <a href="{% url 'home' %}" class="btn btn-outline-light">Cancelar</a>
+                        <div class="mb-5">
+                            <label class="form-label">Género Musical</label>
+                            {{ form.genre }}
+                        </div>
+
+                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-headphones me-2"></i> Audio y Recorte (30s)</h5>
+
+                        <div class="mb-4 p-4 rounded-3" style="background-color: #1a1a1a; border: 1px dashed #555;">
+                            <label class="form-label text-primary fw-bold mb-3">
+                                <i class="fas fa-file-audio fa-lg me-2"></i> 1. Selecciona el archivo de audio
+                            </label>
+                            {{ form.audio_file }}
+                            
+                            <div id="waveform-container" class="mt-4 p-3 rounded-3 d-none">
+                                <div class="d-flex align-items-center text-info small mb-2">
+                                    <i class="fas fa-cut me-2"></i>
+                                    <span>Arrastra los bordes de la región azul para elegir los 30 segundos exactos.</span>
+                                </div>
+                                
+                                <div id="waveform" class="mb-3"></div>
+                                
+                                <div class="d-flex justify-content-between align-items-center bg-black bg-opacity-25 p-2 rounded">
+                                    <button type="button" id="btn-play" class="btn btn-sm btn-primary btn-neuro">
+                                        <i class="fas fa-play me-1"></i> Preescuchar Recorte
+                                    </button>
+                                    <span class="badge bg-dark border border-secondary text-white fs-6" id="time-display">
+                                        <i class="far fa-clock me-1"></i> 0.0s - 30.0s
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label">Portada del Álbum</label>
+                            {{ form.cover_image }}
+                        </div>
+
+                        {{ form.start_time }}
+                        {{ form.end_time }}
+
+                        <div class="d-grid gap-3 mt-5">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold py-3" style="background-color: #00c853; border: none;">
+                                <i class="fas fa-check-circle fa-lg me-2"></i> Procesar y Publicar Canción
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary py-2">Cancelar</a>
                         </div>
                     </form>
                 </div>
@@ -37,5 +111,66 @@
     </div>
 </div>
 
-</body>
-</html>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
+<script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/regions.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const audioInput = document.getElementById('audio-input');
+        const container = document.getElementById('waveform-container');
+        const playBtn = document.getElementById('btn-play');
+        const timeDisplay = document.getElementById('time-display');
+        const inputStart = document.querySelector('input[name="start_time"]');
+        const inputEnd = document.querySelector('input[name="end_time"]');
+
+        let wavesurfer;
+        let wsRegions;
+
+        audioInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                container.classList.remove('d-none');
+                if (wavesurfer) wavesurfer.destroy();
+
+                wavesurfer = WaveSurfer.create({
+                    container: '#waveform',
+                    waveColor: '#5e35b1', // Color morado oscuro
+                    progressColor: '#b39ddb', // Color morado claro al reproducir
+                    cursorColor: '#fff',
+                    barWidth: 2,
+                    barRadius: 3,
+                    cursorWidth: 1,
+                    height: 100,
+                    barGap: 2,
+                    url: URL.createObjectURL(file),
+                });
+
+                wsRegions = wavesurfer.registerPlugin(WaveSurfer.Regions.create());
+
+                wavesurfer.on('decode', () => {
+                    wsRegions.addRegion({
+                        start: 0,
+                        end: 30,
+                        color: 'rgba(0, 200, 83, 0.35)', // Verde Spotify transparente
+                        drag: true,
+                        resize: true,
+                        maxLength: 30
+                    });
+                });
+
+                wsRegions.on('region-updated', (region) => {
+                    inputStart.value = region.start.toFixed(2);
+                    inputEnd.value = region.end.toFixed(2);
+                    timeDisplay.innerHTML = `<i class="far fa-clock me-1"></i> ${region.start.toFixed(1)}s - ${region.end.toFixed(1)}s`;
+                });
+
+                playBtn.onclick = () => {
+                    const regions = wsRegions.getRegions();
+                    if (regions.length > 0) regions[0].play();
+                    else wavesurfer.playPause();
+                };
+            }
+        });
+    });
+</script>
+{% endblock %}
