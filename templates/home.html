@@ -1,63 +1,40 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>NeuroBeats</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #121212; color: white; }
-        .card { background-color: #1e1e1e; border: none; color: white; }
-        .btn-play { background-color: #1db954; border: none; color: black; font-weight: bold;}
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<nav class="navbar navbar-dark bg-black mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="#">🧠 NeuroBeats</a>
-        <div>
-            {% if user.is_authenticated %}
-                <span class="me-3">Hola, {{ user.username }}</span>
-                <a href="/admin/logout/" class="btn btn-sm btn-outline-light">Salir</a>
-            {% else %}
-                <a href="/admin/login/" class="btn btn-sm btn-outline-light">Login</a>
-            {% endif %}
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-    <h2 class="mb-4">🎵 Descubrimiento Semanal</h2>
-    
-    <div class="row">
-        {% for song in songs %}
-        <div class="col-md-3 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="{{ song.cover_image.url }}" class="card-img-top" alt="Cover" style="height: 250px; object-fit: cover;">
-                
-                <div class="card-body">
-                    <h5 class="card-title text-truncate">{{ song.title }}</h5>
-                    <p class="card-text text-secondary">{{ song.artist }}</p>
-                    
-                    <audio controls class="w-100 mb-2">
-                        <source src="{{ song.audio_file.url }}" type="audio/mpeg">
-                        Tu navegador no soporta audio.
-                    </audio>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-secondary">{{ song.genre.name }}</span>
-                        <button class="btn btn-sm btn-outline-danger">❤️</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-            <div class="alert alert-warning">
-                No hay canciones aún. ¡Ve al Admin y sube algunas!
-            </div>
-        {% endfor %}
-    </div>
+{% block content %}
+<div class="mb-4 text-center">
+    <h1 class="display-5 fw-bold">🎵 Descubrimiento Semanal</h1>
+    <p class="text-secondary">Música curada por IA basada en tus gustos.</p>
 </div>
 
-</body>
-</html>
+<div class="row">
+    {% for song in songs %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 shadow-lg hover-effect">
+            <img src="{{ song.cover_image.url }}" class="card-img-top" alt="Cover" style="height: 250px; object-fit: cover;">
+            
+            <div class="card-body">
+                <h5 class="card-title text-truncate fw-bold">{{ song.title }}</h5>
+                <p class="card-text text-secondary small">{{ song.artist }}</p>
+                
+                <audio controls class="w-100 mb-2" style="height: 30px;">
+                    <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                </audio>
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="badge bg-dark border border-secondary">{{ song.genre.name }}</span>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle"><i class="fas fa-heart"></i></button>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-muted small">
+                Subido por: {{ song.uploader.username }}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3 class="text-muted">📭 Aún no hay música.</h3>
+            <a href="{% url 'upload' %}" class="btn btn-neuro mt-3">Sé el primero en subir algo</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

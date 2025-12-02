@@ -19,14 +19,16 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-# Importamos la vista que acabamos de crear
-from music.views import home
+# Importamos vistas de Musica y Usuarios
+from music.views import home, upload_song
+from users.views import profile   # <--- AGREGADO
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),  # <--- Ruta vacía = Página de inicio
+    path('', home, name='home'),
+    path('upload/', upload_song, name='upload'),
+    path('profile/', profile, name='profile'), # <--- RUTA NUEVA
 ]
 
-# Configuración para servir imágenes y audio en modo desarrollo (Crucial)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

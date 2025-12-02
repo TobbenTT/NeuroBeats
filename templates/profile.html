@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card text-center p-4">
+            <div class="mb-3">
+                <img src="{{ user.profile.avatar.url }}" class="rounded-circle border border-3 border-primary" width="150" height="150" style="object-fit: cover;">
+            </div>
+            <h3 class="fw-bold">{{ user.username }}</h3>
+            <p class="text-secondary">{{ user.profile.bio|default:"Sin biografía aún." }}</p>
+            
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <button class="btn btn-sm btn-outline-light">Editar Perfil</button>
+                <button class="btn btn-sm btn-outline-light">⚙️</button>
+            </div>
+
+            <hr>
+            
+            <h5 class="text-start mb-3">🏅 Insignias</h5>
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                {% for badge in user.profile.badges.all %}
+                    <span class="badge bg-warning text-dark" title="{{ badge.description }}">
+                        {{ badge.icon_name }} {{ badge.name }}
+                    </span>
+                {% empty %}
+                    <small class="text-muted">Escucha música para ganar insignias.</small>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3 class="mb-4 border-bottom pb-2">🎸 Mis Aportes Musicales</h3>
+        
+        <div class="list-group">
+            {% for song in my_songs %}
+            <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-3">
+                <img src="{{ song.cover_image.url }}" class="rounded" width="60" height="60" style="object-fit: cover;">
+                
+                <div class="flex-grow-1">
+                    <h5 class="mb-0">{{ song.title }}</h5>
+                    <small class="text-muted">{{ song.genre.name }} • {{ song.created_at|date:"d M Y" }}</small>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary">⭐ 4.5</span>
+                    <button class="btn btn-sm btn-outline-danger">🗑️</button>
+                </div>
+            </div>
+            {% empty %}
+                <div class="alert alert-dark text-center">
+                    No has subido canciones. <a href="{% url 'upload' %}" class="alert-link">¡Sube una ahora!</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
