@@ -8,17 +8,26 @@ from brain.engine import get_recommended_songs
 import os
 
 def home(request):
-    songs = get_recommended_songs(request.user)
+    # 1. OBTIENE LAS RECOMENDACIONES (IA)
+    recommended_songs = get_recommended_songs(request.user)
     
+    # 2. OBTIENE EL RESTO (Exploración Global)
+    # Sacamos los IDs de las recomendadas para no repetirlas abajo
+    recommended_ids = [song.id for song in recommended_songs]
+    
+    # Traemos todas las canciones que NO están en la lista de recomendados
+    explore_songs = Song.objects.exclude(id__in=recommended_ids).order_by('-created_at')
+    
+    # 3. LIKES (Para pintar los corazones)
     liked_songs_ids = []
     if request.user.is_authenticated:
         liked_songs_ids = request.user.favorites.values_list('song_id', flat=True)
     
     return render(request, 'home.html', {
-        'songs': songs, 
+        'recommended_songs': recommended_songs, # Lista 1 (Centro)
+        'explore_songs': explore_songs,         # Lista 2 (Abajo)
         'liked_songs_ids': liked_songs_ids
     })
-
 @login_required
 def upload_song(request):
     if request.method == 'POST':

@@ -7,14 +7,60 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <style>
-        body { background-color: #0d0d0d; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
-        .navbar { background-color: #000000; border-bottom: 1px solid #333; }
-        .btn-neuro { background-color: #7c4dff; color: white; border: none; }
-        .btn-neuro:hover { background-color: #651fff; color: white; }
-        .card { background-color: #1a1a1a; border: 1px solid #333; color: white; }
-        a { text-decoration: none; }
-    </style>
+<style>
+    /* CONFIGURACIÓN GLOBAL DE MODO OSCURO */
+    body {
+        background-color: #0d0d0d; /* Fondo casi negro */
+        color: #ffffff; /* Texto base BLANCO PURO */
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* --- ARREGLO CRÍTICO DE CONTRASTE --- */
+    /* Bootstrap usa grises oscuros para estas clases.
+       Aquí las forzamos a ser grises claros. */
+    .text-secondary,
+    .text-muted,
+    .small,
+    small {
+        color: #cccccc !important; /* Gris claro muy legible */
+    }
+
+    /* Asegurar que los títulos y textos en negrita resalten al máximo */
+    h1, h2, h3, h4, h5, h6, .fw-bold, .display-5 {
+        color: #ffffff !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Sombra sutil para mejorar lectura */
+    }
+    /* ------------------------------------ */
+
+    /* Componentes */
+    .navbar { background-color: #000000; border-bottom: 1px solid #222; }
+    .btn-neuro { background-color: #7c4dff; color: white; border: none; }
+    .btn-neuro:hover { background-color: #651fff; color: white; }
+
+    /* Tarjetas y dropdowns oscuros */
+    .card, .dropdown-menu-dark {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        color: #ffffff;
+    }
+    
+    /* Enlaces */
+    a { text-decoration: none; color: #7c4dff; }
+    a:hover { color: #9e7aff; }
+    /* Los enlaces en la barra de navegación deben ser blancos o claros */
+    .navbar-nav .nav-link, .navbar-brand { color: #e0e0e0 !important; }
+
+    /* Arreglo para inputs en modo oscuro (por si acaso) */
+    .form-control, .form-select {
+        background-color: #2b2b2b;
+        border-color: #444;
+        color: #fff;
+    }
+    .form-control:focus {
+        background-color: #333;
+        color: #fff;
+    }
+</style>
 </head>
 <body>
 
