@@ -1,0 +1,19 @@
+# .gitignore para NeuroBeats
+
+# Python y Entorno Virtual (LO MÁS IMPORTANTE)
+venv/
+__pycache__/
+*.pyc
+
+# Base de datos (Por seguridad y peso)
+db.sqlite3
+
+# Variables de entorno (Claves secretas)
+.env
+
+# Archivos Multimedia (User uploads)
+media/
+!media/.gitkeep
+
+# Logs del sistema
+*.log
