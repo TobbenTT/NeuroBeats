@@ -16,7 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+
+# Importamos la vista que acabamos de crear
+from music.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),  # <--- Ruta vacía = Página de inicio
 ]
+
+# Configuración para servir imágenes y audio en modo desarrollo (Crucial)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
