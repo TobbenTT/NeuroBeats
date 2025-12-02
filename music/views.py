@@ -4,22 +4,21 @@ from django.http import JsonResponse  # <--- VITAL para los likes
 from .models import Song, Rating, Favorite  # <--- VITAL para guardar likes
 from .forms import SongForm
 from pydub import AudioSegment
+from brain.engine import get_recommended_songs
 import os
 
 def home(request):
-    songs = Song.objects.all().order_by('-created_at')
+    songs = get_recommended_songs(request.user)
     
-    # --- AGREGAR ESTO ---
     liked_songs_ids = []
     if request.user.is_authenticated:
-        # Obtenemos solo los IDs de las canciones que le gustan al usuario actual
-        # values_list('song_id', flat=True) devuelve una lista simple tipo: [1, 3, 5]
         liked_songs_ids = request.user.favorites.values_list('song_id', flat=True)
     
     return render(request, 'home.html', {
         'songs': songs, 
-        'liked_songs_ids': liked_songs_ids  # Pasamos la lista al HTML
+        'liked_songs_ids': liked_songs_ids
     })
+
 @login_required
 def upload_song(request):
     if request.method == 'POST':
