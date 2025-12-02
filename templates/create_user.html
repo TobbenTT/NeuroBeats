@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <div class="card border-danger shadow-lg" style="background-color: #1a0505; color: white;">
+        <div class="card-header border-danger text-danger">
+            <h3 class="mb-0"><i class="fas fa-user-secret me-2"></i> God Mode: Crear Usuario</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger small">
+                ⚠️ Estás creando un usuario directamente en la base de datos.
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label text-light">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}" 
+                           name="{{ field.name }}" 
+                           class="form-control bg-dark text-white border-secondary">
+                    <small class="text-muted">{{ field.help_text }}</small>
+                    <div class="text-danger small">{{ field.errors }}</div>
+                </div>
+                {% endfor %}
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-danger fw-bold">⚡ Crear Usuario Ahora</button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-light">Volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

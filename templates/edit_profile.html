@@ -11,6 +11,15 @@
                 <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
+        <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            
+            <a href="{% url 'change_password' %}" class="btn btn-outline-warning">
+                🔐 Cambiar Contraseña
+            </a>
+            
+            <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
     </div>
 </div>
 {% endblock %}

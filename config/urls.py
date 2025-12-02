@@ -18,10 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 # Importamos vistas de Musica y Usuarios
 from music.views import home, upload_song, rate_song, delete_song, toggle_favorite
-from users.views import profile, edit_profile
+from users.views import profile, edit_profile, create_user_fast
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +34,14 @@ urlpatterns = [
     path('rate/<int:song_id>/<int:score>/', rate_song, name='rate_song'),
     path('delete/<int:song_id>/', delete_song, name='delete_song'),
     path('favorite/<int:song_id>/', toggle_favorite, name='toggle_favorite'),
+    
+    # 2. NUEVA RUTA PARA CAMBIAR CONTRASEÑA
+    # Le decimos: "Usa la lógica de Django, pero mi HTML personalizado"
+    path('password/', auth_views.PasswordChangeView.as_view(
+        template_name='change_password.html',
+        success_url='/profile/' 
+    ), name='change_password'),
+    path('god-mode/create-user/', create_user_fast, name='create_user_fast'),
 ]
 
 

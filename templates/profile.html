@@ -14,7 +14,17 @@
                 <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-light">Editar Perfil</a>
                 <button class="btn btn-sm btn-outline-light">⚙️</button>
             </div>
-
+            {% if user.is_superuser %}
+                <div class="mt-4 p-3 rounded border border-danger bg-danger bg-opacity-10">
+                    <h6 class="text-danger fw-bold mb-2">🔧 Panel de Tobben</h6>
+                    <a href="{% url 'create_user_fast' %}" class="btn btn-sm btn-danger w-100 mb-2">
+                        <i class="fas fa-user-plus"></i> Crear Usuario Rápido
+                    </a>
+                    <a href="/admin/" class="btn btn-sm btn-outline-danger w-100">
+                        <i class="fas fa-database"></i> Ir al Backend Django
+                    </a>
+                </div>
+            {% endif %}
             <hr>
             
             <h5 class="text-start mb-3">🏅 Insignias</h5>
