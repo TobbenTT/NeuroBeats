@@ -1,17 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Song, Rating
+from django.http import JsonResponse  # <--- VITAL para los likes
+from .models import Song, Rating, Favorite  # <--- VITAL para guardar likes
 from .forms import SongForm
 from pydub import AudioSegment
-# Create your views here.
+import os
 
 def home(request):
-    # 1 Obtener Todas las Cansiones de la BD
     songs = Song.objects.all().order_by('-created_at')
-
-    # 2 Entregarlas al template Home
-    return render(request, 'home.html', {'songs': songs})
-
+    
+    # --- AGREGAR ESTO ---
+    liked_songs_ids = []
+    if request.user.is_authenticated:
+        # Obtenemos solo los IDs de las canciones que le gustan al usuario actual
+        # values_list('song_id', flat=True) devuelve una lista simple tipo: [1, 3, 5]
+        liked_songs_ids = request.user.favorites.values_list('song_id', flat=True)
+    
+    return render(request, 'home.html', {
+        'songs': songs, 
+        'liked_songs_ids': liked_songs_ids  # Pasamos la lista al HTML
+    })
 @login_required
 def upload_song(request):
     if request.method == 'POST':
@@ -86,3 +94,21 @@ def delete_song(request, song_id):
     
     # Volvemos al perfil
     return redirect('profile')
+
+@login_required
+def toggle_favorite(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    
+    # Intenta buscar el like. Si existe lo borra, si no existe lo crea.
+    favorite, created = Favorite.objects.get_or_create(user=request.user, song=song)
+    
+    if not created:
+        # Si NO se creó recién, significa que YA existía -> Lo borramos (Unlike)
+        favorite.delete()
+        liked = False
+    else:
+        # Si se creó recién -> (Like)
+        liked = True
+    
+    # Respondemos solo con datos, no con HTML
+    return JsonResponse({'liked': liked})

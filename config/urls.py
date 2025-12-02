@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # Importamos vistas de Musica y Usuarios
-from music.views import home, upload_song, rate_song, delete_song
+from music.views import home, upload_song, rate_song, delete_song, toggle_favorite
 from users.views import profile, edit_profile
 
 urlpatterns = [
@@ -32,6 +32,7 @@ urlpatterns = [
     # RUTA NUEVA PARA VOTAR: Recibe el ID de la canción y la nota (1-5)
     path('rate/<int:song_id>/<int:score>/', rate_song, name='rate_song'),
     path('delete/<int:song_id>/', delete_song, name='delete_song'),
+    path('favorite/<int:song_id>/', toggle_favorite, name='toggle_favorite'),
 ]
 
 

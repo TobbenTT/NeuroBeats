@@ -20,9 +20,17 @@
                     <source src="{{ song.audio_file.url }}" type="audio/mpeg">
                 </audio>
                 
-                <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="d-flex justify-content-between align-items-center mt-2">
                     <span class="badge bg-dark border border-secondary">{{ song.genre.name }}</span>
-                    <button class="btn btn-sm btn-outline-danger rounded-circle"><i class="fas fa-heart"></i></button>
+                    
+                    <button class="btn btn-sm rounded-circle btn-favorite" 
+                            data-id="{{ song.id }}"
+                            style="border: 1px solid #e91e63;">
+                        
+                        {% if song.id in liked_songs_ids %}
+                            <i class="fas fa-heart" style="color: #e91e63;"></i> {% else %}
+                            <i class="far fa-heart" style="color: #e91e63;"></i> {% endif %}
+                    </button>
                 </div>
             </div>
             <div class="card-footer bg-transparent border-top-0 text-muted small">
@@ -33,8 +41,45 @@
     {% empty %}
         <div class="col-12 text-center py-5">
             <h3 class="text-muted">📭 Aún no hay música.</h3>
-            <a href="{% url 'upload' %}" class="btn btn-neuro mt-3">Sé el primero en subir algo</a>
+            <a href="{% url 'upload' %}" class="btn btn-primary mt-3">Sé el primero en subir algo</a>
         </div>
     {% endfor %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-favorite');
+        
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songId = this.dataset.id;
+                const icon = this.querySelector('i');
+                
+                // Efecto visual inmediato (para que se sienta rápido)
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+
+                // Llamada AJAX a Django
+                fetch(`/favorite/${songId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Confirmamos con la respuesta del servidor (opcional, pero seguro)
+                    if (data.liked) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
 {% endblock %}
