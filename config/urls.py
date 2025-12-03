@@ -22,7 +22,7 @@ from django.contrib.auth import views as auth_views
 
 # Importamos vistas de Musica y Usuarios
 from music.views import home, upload_song, rate_song, delete_song, toggle_favorite
-from users.views import profile, edit_profile, create_user_fast, sign_out
+from users.views import profile, edit_profile, create_user_fast, sign_out, public_profile, toggle_follow
 
 
 urlpatterns = [
@@ -49,6 +49,12 @@ urlpatterns = [
     
     # 2. Logout (Usamos nuestra función personalizada)
     path('logout/', sign_out, name='logout'),
+
+    # Ruta para ver perfiles ajenos (ej: /u/anita_pop/)
+    path('u/<str:username>/', public_profile, name='public_profile'),
+    
+    # Ruta invisible para el botón seguir
+    path('follow/<int:user_id>/', toggle_follow, name='toggle_follow'),
 ]
 
 

@@ -60,6 +60,28 @@
         background-color: #333;
         color: #fff;
     }
+
+    /* --- ARREGLO DEL BOTÓN DE LIKE --- */
+    .btn-favorite {
+        width: 40px;           /* Ancho fijo */
+        height: 40px;          /* Alto fijo */
+        padding: 0;            /* Sin relleno interno */
+        display: flex;         /* Para centrar el icono */
+        align-items: center;   /* Centrado vertical */
+        justify-content: center; /* Centrado horizontal */
+        transition: transform 0.2s ease; /* Un pequeño efecto al hacer clic */
+        border: none !important; /* Asegurar que no tenga borde */
+    }
+    
+    .btn-favorite:active {
+        transform: scale(0.9); /* Efecto de "pulsar" al hacer clic */
+    }
+
+    /* Asegurar que el icono tenga el tamaño correcto y no se mueva */
+    .btn-favorite i {
+        font-size: 1.5rem; /* Tamaño fijo para el icono (equivale a fa-lg más o menos) */
+        line-height: 1;
+    }
 </style>
 </head>
 <body>
@@ -89,7 +111,7 @@
                         </ul>
                     </div>
                 {% else %}
-                    <a href="/admin/login/" class="btn btn-neuro px-4">Iniciar Sesión</a>
+                    <a href="{% url 'login' %}" class="btn btn-neuro px-4">Iniciar Sesión</a>
                 {% endif %}
             </div>
         </div>

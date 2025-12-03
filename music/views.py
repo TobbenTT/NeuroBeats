@@ -8,6 +8,7 @@ from pydub import AudioSegment
 import os
 import uuid
 from brain.engine import get_recommended_songs
+from users.utils import check_and_award_badges
 
 def home(request):
     # 1. OBTIENE LAS RECOMENDACIONES (IA)
@@ -84,9 +85,13 @@ def upload_song(request):
             song.audio_file = f"tracks/{filename}"
             song.uploader = request.user
             song.save()
+            check_and_award_badges(request.user)
+            
             return redirect('home')
     else:
         form = SongForm()
+
+        
     
     return render(request, 'upload.html', {'form': form})
 
@@ -133,6 +138,18 @@ def toggle_favorite(request, song_id):
     else:
         # Si se creó recién -> (Like)
         liked = True
-    
-    # Respondemos solo con datos, no con HTML
+
+        if not created:
+            favorite.delete()
+            liked = False
+        else:
+            favorite.save()  # Asegúrate de guardar
+            liked = True
+            
+            # ¡LLAMAMOS AL JUEZ! 🏅
+            check_and_award_badges(request.user)
+        
     return JsonResponse({'liked': liked})
+    
+
+

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .record-player-container {
+        position: relative;
+        width: 100%;
+        padding-top: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        background-color: #1a1a1a;
+    }
+    .record {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-size: cover; background-position: center;
+        border-radius: 50%; border: 8px solid #0a0a0a;
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,0.05), inset 0 0 0 8px rgba(0,0,0,0.4);
+        transition: transform 0.5s ease-out;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .record.spinning { animation: spin 5s linear infinite; }
+    
+    .play-btn-center {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 45px; height: 45px;
+        background-color: rgba(124, 77, 255, 0.9);
+        border-radius: 50%; border: none; color: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10; transition: all 0.2s;
+    }
+    .play-btn-center:hover { transform: translate(-50%, -50%) scale(1.1); background-color: #7c4dff; }
+    .center-hole {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 12px; height: 12px; background-color: #0a0a0a; border-radius: 50%; z-index: 5;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card text-center p-4 bg-dark border-secondary position-sticky" style="top: 20px;">
+            <div class="mb-3 position-relative d-inline-block">
+                <img src="{{ profile_user.profile.avatar.url }}" class="rounded-circle border border-3 border-neuro" width="150" height="150" style="object-fit: cover; border-color: #7c4dff;">
+            </div>
+            
+            <h3 class="fw-bold text-white">{{ profile_user.username }}</h3>
+            <p class="text-secondary small">{{ profile_user.profile.bio|default:"Amante de la música." }}</p>
+            
+            <div class="d-flex justify-content-center gap-4 my-3 text-white">
+                <div class="text-center">
+                    <h5 class="mb-0 fw-bold" id="followers-count">{{ profile_user.profile.followed_by.count }}</h5>
+                    <small class="text-muted">Seguidores</small>
+                </div>
+                <div class="text-center">
+                    <h5 class="mb-0 fw-bold">{{ profile_user.profile.follows.count }}</h5>
+                    <small class="text-muted">Siguiendo</small>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+                <button id="btn-follow" 
+                        class="btn w-100 fw-bold {% if is_following %}btn-outline-secondary{% else %}btn-neuro{% endif %}"
+                        data-id="{{ profile_user.id }}">
+                    {% if is_following %}Dejar de Seguir{% else %}Seguir{% endif %}
+                </button>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-light w-100">Inicia sesión para seguir</a>
+            {% endif %}
+            
+            <hr class="border-secondary mt-4">
+            
+            <h6 class="text-start mb-3 text-uppercase text-muted small">Insignias</h6>
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                {% for badge in profile_user.profile.badges.all %}
+                    <span class="badge bg-warning text-dark">
+                        {{ badge.icon_name }} {{ badge.name }}
+                    </span>
+                {% empty %}
+                    <small class="text-muted fst-italic">Sin insignias aún.</small>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3 class="mb-4 border-bottom pb-2 border-secondary text-white">
+            <i class="fas fa-compact-disc me-2"></i> Discografía
+        </h3>
+        
+        <div class="row">
+            {% for song in songs %}
+                {% include 'partials/song_card.html' %}
+            {% empty %}
+                <div class="col-12 alert alert-dark text-center">
+                    Este usuario aún no ha subido música.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Lógica de Seguir
+        const btnFollow = document.getElementById('btn-follow');
+        const counter = document.getElementById('followers-count');
+
+        if(btnFollow){
+            btnFollow.addEventListener('click', function() {
+                const userId = this.dataset.id;
+                fetch(`/follow/${userId}/`)
+                .then(r => r.json())
+                .then(data => {
+                    if(data.following) {
+                        this.textContent = "Dejar de Seguir";
+                        this.classList.remove('btn-neuro');
+                        this.classList.add('btn-outline-secondary');
+                    } else {
+                        this.textContent = "Seguir";
+                        this.classList.remove('btn-outline-secondary');
+                        this.classList.add('btn-neuro');
+                    }
+                    counter.textContent = data.followers_count;
+                });
+            });
+        }
+
+        // 2. Lógica del Reproductor (La que faltaba)
+        const playButtons = document.querySelectorAll('.play-btn-center');
+        let currentlyPlayingAudio = null;
+        let currentlySpinningRecord = null;
+        let currentPlayBtn = null;
+
+        playButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songId = this.dataset.songId;
+                const audio = document.getElementById(`audio-${songId}`);
+                const record = document.getElementById(`record-${songId}`);
+                const icon = this.querySelector('i');
+
+                if (currentlyPlayingAudio && currentlyPlayingAudio !== audio) {
+                    currentlyPlayingAudio.pause();
+                    currentlySpinningRecord.classList.remove('spinning');
+                    currentPlayBtn.querySelector('i').classList.remove('fa-pause');
+                    currentPlayBtn.querySelector('i').classList.add('fa-play');
+                }
+
+                if (audio.paused) {
+                    audio.play();
+                    record.classList.add('spinning');
+                    icon.classList.remove('fa-play').add('fa-pause');
+                    currentlyPlayingAudio = audio;
+                    currentlySpinningRecord = record;
+                    currentPlayBtn = this;
+                } else {
+                    audio.pause();
+                    record.classList.remove('spinning');
+                    icon.classList.remove('fa-pause').add('fa-play');
+                    currentlyPlayingAudio = null;
+                }
+                audio.onended = () => {
+                    record.classList.remove('spinning');
+                    icon.classList.remove('fa-pause').add('fa-play');
+                    currentlyPlayingAudio = null;
+                };
+            });
+        });
+
+        // 3. Lógica de Likes
+        const favButtons = document.querySelectorAll('.btn-favorite');
+        favButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songId = this.dataset.id;
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) icon.classList.remove('far').add('fas');
+                else icon.classList.remove('fas').add('far');
+                fetch(`/favorite/${songId}/`);
+            });
+        });
+    });
+</script>
+{% endblock %}

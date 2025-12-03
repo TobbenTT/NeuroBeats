@@ -3,10 +3,13 @@
         
         <div class="record-player-container mb-3">
             <div class="record" id="record-{{ song.id }}" style="background-image: url('{{ song.cover_image.url }}');"></div>
+            
             <div class="center-hole"></div>
+
             <button class="play-btn-center" data-song-id="{{ song.id }}">
                 <i class="fas fa-play"></i>
             </button>
+
             <audio id="audio-{{ song.id }}" preload="none">
                 <source src="{{ song.audio_file.url }}" type="audio/mpeg">
             </audio>
@@ -14,12 +17,22 @@
 
         <div class="text-center w-100 px-2">
             <h5 class="fw-bold text-truncate mb-1" title="{{ song.title }}">{{ song.title }}</h5>
-            <p class="text-secondary small mb-2">{{ song.artist }}</p>
             
+            <p class="text-secondary small mb-1">{{ song.artist }}</p>
+            
+            <p class="text-muted small mb-3" style="font-size: 0.8rem;">
+                Subido por: 
+                <a href="{% url 'public_profile' song.uploader.username %}" class="text-decoration-none text-info fw-bold hover-link">
+                    {{ song.uploader.username }}
+                </a>
+            </p>
+
             <div class="d-flex justify-content-center gap-2 align-items-center">
-                <span class="badge bg-dark border border-secondary rounded-pill">{{ song.genre.name }}</span>
+                <span class="badge bg-dark border border-secondary rounded-pill text-light">
+                    {{ song.genre.name }}
+                </span>
                 
-                <button class="btn btn-sm rounded-circle btn-favorite p-0" data-id="{{ song.id }}" style="border: none;">
+                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0" data-id="{{ song.id }}">
                     {% if song.id in liked_songs_ids %}
                         <i class="fas fa-heart fa-lg" style="color: #e91e63;"></i>
                     {% else %}
