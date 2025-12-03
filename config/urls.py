@@ -19,7 +19,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from music.views import home, upload_song, rate_song, delete_song, toggle_favorite, song_detail, search
+from music.views import home, upload_song, rate_song, delete_song, toggle_favorite, song_detail, search, edit_song
 from users.views import profile, edit_profile, create_user_fast, sign_out, public_profile, toggle_follow, admin_dashboard, admin_user_detail, admin_edit_user
 
 urlpatterns = [
@@ -33,6 +33,7 @@ urlpatterns = [
     path('rate/<int:song_id>/<int:score>/', rate_song, name='rate_song'),
     path('delete/<int:song_id>/', delete_song, name='delete_song'),
     path('favorite/<int:song_id>/', toggle_favorite, name='toggle_favorite'),
+    path('song/edit/<int:song_id>/', edit_song, name='edit_song'),
     
     # Rutas de Usuario
     path('profile/', profile, name='profile'),

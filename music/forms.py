@@ -31,3 +31,14 @@ class CommentForm(forms.ModelForm):
                 'placeholder': '¿Qué opinas de este temazo?'
             }),
         }
+
+class SongEditForm(forms.ModelForm):
+    class Meta:
+        model = Song
+        fields = ['title', 'artist', 'genre', 'cover_image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Nombre de la canción'}),
+            'artist': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Artista o Banda'}),
+            'genre': forms.Select(attrs={'class': 'form-select bg-dark text-white border-secondary'}),
+            'cover_image': forms.FileInput(attrs={'class': 'form-control bg-dark text-white border-secondary'}),
+        }

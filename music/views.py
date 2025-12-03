@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.conf import settings 
 from .models import Song, Rating, Favorite
-from .forms import SongForm, CommentForm
+from .forms import SongForm, CommentForm, SongEditForm
 from pydub import AudioSegment
 from .analysis import analyze_audio
 import os
@@ -195,3 +195,25 @@ def search(request):
         'songs': songs,
         'users': users
     })
+
+@login_required
+def edit_song(request, song_id):
+    # 1 Buscar
+    song = get_object_or_404(Song, id=song_id)
+
+    # 2. Seguridad: Solo el dueño (o un admin) puede editar
+    if request.user != song.uploader and not request.user.is_superuser:
+        return redirect('home')
+
+    # 3. Procesar el formulario
+    if request.method == 'POST':
+        form = SongEditForm(request.POST, request.FILES, instance=song)
+        if form.is_valid():
+            form.save()
+            # Volvemos al perfil después de guardar
+            return redirect('profile')
+    else:
+        # Cargar los datos actuales en el formulario
+        form = SongEditForm(instance=song)
+
+    return render(request, 'edit_song.html', {'form': form, 'song': song})

@@ -74,11 +74,18 @@
                     <a href="{% url 'rate_song' song.id 5 %}" class="text-decoration-none" title="Obra Maestra">⭐</a>
                 </div>
             </div>
-            <a href="{% url 'delete_song' song.id %}" 
-                class="btn btn-sm btn-outline-danger"
-                onclick="return confirm('⚠️ ¿Estás seguro de que quieres eliminar esta canción permanentemente?');">
-                🗑️
-            </a>
+            <div class="d-flex gap-2 align-items-center">
+                
+                <a href="{% url 'edit_song' song.id %}" class="btn btn-sm btn-outline-info" title="Editar detalles">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+
+                <a href="{% url 'delete_song' song.id %}" 
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('⚠️ ¿Estás seguro?');">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </div>
 
             </div>
             {% empty %}

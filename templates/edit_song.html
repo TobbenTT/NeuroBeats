@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card bg-dark border-secondary shadow-lg">
+        <div class="card-header border-secondary p-4 bg-black bg-opacity-25">
+            <h3 class="mb-0 fw-bold text-white"><i class="fas fa-edit me-2 text-info"></i>Editar Canción</h3>
+        </div>
+        
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded border border-secondary bg-black bg-opacity-50">
+                <img src="{{ song.cover_image.url }}" class="rounded" width="60" height="60" style="object-fit: cover;">
+                <div>
+                    <h5 class="m-0 fw-bold text-white">{{ song.title }}</h5>
+                    <small class="text-secondary">Subido el {{ song.created_at|date:"d M, Y" }}</small>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label text-white fw-bold small text-uppercase">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-info fw-bold">Guardar Cambios</button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
