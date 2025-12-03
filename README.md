@@ -40,14 +40,6 @@ El proyecto implementa una arquitectura moderna con **Django** en el backend y *
 
 ---
 
-## 📸 Capturas de Pantalla
-
-| Home con IA | DJ Anita (HUD) | Perfil de Usuario |
-|:---:|:---:|:---:|
-| *[Inserta aquí tu imagen del Home]* | *[Inserta aquí tu imagen de DJ Anita]* | *[Inserta aquí tu imagen del Perfil]* |
-
----
-
 ## 🚀 Instalación y Despliegue
 
 Sigue estos pasos para correr el proyecto en tu entorno local:
@@ -102,4 +94,4 @@ Sigue estos pasos para correr el proyecto en tu entorno local:
 
 ---
 
-Desarrollado con ❤️ y mucho ☕ por **[Tu Nombre / Tobben]**.
+Desarrollado con ❤️ y mucho ☕ por **[Tobben]**.
