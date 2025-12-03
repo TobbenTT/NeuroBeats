@@ -145,7 +145,8 @@
 
         // Variables para el ESTATUS GLOBAL (Submit)
         const form = document.getElementById('upload-form');
-        const submitBtn = document.querySelector('button[type="submit"]');
+        // FIX: Buscamos el botón DENTRO del formulario para evitar seleccionar el de la barra de búsqueda
+        const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
 
         // Verificación crítica: si no existe el input o el contenedor, no hacer nada.
         if (!audioInput || !container) {
