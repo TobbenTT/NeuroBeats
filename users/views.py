@@ -55,6 +55,11 @@ def sign_out(request):
 
 def public_profile(request, username):
     user_obj = get_object_or_404(User, username=username)
+    # Si soy yo mismo viéndome, veo TODO. Si es otro, solo PÚBLICAS.
+    if request.user == user_obj:
+        songs = Song.objects.filter(uploader=user_obj).order_by('-created_at')
+    else:
+        songs = Song.objects.filter(uploader=user_obj, is_private=False).order_by('-created_at')
     
     if request.user.is_authenticated and request.user == user_obj:
         return redirect('profile')

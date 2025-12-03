@@ -85,6 +85,8 @@
                         {{ form.start_time }}
                         {{ form.end_time }}
 
+
+
                         <div class="d-grid gap-3 mt-5">
                             <button type="submit" class="btn btn-success btn-lg fw-bold py-3" style="background-color: #00c853; border: none;">
                                 <i class="fas fa-check-circle fa-lg me-2"></i> Publicar Canción
@@ -92,6 +94,17 @@
                             <a href="{% url 'home' %}" class="btn btn-outline-secondary py-2">Cancelar</a>
                         </div>
                     </form>
+                                            <div class="form-check d-flex align-items-center gap-3">
+
+                            {{ form.is_private }}
+
+                            <div>
+                                <label class="form-check-label fw-bold text-white" for="id_is_private">
+                                    Marcar como Privada
+                                </label>
+                                <p class="text-muted small mb-0">Solo tú podrás ver y escuchar esta canción.</p>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -138,7 +151,6 @@
                         color: 'rgba(0, 200, 83, 0.35)',
                         drag: true, resize: true, maxLength: 30
                     });
-                    // Inicializar inputs
                     if(inputStart) inputStart.value = 0;
                     if(inputEnd) inputEnd.value = 30;
                 });
@@ -149,36 +161,43 @@
                     timeDisplay.innerHTML = `<i class="far fa-clock me-1"></i> ${region.start.toFixed(1)}s - ${region.end.toFixed(1)}s`;
                 });
 
-                // --- LÓGICA DE PLAY/PAUSE CORREGIDA ---
                 playBtn.onclick = () => {
                     if (wavesurfer.isPlaying()) {
-                        // SI ESTÁ SONANDO -> PAUSAR
                         wavesurfer.pause();
                     } else {
-                        // SI ESTÁ PAUSADO -> REPRODUCIR LA REGIÓN
                         const regions = wsRegions.getRegions();
-                        if (regions.length > 0) {
-                            regions[0].play();
-                        } else {
-                            wavesurfer.play();
-                        }
+                        if (regions.length > 0) regions[0].play();
+                        else wavesurfer.play();
                     }
                 };
 
-                // Eventos para cambiar el icono del botón automáticamente
                 wavesurfer.on('play', () => {
                     playBtn.innerHTML = '<i class="fas fa-pause me-1"></i> Pausar';
                     playBtn.classList.remove('btn-primary');
-                    playBtn.classList.add('btn-warning'); // Color amarillo para pausar
+                    playBtn.classList.add('btn-warning');
                 });
 
                 wavesurfer.on('pause', () => {
                     playBtn.innerHTML = '<i class="fas fa-play me-1"></i> Preescuchar Recorte';
                     playBtn.classList.remove('btn-warning');
-                    playBtn.classList.add('btn-primary'); // Volver a azul
+                    playBtn.classList.add('btn-primary');
                 });
             }
-        });
+        }); // <--- AQUÍ TERMINA LA LÓGICA DEL AUDIO
+
+        // --- LÓGICA ANTI-SPAM (AHORA ESTÁ AFUERA, DONDE DEBE SER) ---
+        const form = document.getElementById('upload-form');
+        const submitBtn = document.querySelector('button[type="submit"]');
+
+        if (form && submitBtn) {
+            form.addEventListener('submit', function() {
+                // 1. Cambiar texto e icono
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Subiendo y Procesando...';
+                // 2. Desactivar botón inmediatamente
+                submitBtn.disabled = true;
+                submitBtn.classList.add('disabled');
+            });
+        }
     });
 </script>
 {% endblock %}
