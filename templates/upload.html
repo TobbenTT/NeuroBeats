@@ -120,8 +120,10 @@
         const container = document.getElementById('waveform-container');
         const playBtn = document.getElementById('btn-play');
         const timeDisplay = document.getElementById('time-display');
-        const inputStart = document.querySelector('input[name="start_time"]');
-        const inputEnd = document.querySelector('input[name="end_time"]');
+        
+        // SELECTORES PRECISOS (Django genera IDs automáticamente)
+        const inputStart = document.getElementById('id_start_time');
+        const inputEnd = document.getElementById('id_end_time');
 
         let wavesurfer;
         let wsRegions;
@@ -130,37 +132,46 @@
             const file = e.target.files[0];
             if (file) {
                 container.classList.remove('d-none');
+                
                 if (wavesurfer) wavesurfer.destroy();
 
                 wavesurfer = WaveSurfer.create({
                     container: '#waveform',
-                    waveColor: '#5e35b1', // Color morado oscuro
-                    progressColor: '#b39ddb', // Color morado claro al reproducir
+                    waveColor: '#5e35b1',
+                    progressColor: '#b39ddb',
                     cursorColor: '#fff',
                     barWidth: 2,
-                    barRadius: 3,
-                    cursorWidth: 1,
                     height: 100,
-                    barGap: 2,
                     url: URL.createObjectURL(file),
                 });
 
                 wsRegions = wavesurfer.registerPlugin(WaveSurfer.Regions.create());
 
                 wavesurfer.on('decode', () => {
-                    wsRegions.addRegion({
+                    // Limpiamos regiones viejas
+                    wsRegions.clearRegions();
+
+                    // Creamos la región inicial
+                    const region = wsRegions.addRegion({
                         start: 0,
                         end: 30,
-                        color: 'rgba(0, 200, 83, 0.35)', // Verde Spotify transparente
+                        color: 'rgba(0, 200, 83, 0.35)',
                         drag: true,
                         resize: true,
                         maxLength: 30
                     });
+
+                    // --- FIX CRÍTICO: Actualizar inputs INMEDIATAMENTE al cargar ---
+                    // Así, si el usuario no toca nada, se envía 0 y 30 correctamente.
+                    if(inputStart) inputStart.value = 0;
+                    if(inputEnd) inputEnd.value = 30;
                 });
 
                 wsRegions.on('region-updated', (region) => {
-                    inputStart.value = region.start.toFixed(2);
-                    inputEnd.value = region.end.toFixed(2);
+                    // Actualizamos inputs cada vez que se mueve
+                    if(inputStart) inputStart.value = region.start.toFixed(2);
+                    if(inputEnd) inputEnd.value = region.end.toFixed(2);
+                    
                     timeDisplay.innerHTML = `<i class="far fa-clock me-1"></i> ${region.start.toFixed(1)}s - ${region.end.toFixed(1)}s`;
                 });
 

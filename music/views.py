@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse  # <--- VITAL para los likes
-from .models import Song, Rating, Favorite  # <--- VITAL para guardar likes
+from django.http import JsonResponse
+from django.conf import settings 
+from .models import Song, Rating, Favorite
 from .forms import SongForm
 from pydub import AudioSegment
-from brain.engine import get_recommended_songs
 import os
+import uuid
+from brain.engine import get_recommended_songs
 
 def home(request):
     # 1. OBTIENE LAS RECOMENDACIONES (IA)
@@ -28,6 +30,7 @@ def home(request):
         'explore_songs': explore_songs,         # Lista 2 (Abajo)
         'liked_songs_ids': liked_songs_ids
     })
+
 @login_required
 def upload_song(request):
     if request.method == 'POST':
@@ -35,36 +38,49 @@ def upload_song(request):
         if form.is_valid():
             song = form.save(commit=False)
             
-            # --- LÓGICA DE RECORTE CON ONDAS ---
+            # --- LÓGICA DE RECORTE DE AUDIO MEJORADA ---
             uploaded_audio = request.FILES['audio_file']
             
-            # Obtenemos los datos exactos del formulario visual
-            start_sec = form.cleaned_data.get('start_time', 0)
-            end_sec = form.cleaned_data.get('end_time', 30)
-            
-            # Validacion de seguridad: Que no dure más de 30s
-            if (end_sec - start_sec) > 32: # Damos 2s de margen por lag
+            # 1. Obtenemos los datos y forzamos float (por si acaso)
+            # Si falla, usamos 0 y 30 como seguridad
+            try:
+                start_sec = float(form.cleaned_data.get('start_time') or 0)
+                end_sec = float(form.cleaned_data.get('end_time') or 30)
+            except ValueError:
+                start_sec = 0.0
+                end_sec = 30.0
+
+            # 2. DEBUG: Mira esto en tu terminal negra cuando subas la canción
+            print(f"✂️ CORTANDO AUDIO: Inicio={start_sec}s | Fin={end_sec}s")
+
+            # 3. Validación de seguridad (Máximo 30s)
+            if (end_sec - start_sec) > 32: 
                 end_sec = start_sec + 30
 
-            # Procesamiento con PyDub
+            # 4. Procesamiento con PyDub
             audio = AudioSegment.from_file(uploaded_audio)
             
-            # Convertir segundos a milisegundos
-            start_ms = start_sec * 1000
-            end_ms = end_sec * 1000
+            # 5. CONVERSIÓN A ENTEROS (CRÍTICO: Pydub odia los decimales)
+            start_ms = int(start_sec * 1000)
+            end_ms = int(end_sec * 1000)
             
-            # Cortar
+            # 6. Cortar
             cut_audio = audio[start_ms:end_ms]
             
-            # Guardar
-            filename = f"cut_{uploaded_audio.name}" # Cambiamos nombre para evitar caché
-            save_path = f"media/tracks/{filename}"
+            # 7. Guardar con nombre único para evitar caché
+            import uuid # Importar esto arriba si puedes, si no, usa el nombre simple
+            filename = f"cut_{uuid.uuid4().hex[:8]}_{uploaded_audio.name}"
             
-            # Asegurar que el directorio existe
+            # Ruta absoluta del sistema
+            save_path = os.path.join(settings.MEDIA_ROOT, 'tracks', filename)
+            
+            # Asegurar directorio
             os.makedirs(os.path.dirname(save_path), exist_ok=True)
             
+            # Exportar
             cut_audio.export(save_path, format="mp3")
             
+            # 8. Asignar ruta relativa a la Base de Datos
             song.audio_file = f"tracks/{filename}"
             song.uploader = request.user
             song.save()
