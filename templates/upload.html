@@ -3,26 +3,37 @@
 {% block content %}
 <style>
     /* Estilos Dark Mode Pro */
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         background-color: #2b2b2b;
         border: 1px solid #444;
         color: #e0e0e0;
     }
-    .form-control:focus, .form-select:focus {
+
+    .form-control:focus,
+    .form-select:focus {
         background-color: #333;
         border-color: #7c4dff;
         box-shadow: 0 0 0 0.25rem rgba(124, 77, 255, 0.25);
         color: white;
     }
-    .form-label { color: #b0b0b0; font-weight: 500; }
-    #waveform-container { background-color: #1a1a1a; border: 1px solid #333; }
+
+    .form-label {
+        color: #b0b0b0;
+        font-weight: 500;
+    }
+
+    #waveform-container {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+    }
 </style>
 
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
             <div class="card bg-dark text-white border-0 shadow-lg rounded-4 overflow-hidden">
-                
+
                 <div class="card-header p-4" style="background: linear-gradient(45deg, #3a1c71, #d76d77, #ffaf7b);">
                     <div class="d-flex justify-content-between align-items-center">
                         <h3 class="mb-0 fw-bold text-white"><i class="fas fa-rocket me-2"></i> Estudio de Subida</h3>
@@ -35,8 +46,9 @@
                 <div class="card-body p-4 p-md-5" style="background-color: #121212;">
                     <form method="post" enctype="multipart/form-data" id="upload-form">
                         {% csrf_token %}
-                        
-                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-info-circle me-2"></i> Información</h5>
+
+                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i
+                                class="fas fa-info-circle me-2"></i> Información</h5>
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label">Título</label>
@@ -52,25 +64,28 @@
                             {{ form.genre }}
                         </div>
 
-                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-headphones me-2"></i> Recorte (30s)</h5>
+                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i
+                                class="fas fa-headphones me-2"></i> Recorte (30s)</h5>
                         <div class="mb-4 p-4 rounded-3" style="background-color: #1a1a1a; border: 1px dashed #555;">
                             <label class="form-label text-primary fw-bold mb-3">
                                 <i class="fas fa-file-audio fa-lg me-2"></i> 1. Selecciona el archivo
                             </label>
                             {{ form.audio_file }}
-                            
+
                             <div id="waveform-container" class="mt-4 p-3 rounded-3 d-none">
                                 <div class="d-flex align-items-center text-info small mb-2">
                                     <i class="fas fa-cut me-2"></i>
                                     <span>Arrastra la caja azul para elegir el fragmento.</span>
                                 </div>
                                 <div id="waveform" class="mb-3"></div>
-                                
-                                <div class="d-flex justify-content-between align-items-center bg-black bg-opacity-25 p-2 rounded">
+
+                                <div
+                                    class="d-flex justify-content-between align-items-center bg-black bg-opacity-25 p-2 rounded">
                                     <button type="button" id="btn-play" class="btn btn-sm btn-primary btn-neuro">
                                         <i class="fas fa-play me-1"></i> Preescuchar Recorte
                                     </button>
-                                    <span class="badge bg-dark border border-secondary text-white fs-6" id="time-display">
+                                    <span class="badge bg-dark border border-secondary text-white fs-6"
+                                        id="time-display">
                                         <i class="far fa-clock me-1"></i> 0.0s - 30.0s
                                     </span>
                                 </div>
@@ -88,23 +103,24 @@
 
 
                         <div class="d-grid gap-3 mt-5">
-                            <button type="submit" class="btn btn-success btn-lg fw-bold py-3" style="background-color: #00c853; border: none;">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold py-3"
+                                style="background-color: #00c853; border: none;">
                                 <i class="fas fa-check-circle fa-lg me-2"></i> Publicar Canción
                             </button>
                             <a href="{% url 'home' %}" class="btn btn-outline-secondary py-2">Cancelar</a>
                         </div>
                     </form>
-                                            <div class="form-check d-flex align-items-center gap-3">
+                    <div class="form-check d-flex align-items-center gap-3">
 
-                            {{ form.is_private }}
+                        {{ form.is_private }}
 
-                            <div>
-                                <label class="form-check-label fw-bold text-white" for="id_is_private">
-                                    Marcar como Privada
-                                </label>
-                                <p class="text-muted small mb-0">Solo tú podrás ver y escuchar esta canción.</p>
-                            </div>
+                        <div>
+                            <label class="form-check-label fw-bold text-white" for="id_is_private">
+                                Marcar como Privada
+                            </label>
+                            <p class="text-muted small mb-0">Solo tú podrás ver y escuchar esta canción.</p>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -115,93 +131,131 @@
 <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/regions.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const audioInput = document.getElementById('audio-input');
+    // 1. DEFINIR LA FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
+    function initUploadPage() {
+        console.log("DEBUG: Iniciando lógica de Upload (Corte y Botón)...");
+
+        // Variables para la lógica de WaveSurfer
+        const audioInput = document.querySelector('input[name="audio_file"]');
         const container = document.getElementById('waveform-container');
         const playBtn = document.getElementById('btn-play');
         const timeDisplay = document.getElementById('time-display');
         const inputStart = document.getElementById('id_start_time');
         const inputEnd = document.getElementById('id_end_time');
 
-        let wavesurfer;
-        let wsRegions;
-
-        audioInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                container.classList.remove('d-none');
-                if (wavesurfer) wavesurfer.destroy();
-
-                wavesurfer = WaveSurfer.create({
-                    container: '#waveform',
-                    waveColor: '#5e35b1',
-                    progressColor: '#b39ddb',
-                    cursorColor: '#fff',
-                    barWidth: 2,
-                    height: 100,
-                    url: URL.createObjectURL(file),
-                });
-
-                wsRegions = wavesurfer.registerPlugin(WaveSurfer.Regions.create());
-
-                wavesurfer.on('decode', () => {
-                    wsRegions.clearRegions();
-                    wsRegions.addRegion({
-                        start: 0, end: 30,
-                        color: 'rgba(0, 200, 83, 0.35)',
-                        drag: true, resize: true, maxLength: 30
-                    });
-                    if(inputStart) inputStart.value = 0;
-                    if(inputEnd) inputEnd.value = 30;
-                });
-
-                wsRegions.on('region-updated', (region) => {
-                    if(inputStart) inputStart.value = region.start.toFixed(2);
-                    if(inputEnd) inputEnd.value = region.end.toFixed(2);
-                    timeDisplay.innerHTML = `<i class="far fa-clock me-1"></i> ${region.start.toFixed(1)}s - ${region.end.toFixed(1)}s`;
-                });
-
-                playBtn.onclick = () => {
-                    if (wavesurfer.isPlaying()) {
-                        wavesurfer.pause();
-                    } else {
-                        const regions = wsRegions.getRegions();
-                        if (regions.length > 0) regions[0].play();
-                        else wavesurfer.play();
-                    }
-                };
-
-                wavesurfer.on('play', () => {
-                    playBtn.innerHTML = '<i class="fas fa-pause me-1"></i> Pausar';
-                    playBtn.classList.remove('btn-primary');
-                    playBtn.classList.add('btn-warning');
-                });
-
-                wavesurfer.on('pause', () => {
-                    playBtn.innerHTML = '<i class="fas fa-play me-1"></i> Preescuchar Recorte';
-                    playBtn.classList.remove('btn-warning');
-                    playBtn.classList.add('btn-primary');
-                });
-            }
-        }); // <--- AQUÍ TERMINA LA LÓGICA DEL AUDIO
-
-        // --- LÓGICA FINAL ANTI-SPAM (REGRESO AL BOTÓN) ---
+        // Variables para el ESTATUS GLOBAL (Submit)
         const form = document.getElementById('upload-form');
         const submitBtn = document.querySelector('button[type="submit"]');
 
+        // Verificación crítica: si no existe el input o el contenedor, no hacer nada.
+        if (!audioInput || !container) {
+            console.error("ERROR: Elementos de Upload no encontrados. Skip.");
+            return;
+        }
+
+        // Verificación crítica: Si WaveSurfer no está cargado, esperar un momento.
+        if (typeof WaveSurfer === 'undefined') {
+            console.warn("WaveSurfer aún no está cargado. Reintentando en 50ms...");
+            setTimeout(initUploadPage, 50);
+            return;
+        }
+
+        let wavesurfer;
+        let wsRegions;
+
+        // --- LÓGICA DEL CORTADOR (WaveSurfer) ---
+        audioInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                container.classList.remove('d-none');
+
+                // Usamos un pequeño retraso (Timeout) para solucionar problemas de pintado del DOM
+                setTimeout(function () {
+                    if (wavesurfer) wavesurfer.destroy();
+
+                    try {
+                        const audioUrl = URL.createObjectURL(file);
+
+                        wavesurfer = WaveSurfer.create({
+                            container: '#waveform',
+                            waveColor: '#5e35b1',
+                            progressColor: '#b39ddb',
+                            cursorColor: '#fff',
+                            barWidth: 2,
+                            height: 100,
+                            url: audioUrl,
+                        });
+
+                        wsRegions = wavesurfer.registerPlugin(WaveSurfer.Regions.create());
+
+                        wavesurfer.on('decode', () => {
+                            wsRegions.clearRegions();
+                            wsRegions.addRegion({
+                                start: 0, end: 30,
+                                color: 'rgba(0, 200, 83, 0.35)',
+                                drag: true, resize: true, maxLength: 30
+                            });
+                            if (inputStart) inputStart.value = 0;
+                            if (inputEnd) inputEnd.value = 30;
+                        });
+                        wsRegions.on('region-updated', (region) => {
+                            if (inputStart) inputStart.value = region.start.toFixed(2);
+                            if (inputEnd) inputEnd.value = region.end.toFixed(2);
+                            timeDisplay.innerHTML = `<i class="far fa-clock me-1"></i> ${region.start.toFixed(1)}s - ${region.end.toFixed(1)}s`;
+                        });
+
+                        // Lógica de Play/Pause
+                        playBtn.onclick = () => {
+                            if (wavesurfer.isPlaying()) {
+                                wavesurfer.pause();
+                            } else {
+                                const regions = wsRegions.getRegions();
+                                if (regions.length > 0) regions[0].play();
+                                else wavesurfer.play();
+                            }
+                        };
+                        wavesurfer.on('play', () => {
+                            playBtn.innerHTML = '<i class="fas fa-pause me-1"></i> Pausar';
+                            playBtn.classList.remove('btn-primary', 'btn-neuro');
+                            playBtn.classList.add('btn-warning');
+                        });
+                        wavesurfer.on('pause', () => {
+                            playBtn.innerHTML = '<i class="fas fa-play me-1"></i> Preescuchar Recorte';
+                            playBtn.classList.remove('btn-warning');
+                            playBtn.classList.add('btn-primary', 'btn-neuro');
+                        });
+
+                    } catch (error) {
+                        console.error("ERROR CRÍTICO AL INICIAR EDITOR:", error);
+                        container.classList.add('d-none');
+                    }
+                }, 10); // Pequeño retraso de 10ms
+            }
+        });
+
+        // --- LÓGICA FINAL ANTI-SPAM ---
         if (form && submitBtn) {
-            form.addEventListener('submit', function() {
-                // 1. Cambiar texto y icono del botón
+            form.addEventListener('submit', function () {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Subiendo y Procesando...';
-                
-                // 2. Bloquear y oscurecer el botón
-                submitBtn.disabled = true; 
+                submitBtn.disabled = true;
                 submitBtn.classList.add('disabled');
                 submitBtn.style.opacity = '0.8';
                 submitBtn.style.cursor = 'default';
-                submitBtn.style.pointerEvents = 'none'; 
+                submitBtn.style.pointerEvents = 'none';
             });
         }
-    });
+    }
+
+    // 2. DISPARAR LA FUNCIÓN EN EVENTOS CRÍTICOS (CORRECCIÓN)
+    // Verificamos si el DOM ya está listo (caso HTMX o carga rápida) o si debemos esperar (carga normal lenta)
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        // Caso HTMX o DOM ya listo: Ejecutar inmediatamente
+        // Usamos un pequeño timeout para asegurar que el DOM insertado por HTMX esté totalmente estable
+        setTimeout(initUploadPage, 20);
+    } else {
+        // Caso Carga Normal: Esperar a DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initUploadPage);
+    }
+
 </script>
 {% endblock %}
