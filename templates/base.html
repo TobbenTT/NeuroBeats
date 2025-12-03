@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#7c4dff">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
     /* CONFIGURACIÓN GLOBAL DE MODO OSCURO */
     body {
@@ -81,6 +84,144 @@
     .btn-favorite i {
         font-size: 1.5rem; /* Tamaño fijo para el icono (equivale a fa-lg más o menos) */
         line-height: 1;
+    }
+
+    /* =========================================
+       DISEÑO MÓVIL PROFESIONAL (Spotify Style)
+       ========================================= */
+    @media (max-width: 768px) {
+        
+        /* 1. REPRODUCTOR COMPACTO (FIXED) */
+        #master-player-bar { 
+            height: 65px; /* Altura fija para evitar saltos */
+            padding: 0 !important;
+            bottom: 0; 
+            background: #121212 !important; /* Negro sólido elegante */
+            border-top: 1px solid #333;
+            display: flex; /* Asegurar flexbox */
+        }
+
+        /* Contenedor interno del player */
+        #master-player-bar .container-fluid, 
+        #master-player-bar .row {
+            height: 100%;
+            margin: 0;
+            padding: 0 10px; /* Margen lateral seguro */
+        }
+
+        /* COLUMNA 1: Info Canción (Izquierda) */
+        #master-player-bar .col-4:first-child { 
+            width: 70% !important; 
+            display: flex;
+            align-items: center;
+            padding: 0;
+        }
+        /* Imagen pequeña en el player */
+        #master-cover {
+            width: 45px !important;
+            height: 45px !important;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        /* Texto alineado */
+        #master-player-bar h6 { font-size: 0.9rem; margin-bottom: 0; line-height: 1.2; }
+        #master-player-bar small { font-size: 0.75rem; opacity: 0.7; }
+
+        /* COLUMNA 2: Controles (Derecha) */
+        #master-player-bar .col-4:nth-child(2) { 
+            width: 30% !important; 
+            display: flex; 
+            align-items: center;
+            justify-content: flex-end; /* Pegar botón a la derecha */
+            padding: 0;
+        }
+
+        /* Botón Play Limpio */
+        #master-play-btn {
+            width: 40px !important;
+            height: 40px !important;
+            background: white !important; /* Círculo blanco */
+            color: black !important;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin-right: 5px;
+        }
+        #master-play-btn i { font-size: 1rem; margin-left: 2px; } /* Ajuste óptico del icono */
+
+        /* Barra de Progreso (Pegada al borde superior) */
+        #seek-slider {
+            position: absolute; 
+            top: -6px; /* Subirlo un poco para que tape el borde */
+            left: 0; 
+            width: 100%; 
+            height: 4px; /* Más fina */
+            margin: 0;
+            z-index: 1050;
+            opacity: 1;
+            border-radius: 0;
+            cursor: pointer;
+        }
+        /* Quitar la bolita del slider en móvil para que sea más limpio */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 0; height: 0;
+        }
+
+        /* COLUMNA 3: Volumen (Ocultar) */
+        #master-player-bar .col-4:last-child { display: none !important; }
+
+        /* ELEMENTOS OCULTOS EN MÓVIL */
+        #audio-visualizer, 
+        .fa-step-backward, 
+        .fa-step-forward,
+        #current-time, 
+        #duration-time { 
+            display: none !important; 
+        }
+
+        /* 2. AJUSTE DEL VINILO EN EL FEED (Que no sea gigante) */
+        .record-player-container {
+            max-width: 250px !important; /* Limitar tamaño máximo */
+            margin: 0 auto 1.5rem auto; /* Centrar y dar aire abajo */
+        }
+
+        /* 3. MÁRGENES GENERALES */
+        .container { padding-left: 20px; padding-right: 20px; }
+        /* Espacio extra abajo para que el player no tape la última canción */
+        .py-4 { padding-bottom: 90px !important; }
+        
+        /* 1. ARREGLO PÁGINA DE DETALLE (Vinilo Gigante) */
+        /* Hacemos que el disco no ocupe toda la pantalla en el cel */
+        .record-player-container {
+            max-width: 280px !important; /* Tamaño controlado */
+            margin: 0 auto 20px auto;    /* Centrado */
+        }
+
+        /* 2. ARREGLO PERFIL DE USUARIO */
+        /* Que la tarjeta del perfil no tenga márgenes raros */
+        .col-md-4 .card {
+            margin-bottom: 20px;
+        }
+        /* Avatar de perfil un poco más chico en móvil */
+        .rounded-circle.border-3 {
+            width: 120px !important;
+            height: 120px !important;
+        }
+        
+        /* 3. ARREGLO RESULTADOS DE BÚSQUEDA */
+        /* Texto del Hero más pequeño para que quepa */
+        .search-hero h1 { font-size: 2rem; }
+        .search-hero { padding: 2rem 1rem; }
+
+        /* 4. ARREGLO LISTA DE CANCIONES (Perfil) */
+        /* En móvil, ocultamos la fecha de subida para que quepa el título */
+        .list-group-item small.text-muted {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
     }
 </style>
 <style>
@@ -167,55 +308,67 @@
     }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }</style>
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+</style>
 </head>
 <body hx-boost="true">
 
-<nav class="navbar navbar-expand-lg navbar-dark py-3">
+<nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top bg-black border-bottom border-secondary">
     <div class="container">
         <a class="navbar-brand fw-bold fs-4" href="{% url 'home' %}">
             🧠 <span class="text-white">Neuro</span><span style="color: #7c4dff;">Beats</span>
         </a>
         
-        <div class="collapse navbar-collapse justify-content-end">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+            
+            <div class="d-md-none mt-3 mb-3">
+                <form action="{% url 'search' %}" method="get" class="d-flex">
+                    <input type="search" name="q" class="form-control bg-dark text-white border-secondary" placeholder="🔍 Buscar..." value="{{ request.GET.q }}">
+                </form>
+            </div>
+
             <div class="mx-auto d-none d-md-block" style="width: 40%;">
                 <form action="{% url 'search' %}" method="get" class="d-flex">
                     <div class="input-group">
-                        <span class="input-group-text bg-dark border-secondary text-secondary">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="search" name="q" class="form-control bg-dark text-white border-secondary" placeholder="Buscar canciones, artistas o usuarios..." value="{{ request.GET.q }}">
-                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                        <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-search"></i></span>
+                        <input type="search" name="q" class="form-control bg-dark text-white border-secondary" placeholder="Buscar..." value="{{ request.GET.q }}">
+                        <button class="btn btn-outline-secondary" type="submit">Ir</button>
                     </div>
                 </form>
             </div>
-            <div class="navbar-nav align-items-center gap-3">
+
+            <div class="navbar-nav align-items-center gap-3 mt-3 mt-md-0">
                 {% if user.is_authenticated %}
-                    <button class="btn btn-sm btn-outline-info me-2 fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#djAnitaPanel">
+                    <button class="btn btn-sm btn-outline-info w-100 w-md-auto fw-bold mb-2 mb-md-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#djAnitaPanel">
                         🤖 DJ Anita
                     </button>
-                    <a href="{% url 'upload' %}" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-cloud-upload-alt"></i> Subir Música
+                    <a href="{% url 'upload' %}" class="btn btn-sm btn-outline-secondary w-100 w-md-auto">
+                        <i class="fas fa-cloud-upload-alt"></i> Subir
                     </a>
                     
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center text-white dropdown-toggle" data-bs-toggle="dropdown">
+                    <div class="dropdown w-100 w-md-auto">
+                        <a href="#" class="d-flex align-items-center text-white dropdown-toggle justify-content-center justify-content-md-start mt-2 mt-md-0" data-bs-toggle="dropdown">
                             <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-2" width="32" height="32" style="object-fit: cover;">
                             <strong>{{ user.username }}</strong>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark shadow">
+                        <ul class="dropdown-menu dropdown-menu-dark shadow w-100 text-center text-md-start">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">👤 Mi Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">🚪 Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">🚪 Salir</a></li>
                         </ul>
                     </div>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-neuro px-4">Iniciar Sesión</a>
+                    <a href="{% url 'login' %}" class="btn btn-neuro px-4 w-100 mt-2 mt-md-0">Entrar</a>
                 {% endif %}
             </div>
         </div>
     </div>
 </nav>
+<div style="margin-top: 80px;"></div>
 
 <div class="container py-4">
     {% block content %}
