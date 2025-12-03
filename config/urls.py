@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from music.views import home, upload_song, rate_song, delete_song, toggle_favorite, song_detail
-from users.views import profile, edit_profile, create_user_fast, sign_out, public_profile, toggle_follow, admin_dashboard, admin_user_detail
+from users.views import profile, edit_profile, create_user_fast, sign_out, public_profile, toggle_follow, admin_dashboard, admin_user_detail, admin_edit_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -51,6 +51,7 @@ urlpatterns = [
     # --- ZONA DE ADMINISTRACIÓN (TOBBEN) ---
     path('god-mode/dashboard/', admin_dashboard, name='admin_dashboard'),
     path('god-mode/inspect/<int:user_id>/', admin_user_detail, name='admin_user_detail'),
+    path('god-mode/edit/<int:user_id>/', admin_edit_user, name='admin_edit_user'),
 ]
 
 if settings.DEBUG:

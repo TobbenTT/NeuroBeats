@@ -6,6 +6,8 @@ from music.models import Song
 from .forms import ProfileUpdateForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.forms import SetPasswordForm
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.admin.views.decorators import staff_member_required
@@ -125,4 +127,37 @@ def admin_user_detail(request, user_id):
     return render(request, 'admin_user_detail.html', {
         'target_user': target_user,
         'songs': songs
+    })
+
+@staff_member_required
+def admin_edit_user(request, user_id):
+    target_user = get_object_or_404(User, id=user_id)
+    
+    # Formularios
+    if request.method == 'POST':
+        # ¿Es cambio de contraseña?
+        if 'btn_password' in request.POST:
+            pass_form = SetPasswordForm(target_user, request.POST)
+            if pass_form.is_valid():
+                pass_form.save()
+                messages.success(request, f"✅ Contraseña de {target_user.username} cambiada con éxito.")
+                return redirect('admin_user_detail', user_id=user_id)
+        
+        # ¿Es actualización de perfil?
+        elif 'btn_profile' in request.POST:
+            p_form = ProfileUpdateForm(request.POST, request.FILES, instance=target_user.profile)
+            if p_form.is_valid():
+                p_form.save()
+                messages.success(request, f"✅ Perfil de {target_user.username} actualizado.")
+                return redirect('admin_user_detail', user_id=user_id)
+    
+    else:
+        # Cargar formularios vacíos
+        pass_form = SetPasswordForm(target_user)
+        p_form = ProfileUpdateForm(instance=target_user.profile)
+
+    return render(request, 'admin_edit_user.html', {
+        'target_user': target_user,
+        'pass_form': pass_form,
+        'p_form': p_form
     })

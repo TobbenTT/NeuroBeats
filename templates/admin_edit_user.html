@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{% url 'admin_user_detail' target_user.id %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h2 class="fw-bold text-white m-0">🛠️ Editando a: <span class="text-info">{{ target_user.username }}</span></h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark border-danger shadow-lg">
+                <div class="card-header bg-danger bg-opacity-25 border-danger text-danger fw-bold">
+                    <i class="fas fa-key me-2"></i> RESEATEAR CONTRASEÑA
+                </div>
+                <div class="card-body">
+                    <p class="text-secondary small">Usa esto si el usuario olvidó su clave. No necesitas la anterior.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in pass_form %}
+                            <div class="mb-3">
+                                <label class="text-white small fw-bold">{{ field.label }}</label>
+                                {{ field }} <div class="text-danger small">{{ field.errors }}</div>
+                                <div class="text-muted small">{{ field.help_text|safe }}</div>
+                            </div>
+                        {% endfor %}
+                        
+                        <button type="submit" name="btn_password" class="btn btn-danger w-100 fw-bold">
+                            GUARDAR NUEVA CONTRASEÑA
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header bg-secondary bg-opacity-10 border-secondary text-white fw-bold">
+                    <i class="fas fa-user-edit me-2"></i> DATOS DE PERFIL
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="text-center mb-3">
+                            <img src="{{ target_user.profile.avatar.url }}" class="rounded-circle border border-secondary" width="80" height="80">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-white small fw-bold">Avatar Nuevo</label>
+                            {{ p_form.avatar }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-white small fw-bold">Biografía</label>
+                            {{ p_form.bio }}
+                        </div>
+
+                        <div class="mb-3 bg-black p-2 rounded border border-secondary">
+                            <div class="form-check form-switch">
+                                {{ p_form.is_private }}
+                                <label class="form-check-label text-white">Perfil Privado</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" name="btn_profile" class="btn btn-neuro w-100 fw-bold">
+                            ACTUALIZAR DATOS
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="password"], textarea, input[type="file"] {
+        background-color: #222; border: 1px solid #444; color: white; width: 100%; padding: 8px; border-radius: 5px;
+    }
+    input:focus, textarea:focus { outline: 2px solid #7c4dff; border-color: transparent; }
+    ul { list-style: none; padding: 0; font-size: 0.8rem; color: #888; }
+</style>
+{% endblock %}
