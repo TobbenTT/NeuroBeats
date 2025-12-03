@@ -16,8 +16,9 @@
         </div>
 
         <div class="text-center w-100 px-2">
-            <h5 class="fw-bold text-truncate mb-1" title="{{ song.title }}">{{ song.title }}</h5>
-            
+            <a href="{% url 'song_detail' song.id %}" class="text-decoration-none text-white">
+                <h5 class="fw-bold text-truncate mb-1 hover-link" title="{{ song.title }}">{{ song.title }}</h5>
+            </a>
             <p class="text-secondary small mb-1">{{ song.artist }}</p>
             
             <p class="text-muted small mb-3" style="font-size: 0.8rem;">

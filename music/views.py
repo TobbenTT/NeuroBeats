@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.conf import settings 
 from .models import Song, Rating, Favorite
-from .forms import SongForm
+from .forms import SongForm, CommentForm
 from pydub import AudioSegment
 import os
 import uuid
@@ -106,3 +106,35 @@ def toggle_favorite(request, song_id):
     return JsonResponse({'liked': liked})
 
 
+def song_detail(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    
+    # Manejar el envío de comentarios
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('login')
+            
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.song = song
+            comment.user = request.user
+            comment.save()
+            return redirect('song_detail', song_id=song.id)
+    else:
+        form = CommentForm()
+
+    # Obtener comentarios existentes
+    comments = song.comments.all().order_by('-created_at')
+    
+    # Verificar si le di like (para pintar el corazón en esta página también)
+    is_liked = False
+    if request.user.is_authenticated:
+        is_liked = request.user.favorites.filter(song=song).exists()
+
+    return render(request, 'song_detail.html', {
+        'song': song,
+        'comments': comments,
+        'form': form,
+        'is_liked': is_liked
+    })

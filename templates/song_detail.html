@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .record-player-container {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* Truco para mantenerlo cuadrado/redondo */
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        background-color: #1a1a1a;
+    }
+    .record {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-size: cover; background-position: center;
+        border-radius: 50%; border: 8px solid #0a0a0a;
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,0.05), inset 0 0 0 8px rgba(0,0,0,0.4);
+        transition: transform 0.5s ease-out;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .record.spinning { animation: spin 5s linear infinite; }
+    
+    .play-btn-center {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(124, 77, 255, 0.9);
+        border-radius: 50%; border: none; color: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10; transition: all 0.2s;
+    }
+    .play-btn-center:hover { transform: translate(-50%, -50%) scale(1.1); background-color: #7c4dff; }
+    
+    .center-hole {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 15px; height: 15px; background-color: #0a0a0a; border-radius: 50%; z-index: 5;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card bg-dark border-secondary p-4 sticky-top text-center" style="top: 100px;">
+                
+                <div class="record-player-container mb-4 mx-auto" style="max-width: 300px;">
+                    <div class="record" id="record-{{ song.id }}" style="background-image: url('{{ song.cover_image.url }}');"></div>
+                    <div class="center-hole"></div>
+                    
+                    <button class="play-btn-center" data-song-id="{{ song.id }}" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    
+                    <audio id="audio-{{ song.id }}" preload="none">
+                        <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                    </audio>
+                </div>
+
+                <h2 class="fw-bold text-white mb-1">{{ song.title }}</h2>
+                <h5 class="text-secondary mb-3">{{ song.artist }}</h5>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <span class="badge bg-neuro fs-6">{{ song.genre.name }}</span>
+                    <button class="btn btn-outline-danger btn-favorite rounded-pill px-4" data-id="{{ song.id }}">
+                        {% if is_liked %}
+                            <i class="fas fa-heart me-2"></i> Te gusta
+                        {% else %}
+                            <i class="far fa-heart me-2"></i> Me gusta
+                        {% endif %}
+                    </button>
+                </div>
+
+                <div class="text-muted small border-top border-secondary pt-3">
+                    Subido por <a href="{% url 'public_profile' song.uploader.username %}" class="text-info fw-bold text-decoration-none">{{ song.uploader.username }}</a>
+                    <br> el {{ song.created_at|date:"d M, Y" }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="bg-black bg-opacity-25 p-4 rounded-4 border border-secondary">
+                <h3 class="fw-bold mb-4"><i class="far fa-comments me-2"></i>Comentarios <span class="text-secondary">({{ comments.count }})</span></h3>
+
+                {% if user.is_authenticated %}
+                    <div class="d-flex gap-3 mb-5">
+                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle" width="50" height="50" style="object-fit: cover;">
+                        <form method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            {{ form.text }}
+                            <div class="text-end mt-2">
+                                <button type="submit" class="btn btn-neuro fw-bold">Comentar</button>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="alert alert-dark text-center mb-5">
+                        <a href="{% url 'login' %}" class="fw-bold text-info">Inicia sesión</a> para unirte a la conversación.
+                    </div>
+                {% endif %}
+
+                <div class="vstack gap-4">
+                    {% for comment in comments %}
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'public_profile' comment.user.username %}">
+                                <img src="{{ comment.user.profile.avatar.url }}" class="rounded-circle border border-secondary" width="45" height="45" style="object-fit: cover;">
+                            </a>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-baseline justify-content-between">
+                                    <h6 class="fw-bold text-white mb-1">
+                                        {{ comment.user.username }}
+                                        {% if comment.user == song.uploader %}
+                                            <span class="badge bg-secondary ms-2" style="font-size: 0.6rem;">AUTOR</span>
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-secondary">{{ comment.created_at|timesince }}</small>
+                                </div>
+                                <p class="text-light mb-0">{{ comment.text }}</p>
+                            </div>
+                        </div>
+                        <hr class="border-secondary opacity-25">
+                    {% empty %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-ghost fa-3x mb-3 opacity-50"></i>
+                            <p>Está muy tranquilo por aquí... ¡Sé el primero!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lógica de Likes
+        const favButtons = document.querySelectorAll('.btn-favorite');
+        favButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songId = this.dataset.id;
+                const icon = this.querySelector('i');
+                // Lógica Toggle
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far'); icon.classList.add('fas');
+                    if(this.textContent.includes('Me gusta')) this.innerHTML = '<i class="fas fa-heart me-2"></i> Te gusta';
+                } else {
+                    icon.classList.remove('fas'); icon.classList.add('far');
+                    if(this.textContent.includes('Te gusta')) this.innerHTML = '<i class="far fa-heart me-2"></i> Me gusta';
+                }
+                fetch(`/favorite/${songId}/`);
+            });
+        });
+
+        // Lógica del Reproductor (Vinilo)
+        const playButtons = document.querySelectorAll('.play-btn-center');
+        playButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songId = this.dataset.songId;
+                const audio = document.getElementById(`audio-${songId}`);
+                const record = document.getElementById(`record-${songId}`);
+                const icon = this.querySelector('i');
+                
+                // Detener otros (solo uno a la vez)
+                document.querySelectorAll('audio').forEach(a => {
+                    if(a !== audio) { a.pause(); a.currentTime = 0; }
+                });
+                document.querySelectorAll('.record').forEach(r => {
+                   if(r !== record) r.classList.remove('spinning'); 
+                });
+                document.querySelectorAll('.play-btn-center i').forEach(i => {
+                    if(i !== icon) { i.classList.remove('fa-pause'); i.classList.add('fa-play'); }
+                });
+
+                if (audio.paused) {
+                    audio.play();
+                    record.classList.add('spinning');
+                    icon.classList.remove('fa-play').add('fa-pause');
+                } else {
+                    audio.pause();
+                    record.classList.remove('spinning');
+                    icon.classList.remove('fa-pause').add('fa-play');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

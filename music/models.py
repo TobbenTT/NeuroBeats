@@ -50,3 +50,13 @@ class Favorite(models.Model):
 
     class Meta:
         unique_together = ('user', 'song')
+
+# 5. Comentarios
+class Comment(models.Model):
+    song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField(verbose_name="Comentario")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comentario de {self.user.username} en {self.song.title}"

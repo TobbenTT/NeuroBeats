@@ -19,44 +19,34 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-
-# Importamos vistas de Musica y Usuarios
-from music.views import home, upload_song, rate_song, delete_song, toggle_favorite
+from music.views import home, upload_song, rate_song, delete_song, toggle_favorite, song_detail
 from users.views import profile, edit_profile, create_user_fast, sign_out, public_profile, toggle_follow
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
+    
+    # Rutas de Música
     path('upload/', upload_song, name='upload'),
-    path('profile/', profile, name='profile'),
-    path('profile/edit/', edit_profile, name='edit_profile'),
-    # RUTA NUEVA PARA VOTAR: Recibe el ID de la canción y la nota (1-5)
+    path('song/<int:song_id>/', song_detail, name='song_detail'),
+
     path('rate/<int:song_id>/<int:score>/', rate_song, name='rate_song'),
     path('delete/<int:song_id>/', delete_song, name='delete_song'),
     path('favorite/<int:song_id>/', toggle_favorite, name='toggle_favorite'),
     
-    # 2. NUEVA RUTA PARA CAMBIAR CONTRASEÑA
-    # Le decimos: "Usa la lógica de Django, pero mi HTML personalizado"
-    path('password/', auth_views.PasswordChangeView.as_view(
-        template_name='change_password.html',
-        success_url='/profile/' 
-    ), name='change_password'),
+    # Rutas de Usuario
+    path('profile/', profile, name='profile'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
+    path('u/<str:username>/', public_profile, name='public_profile'),
+    path('follow/<int:user_id>/', toggle_follow, name='toggle_follow'),
+    
+    # God Mode
     path('god-mode/create-user/', create_user_fast, name='create_user_fast'),
 
-    # 1. Login (Usamos la vista por defecto de Django)
+    # Autenticación
     path('accounts/login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    
-    # 2. Logout (Usamos nuestra función personalizada)
     path('logout/', sign_out, name='logout'),
-
-    # Ruta para ver perfiles ajenos (ej: /u/anita_pop/)
-    path('u/<str:username>/', public_profile, name='public_profile'),
-    
-    # Ruta invisible para el botón seguir
-    path('follow/<int:user_id>/', toggle_follow, name='toggle_follow'),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
