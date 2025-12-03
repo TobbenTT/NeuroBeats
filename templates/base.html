@@ -233,15 +233,21 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-4">
+            <div class="col-md-6 col-4 position-relative">
                 <div class="d-flex flex-column align-items-center">
+                    
+                    <canvas id="audio-visualizer" width="400" height="40" class="mb-1" style="width: 100%; max-width: 400px; height: 40px;"></canvas>
+
                     <div class="d-flex align-items-center gap-4 mb-1">
                         <button class="btn btn-link text-secondary p-0"><i class="fas fa-step-backward"></i></button>
-                        <button id="master-play-btn" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        
+                        <button id="master-play-btn" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; z-index: 10;">
                             <i class="fas fa-play text-black"></i>
                         </button>
+                        
                         <button class="btn btn-link text-secondary p-0"><i class="fas fa-step-forward"></i></button>
                     </div>
+
                     <div class="w-100 d-flex align-items-center gap-2" style="max-width: 500px;">
                         <span id="current-time" class="small text-muted" style="font-size: 0.7rem; width: 35px;">0:00</span>
                         <input type="range" id="seek-slider" class="form-range custom-range" min="0" max="100" value="0">
@@ -256,7 +262,7 @@
             </div>
         </div>
     </div>
-    <audio id="global-audio" preload="none"></audio>
+    <audio id="global-audio" preload="none" crossorigin="anonymous"></audio>
 </div>
 
 <style>
@@ -366,6 +372,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- 1. VARIABLES GLOBALES ---
         const globalAudio = document.getElementById('global-audio');
         const masterBar = document.getElementById('master-player-bar');
         const masterPlayBtn = document.getElementById('master-play-btn');
@@ -377,12 +384,14 @@
         const durationTimeEl = document.getElementById('duration-time');
         const volumeSlider = document.getElementById('volume-slider');
 
+        // Función para formatear tiempo (0:00)
         const formatTime = (time) => {
             const min = Math.floor(time / 60);
             const sec = Math.floor(time % 60);
             return `${min}:${sec < 10 ? '0' + sec : sec}`;
         };
 
+        // --- 2. LÓGICA DE REPRODUCCIÓN (Delegación de eventos) ---
         document.body.addEventListener('click', function(e) {
             const btn = e.target.closest('.play-btn-center');
             
@@ -395,6 +404,7 @@
                 const songCover = btn.dataset.cover;
                 const recordId = `record-${btn.dataset.songId}`;
                 
+                // Si es la misma canción, pausar/reanudar
                 if (globalAudio.src === songUrl || globalAudio.src.endsWith(songUrl)) {
                     togglePlay();
                 } else {
@@ -415,6 +425,7 @@
             globalAudio.play();
             updatePlayIcon(true);
 
+            // Animar vinilos
             document.querySelectorAll('.record').forEach(r => r.classList.remove('spinning')); 
             const currentRecord = document.getElementById(recordId);
             if(currentRecord) currentRecord.classList.add('spinning'); 
@@ -426,6 +437,7 @@
             if (globalAudio.paused) {
                 globalAudio.play();
                 updatePlayIcon(true);
+                // Intentar animar el vinilo si está en pantalla
                 const activeRecord = document.querySelector('.record[style*="' + masterCover.getAttribute('src') + '"]'); 
                 if(activeRecord) activeRecord.classList.add('spinning');
             } else {
@@ -443,6 +455,7 @@
             }
         }
 
+        // --- 3. BARRA DE PROGRESO Y VOLUMEN ---
         globalAudio.addEventListener('timeupdate', () => {
             const progress = (globalAudio.currentTime / globalAudio.duration) * 100;
             seekSlider.value = progress || 0;
@@ -455,39 +468,125 @@
             globalAudio.currentTime = time;
         });
 
-        // --- CÓDIGO NUEVO DEL VOLUMEN ---
-        volumeSlider.addEventListener('input', (e) => {
-            globalAudio.volume = e.target.value;
-        });
-        // -------------------------------
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                globalAudio.volume = e.target.value;
+            });
+        }
 
-    }); // Fin del DOMContentLoaded
-    // --- NUEVO: LÓGICA GLOBAL DE LIKES (Corregida para HTMX) ---
-        document.body.addEventListener('click', function(e) {
-            // Buscamos si el clic fue en un botón de favorito
-            const btn = e.target.closest('.btn-favorite');
+// --- 4. VISUALIZADOR DE ESPECTRO (MODO GOD: ONDA ESPEJO) ---
+        let audioContext;
+        let analyser;
+        let source;
+        const canvas = document.getElementById('audio-visualizer');
+        let isVisualizerInit = false;
+
+        function initVisualizer() {
+            if (isVisualizerInit || !canvas) return;
+            const canvasCtx = canvas.getContext('2d');
             
+            // 1. Configuración de Audio
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            source = audioContext.createMediaElementSource(globalAudio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            // 2. Ajustes para que NO se sature
+            analyser.fftSize = 64; // Barras más gruesas y estéticas
+            // analyser.minDecibels = -90; // Sensibilidad base
+            // analyser.maxDecibels = -10; // Tope para que no se llene siempre
+            analyser.smoothingTimeConstant = 0.85; // Suavizado (0.8 = robótico, 0.9 = muy suave)
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+
+                // Limpiar fondo
+                canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const barWidth = (canvas.width / bufferLength) * 0.8; // Ancho de barra con espacio
+                let barHeight;
+                let x = 0;
+                
+                // Centro vertical del canvas
+                const centerY = canvas.height / 2;
+
+                for(let i = 0; i < bufferLength; i++) {
+                    // MÁGICA MATEMÁTICA: Escalar el valor (0-255) a la altura del canvas
+                    // Multiplicamos por 0.8 para dejar un margen y que no toque los bordes
+                    let percent = dataArray[i] / 255;
+                    
+                    // Potenciamos los bajos y suavizamos los altos para mejor efecto visual
+                    percent = percent * percent; 
+                    
+                    barHeight = (percent * canvas.height) * 1.5; 
+
+                    // Definir color basado en la intensidad
+                    // Bajo: Morado oscuro | Medio: Morado Neón | Alto: Cian/Blanco
+                    const r = 124 + (131 * percent); // De 124 a 255
+                    const g = 77 + (125 * percent);  // De 77 a 202
+                    const b = 255;                   // Siempre azul alto
+                    
+                    canvasCtx.fillStyle = `rgb(${r},${g},${b})`;
+                    
+                    // Diseño redondeado
+                    // Dibujar desde el centro hacia arriba y abajo (Espejo)
+                    
+                    // Parte de Arriba
+                    canvasCtx.fillRect(x, centerY - (barHeight / 2), barWidth, barHeight / 2);
+                    
+                    // Parte de Abajo
+                    canvasCtx.fillRect(x, centerY, barWidth, barHeight / 2);
+                    
+                    // (Opcional) Pequeños "caps" blancos en las puntas para efecto pro
+                    if (barHeight > 5) {
+                        canvasCtx.fillStyle = '#ffffff';
+                        canvasCtx.fillRect(x, centerY - (barHeight / 2) - 2, barWidth, 2); // Cap arriba
+                        canvasCtx.fillRect(x, centerY + (barHeight / 2), barWidth, 2);     // Cap abajo
+                    }
+
+                    x += barWidth + 4; // Espacio entre barras
+                }
+            }
+            draw(); 
+            isVisualizerInit = true;
+        }
+
+        globalAudio.addEventListener('play', () => {
+            // Si nunca hemos encendido el visualizador, lo encendemos
+            if (!isVisualizerInit) {
+                initVisualizer();
+            }
+            // Si el navegador suspendió el audio (ahorro de energía), lo reactivamos
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        });
+
+        // --- 5. LÓGICA GLOBAL DE LIKES ---
+        document.body.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-favorite');
             if (btn) {
-                e.preventDefault(); // Evita saltos raros
+                e.preventDefault(); 
                 const songId = btn.dataset.id;
                 const icon = btn.querySelector('i');
                 
-                // Efecto visual instantáneo
-                if (icon.classList.contains('far')) { // Si estaba vacío
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                    // Si el botón tiene texto (como en song_detail), cámbialo
+                if (icon.classList.contains('far')) { 
+                    icon.classList.remove('far'); icon.classList.add('fas');
                     if(btn.textContent.includes('Me gusta')) btn.innerHTML = '<i class="fas fa-heart me-2"></i> Te gusta';
-                } else { // Si estaba lleno
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
+                } else { 
+                    icon.classList.remove('fas'); icon.classList.add('far');
                     if(btn.textContent.includes('Te gusta')) btn.innerHTML = '<i class="far fa-heart me-2"></i> Me gusta';
                 }
-
-                // Enviar al servidor en segundo plano
                 fetch(`/favorite/${songId}/`);
             }
         });
+
+    }); // <--- ¡AQUÍ SE CIERRA TODO! (Importante)
 </script>
 </body>
 </html>
