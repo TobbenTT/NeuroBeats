@@ -5,6 +5,7 @@ from django.conf import settings
 from .models import Song, Rating, Favorite
 from .forms import SongForm, CommentForm
 from pydub import AudioSegment
+from .analysis import analyze_audio
 import os
 import uuid
 from brain.engine import get_recommended_songs
@@ -64,7 +65,19 @@ def upload_song(request):
             
             song.audio_file = f"tracks/{filename}"
             song.uploader = request.user
-            song.save()
+            song.save() 
+
+            # --- 🤖 ZONA IA: ANÁLISIS AUTOMÁTICO ---
+            # Le pasamos la ruta real del archivo en el disco
+            file_path = song.audio_file.path 
+            bpm, energy = analyze_audio(file_path)
+
+            if bpm:
+                song.bpm = bpm
+                song.energy = energy
+                song.save()
+            # ---------------------------------------
+
             check_and_award_badges(request.user)
             
             return redirect('home')

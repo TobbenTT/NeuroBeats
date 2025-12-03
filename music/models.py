@@ -26,6 +26,10 @@ class Song(models.Model):
     # NUEVO CAMPO (Solo una vez)
     is_private = models.BooleanField(default=False, verbose_name="Privado")
 
+    # NUEVOS CAMPOS DE IA 🤖
+    bpm = models.IntegerField(null=True, blank=True, verbose_name="BPM (Velocidad)")
+    energy = models.FloatField(null=True, blank=True, verbose_name="Nivel de Energía")
+    
     def average_rating(self):
         ratings = self.ratings.all().aggregate(Avg('score'))['score__avg']
         return round(ratings, 1) if ratings else None

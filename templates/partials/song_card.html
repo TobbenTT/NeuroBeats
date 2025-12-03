@@ -33,13 +33,14 @@
                     {{ song.genre.name }}
                 </span>
                 
-                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0" data-id="{{ song.id }}">
-                    {% if song.id in liked_songs_ids %}
-                        <i class="fas fa-heart fa-lg" style="color: #e91e63;"></i>
-                    {% else %}
-                        <i class="far fa-heart fa-lg" style="color: #e91e63;"></i>
-                    {% endif %}
-                </button>
+                {% if song.bpm %}
+                    <span class="badge bg-black border border-secondary text-info" title="Velocidad detectada por IA">
+                        <i class="fas fa-tachometer-alt me-1"></i>{{ song.bpm }}
+                    </span>
+                {% endif %}
+                
+                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0" ... >
+                   </button>
             </div>
         </div>
     </div>
