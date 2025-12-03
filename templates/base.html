@@ -178,6 +178,17 @@
         </a>
         
         <div class="collapse navbar-collapse justify-content-end">
+            <div class="mx-auto d-none d-md-block" style="width: 40%;">
+                <form action="{% url 'search' %}" method="get" class="d-flex">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="search" name="q" class="form-control bg-dark text-white border-secondary" placeholder="Buscar canciones, artistas o usuarios..." value="{{ request.GET.q }}">
+                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
             <div class="navbar-nav align-items-center gap-3">
                 {% if user.is_authenticated %}
                     <button class="btn btn-sm btn-outline-info me-2 fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#djAnitaPanel">
@@ -478,6 +489,5 @@
             }
         });
 </script>
-
 </body>
 </html>

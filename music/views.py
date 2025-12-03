@@ -10,6 +10,8 @@ import os
 import uuid
 from brain.engine import get_recommended_songs
 from users.utils import check_and_award_badges
+from django.db.models import Q
+from django.contrib.auth.models import User
 
 def home(request):
     # 1. OBTIENE LAS RECOMENDACIONES (IA)
@@ -168,3 +170,28 @@ def delete_song(request, song_id):
     else:
         # Si un hacker intenta borrar algo ajeno, lo mandamos al Home
         return redirect('home')
+    
+def search(request):
+    query = request.GET.get('q')
+    songs = []
+    users = []
+    
+    if query:
+        # 1. Buscar Canciones (por Título O por Artista O por Género)
+        songs = Song.objects.filter(
+            Q(title__icontains=query) | 
+            Q(artist__icontains=query) |
+            Q(genre__name__icontains=query),
+            is_private=False # Solo canciones públicas
+        ).order_by('-created_at')
+
+        # 2. Buscar Usuarios (por Username)
+        users = User.objects.filter(
+            username__icontains=query
+        ).exclude(id=request.user.id) # No buscarme a mí mismo
+
+    return render(request, 'search_results.html', {
+        'query': query,
+        'songs': songs,
+        'users': users
+    })

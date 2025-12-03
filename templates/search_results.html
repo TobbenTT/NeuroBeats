@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Tarjetas de Usuario Holográficas */
+    .user-glass-card {
+        background: rgba(20, 20, 20, 0.6); /* Fondo semi-transparente */
+        backdrop-filter: blur(10px);        /* Efecto vidrio borroso */
+        border: 1px solid rgba(13, 202, 240, 0.2); /* Borde Cian sutil */
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .user-glass-card:hover {
+        transform: translateY(-5px);
+        border-color: #0dcaf0; /* Cian brillante al pasar el mouse */
+        box-shadow: 0 0 20px rgba(13, 202, 240, 0.3);
+    }
+    
+    /* Efecto de luz de fondo en la tarjeta de usuario */
+    .user-glass-card::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(13,202,240,0.1) 0%, transparent 70%);
+        opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .user-glass-card:hover::before { opacity: 1; }
+
+    /* Títulos Neón */
+    .section-header {
+        border-left: 4px solid #7c4dff; /* Morado Neuro */
+        padding-left: 15px;
+        margin-bottom: 25px;
+        background: linear-gradient(90deg, rgba(124, 77, 255, 0.1), transparent);
+        padding-top: 5px; padding-bottom: 5px;
+        border-radius: 0 10px 10px 0;
+    }
+    /* =========================================
+       ESTILOS MAESTROS DEL VINILO (Fix Global)
+       ========================================= */
+    .record-player-container {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* Mantiene el aspecto cuadrado 1:1 */
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        background-color: #1a1a1a;
+    }
+    .record {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-size: cover; background-position: center;
+        border-radius: 50%; 
+        border: 4px solid #0a0a0a;
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,0.05), inset 0 0 0 8px rgba(0,0,0,0.4);
+        transition: transform 0.5s ease-out;
+    }
+    .record.spinning { animation: spin 5s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    .play-btn-center {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(124, 77, 255, 0.9);
+        border-radius: 50%; border: none; color: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10; transition: all 0.2s;
+        /* Tamaño por defecto responsive */
+        width: 50px; height: 50px; font-size: 1.2rem;
+    }
+    .play-btn-center:hover { transform: translate(-50%, -50%) scale(1.1); background-color: #7c4dff; }
+    
+    .center-hole {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 15px; height: 15px; background-color: #0a0a0a; border-radius: 50%; z-index: 5;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    
+    <div class="text-center mb-5 animate__animated animate__fadeInDown">
+        <h5 class="text-secondary text-uppercase letter-spacing-2">Resultados de búsqueda</h5>
+        <h1 class="display-5 fw-bold text-white">
+            "{{ query }}"
+        </h1>
+        {% if not songs and not users %}
+            <div class="mt-5 p-5 rounded-4 border border-secondary border-dashed bg-black bg-opacity-25">
+                <i class="fas fa-search-location fa-4x text-secondary mb-3 opacity-50"></i>
+                <h3 class="text-white">No encontramos nada... 🛸</h3>
+                <p class="text-muted">Intenta buscar por género (ej: "Rock") o revisa la ortografía.</p>
+                <a href="{% url 'home' %}" class="btn btn-outline-info mt-3">Volver al Inicio</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if users %}
+        <div class="mb-5 animate__animated animate__fadeInUp">
+            <div class="section-header">
+                <h3 class="fw-bold text-white m-0">
+                    <i class="fas fa-users text-info me-2"></i> Usuarios <span class="badge bg-dark border border-info text-info rounded-pill ms-2">{{ users.count }}</span>
+                </h3>
+            </div>
+            
+            <div class="row g-4">
+                {% for u in users %}
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="user-glass-card h-100 p-4 text-center">
+                            <div class="position-relative d-inline-block mb-3">
+                                <img src="{{ u.profile.avatar.url }}" class="rounded-circle border border-2 border-info" width="90" height="90" style="object-fit: cover; box-shadow: 0 0 15px rgba(13,202,240,0.4);">
+                                {% if u.is_superuser %}
+                                    <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-danger border border-dark" title="Admin">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <h5 class="fw-bold text-white text-truncate mb-1">{{ u.username }}</h5>
+                            <p class="small text-secondary mb-3">{{ u.uploaded_songs.count }} canciones</p>
+                            
+                            <a href="{% url 'public_profile' u.username %}" class="btn btn-sm btn-outline-info w-100 rounded-pill fw-bold stretched-link">
+                                Ver Perfil
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if songs %}
+        <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+            <div class="section-header" style="border-left-color: #00e676;"> <h3 class="fw-bold text-white m-0">
+                    <i class="fas fa-music text-success me-2"></i> Canciones <span class="badge bg-dark border border-success text-success rounded-pill ms-2">{{ songs.count }}</span>
+                </h3>
+            </div>
+            
+            <div class="row">
+                {% for song in songs %}
+                    {% include 'partials/song_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
