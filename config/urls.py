@@ -39,6 +39,7 @@ urlpatterns = [
     path('profile/edit/', edit_profile, name='edit_profile'),
     path('u/<str:username>/', public_profile, name='public_profile'),
     path('follow/<int:user_id>/', toggle_follow, name='toggle_follow'),
+    path('profile/password/', auth_views.PasswordChangeView.as_view(template_name='change_password.html', success_url='/profile/'), name='change_password'),
     
     # God Mode
     path('god-mode/create-user/', create_user_fast, name='create_user_fast'),
