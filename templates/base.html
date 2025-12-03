@@ -83,6 +83,91 @@
         line-height: 1;
     }
 </style>
+<style>
+/* =========================================
+       ESTILOS DJ ANITA (NEURO CYBERPUNK) v2
+       ========================================= */
+    .neon-text-info {
+        color: #0dcaf0;
+        text-shadow: 0 0 10px rgba(13, 202, 240, 0.7), 0 0 20px rgba(13, 202, 240, 0.5);
+    }
+    .neon-text-purple {
+        color: #7c4dff;
+        text-shadow: 0 0 10px rgba(124, 77, 255, 0.7), 0 0 20px rgba(124, 77, 255, 0.5);
+    }
+
+    /* Avatar Pulsante */
+    .ai-avatar-container {
+        width: 100px; height: 100px;
+        margin: 0 auto;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(13,202,240,0.2) 0%, rgba(0,0,0,0) 70%);
+        border: 2px solid rgba(13, 202, 240, 0.5);
+        box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset;
+        animation: pulse-blue 3s infinite ease-in-out;
+    }
+    @keyframes pulse-blue { 
+        0% { box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset; } 
+        50% { box-shadow: 0 0 30px rgba(13, 202, 240, 0.6) inset, 0 0 20px rgba(13, 202, 240, 0.2); } 
+        100% { box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset; } 
+    }
+
+    /* Tarjeta HUD (Heads-Up Display) */
+    .ai-hud-card {
+        background-color: #121212;
+        border: 1px solid #333;
+        border-left: 4px solid #0dcaf0;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+    .ai-hud-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(13, 202, 240, 0.05) 3px, rgba(13, 202, 240, 0.05) 4px);
+        pointer-events: none; z-index: 0;
+    }
+
+    /* Barra de Energía Glow (CORREGIDA) */
+    .progress-futuristic {
+        height: 12px; 
+        background-color: #0a0a0a; 
+        border: 1px solid #333;
+        border-radius: 6px; 
+        overflow: hidden; 
+        position: relative;
+        display: flex; /* <--- ¡ESTO FALTABA! */
+    }
+    .progress-bar-glow {
+        background: linear-gradient(90deg, #0dcaf0, #7c4dff) !important; /* !important para ganar a Bootstrap */
+        box-shadow: 0 0 15px rgba(13, 202, 240, 0.8);
+        position: relative;
+        height: 100%; /* Asegurar que llene el alto */
+    }
+    .progress-bar-glow::after {
+        content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: shimmer 2s infinite linear;
+    }
+    @keyframes shimmer { 100% { left: 100%; } }
+
+    /* Tarjeta VIP Holográfica */
+    .vip-holographic-card {
+        background: rgba(124, 77, 255, 0.05);
+        border: 1px solid rgba(124, 77, 255, 0.3);
+        box-shadow: inset 0 0 20px rgba(124, 77, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+    }
+    
+    /* Scrollbar personalizado (Funciona en Chrome, Edge y Firefox) */
+    .custom-scrollbar {
+        scrollbar-width: thin; /* Para Firefox */
+        scrollbar-color: #333 #000; /* Para Firefox */
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }</style>
 </head>
 <body>
 
@@ -95,6 +180,9 @@
         <div class="collapse navbar-collapse justify-content-end">
             <div class="navbar-nav align-items-center gap-3">
                 {% if user.is_authenticated %}
+                    <button class="btn btn-sm btn-outline-info me-2 fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#djAnitaPanel">
+                        🤖 DJ Anita
+                    </button>
                     <a href="{% url 'upload' %}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-cloud-upload-alt"></i> Subir Música
                     </a>
@@ -122,7 +210,103 @@
     {% block content %}
     {% endblock %}
 </div>
+<div class="offcanvas offcanvas-end bg-black" tabindex="-1" id="djAnitaPanel" style="width: 380px; border-left: 2px solid #0dcaf0;">
+    
+    <div class="offcanvas-header border-bottom border-secondary p-4" style="background: #0a0a0a;">
+        <h4 class="offcanvas-title fw-bold neon-text-info m-0 d-flex align-items-center">
+            <i class="fas fa-robot me-3 fa-spin" style="--fa-animation-duration: 4s; font-size: 1.5rem;"></i> 
+            <span>DJ Anita <small style="font-size: 0.6em; opacity: 0.7;">AI CORE</small></span>
+        </h4>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" style="opacity: 1; text-shadow: 0 0 10px white;"></button>
+    </div>
 
+    <div class="offcanvas-body p-4 custom-scrollbar" style="background: radial-gradient(circle at top right, #1a1a2e, #000000);">
+        
+        <div class="text-center mb-5">
+            <div class="ai-avatar-container mb-3">
+                <i class="fas fa-microchip fa-4x text-info"></i>
+            </div>
+            <h6 class="text-white fw-bold">Sistema de Análisis Sónico</h6>
+            <p class="small text-info opacity-75 mb-0 fw-bold">v2.4.1 // CONECTADO</p>
+        </div>
+
+        {% if user.is_authenticated %}
+            <div class="ai-hud-card p-4 mb-5 position-relative z-1">
+                <h6 class="text-uppercase neon-text-info small fw-bold mb-4 text-center">
+                    <i class="fas fa-satellite-dish me-2"></i>Escaneo de Vibe Actual
+                </h6>
+                
+                <div class="row g-3 text-center mb-4">
+                    <div class="col-6">
+                        <div class="p-2 rounded" style="background: rgba(255,255,255,0.05);">
+                            <small class="text-secondary d-block mb-1">Mood Detectado</small>
+                            <span class="fw-bold text-warning fs-5" style="text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);">{{ anita_mood }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 rounded" style="background: rgba(255,255,255,0.05);">
+                            <small class="text-secondary d-block mb-1">Ritmo Promedio</small>
+                            <span class="fw-bold text-info fs-5" style="text-shadow: 0 0 10px rgba(13, 202, 240, 0.5);">{{ anita_bpm }} <small>BPM</small></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between small mb-2 text-info fw-bold">
+                        <span><i class="fas fa-bolt me-2"></i>Nivel de Energía</span>
+                        <span>{{ anita_energy }}%</span>
+                    </div>
+                    <div class="progress-futuristic">
+                        <div class="progress-bar progress-bar-glow" role="progressbar" style="width: {{ anita_energy }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="text-uppercase neon-text-purple small fw-bold mb-3 text-center">
+                    <i class="fas fa-broadcast-tower me-2"></i>Transmisión VIP Entrante
+                </h6>
+
+                {% if anita_track %}
+                    <div class="vip-holographic-card p-3 d-flex align-items-center gap-3">
+                        <div class="position-relative">
+                            <img src="{{ anita_track.cover_image.url }}" class="rounded-3 shadow-lg" width="90" height="90" style="object-fit: cover; border: 2px solid #7c4dff;">
+                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-neuro border border-light rounded-circle">
+                                <span class="visually-hidden">New Alert</span>
+                            </span>
+                        </div>
+                        
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h6 class="fw-bold text-white text-truncate mb-1">{{ anita_track.title }}</h6>
+                            <p class="text-secondary small mb-3 text-truncate">{{ anita_track.artist }}</p>
+                            <a href="{% url 'song_detail' anita_track.id %}" class="btn btn-sm btn-neuro w-100 fw-bold" style="box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);">
+                                <i class="fas fa-play me-2"></i> Iniciar Escucha
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4 border border-secondary border-dashed rounded">
+                        <i class="fas fa-database fa-2x mb-3 opacity-50"></i>
+                        <p class="small mb-0">Datos insuficientes para generar recomendación.</p>
+                        <p class="small opacity-75">Interactúa más con la plataforma.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% else %}
+            <div class="text-center mt-5 pt-5">
+                <i class="fas fa-user-slash fa-4x text-secondary opacity-25 mb-4"></i>
+                <h5 class="fw-bold text-white">Enlace Neuronal Inactivo</h5>
+                <p class="text-muted mb-4">Inicia sesión para establecer conexión con el núcleo de IA.</p>
+                <a href="{% url 'login' %}" class="btn btn-outline-info px-4 fw-bold">Conectar Ahora</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="p-3 text-center small text-secondary border-top border-secondary" style="background: #0a0a0a; letter-spacing: 1px;">
+        <i class="fas fa-terminal me-2 text-info"></i> NEUROBEATS.AI.SYSTEMS // END_OF_LINE
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
