@@ -5,6 +5,7 @@ from .forms import ProfileUpdateForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.contrib.auth import logout
 
 @login_required
 def profile(request):
@@ -45,3 +46,7 @@ def create_user_fast(request):
         form = UserCreationForm()
     
     return render(request, 'create_user.html', {'form': form})
+
+def sign_out(request):
+    logout(request)
+    return redirect('login')  # Nos manda a la página de inicio de sesión

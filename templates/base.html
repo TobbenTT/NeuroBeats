@@ -85,7 +85,7 @@
                         <ul class="dropdown-menu dropdown-menu-dark shadow">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">👤 Mi Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/admin/logout/">🚪 Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">🚪 Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 {% else %}

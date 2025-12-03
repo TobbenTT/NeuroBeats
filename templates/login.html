@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card bg-dark text-white border-secondary shadow-lg">
+                <div class="card-header text-center border-secondary pt-4 pb-3">
+                    <h2 class="fw-bold">🧠 NeuroBeats</h2>
+                    <p class="text-secondary small">Inicia sesión para entrenar a tu IA.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Usuario</label>
+                            <input type="text" name="username" class="form-control bg-black text-white border-secondary" required autofocus>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Contraseña</label>
+                            <input type="password" name="password" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-neuro btn-lg fw-bold">Entrar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center border-secondary py-3">
+                    <small class="text-muted">¿No tienes cuenta? Pídele a Tobben que te cree una.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

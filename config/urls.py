@@ -22,7 +22,8 @@ from django.contrib.auth import views as auth_views
 
 # Importamos vistas de Musica y Usuarios
 from music.views import home, upload_song, rate_song, delete_song, toggle_favorite
-from users.views import profile, edit_profile, create_user_fast
+from users.views import profile, edit_profile, create_user_fast, sign_out
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,6 +43,12 @@ urlpatterns = [
         success_url='/profile/' 
     ), name='change_password'),
     path('god-mode/create-user/', create_user_fast, name='create_user_fast'),
+
+    # 1. Login (Usamos la vista por defecto de Django)
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    
+    # 2. Logout (Usamos nuestra función personalizada)
+    path('logout/', sign_out, name='logout'),
 ]
 
 
