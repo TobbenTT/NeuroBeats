@@ -185,17 +185,21 @@
             }
         }); // <--- AQUÍ TERMINA LA LÓGICA DEL AUDIO
 
-        // --- LÓGICA ANTI-SPAM (AHORA ESTÁ AFUERA, DONDE DEBE SER) ---
+        // --- LÓGICA FINAL ANTI-SPAM (REGRESO AL BOTÓN) ---
         const form = document.getElementById('upload-form');
         const submitBtn = document.querySelector('button[type="submit"]');
 
         if (form && submitBtn) {
             form.addEventListener('submit', function() {
-                // 1. Cambiar texto e icono
+                // 1. Cambiar texto y icono del botón
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Subiendo y Procesando...';
-                // 2. Desactivar botón inmediatamente
-                submitBtn.disabled = true;
+                
+                // 2. Bloquear y oscurecer el botón
+                submitBtn.disabled = true; 
                 submitBtn.classList.add('disabled');
+                submitBtn.style.opacity = '0.8';
+                submitBtn.style.cursor = 'default';
+                submitBtn.style.pointerEvents = 'none'; 
             });
         }
     });
