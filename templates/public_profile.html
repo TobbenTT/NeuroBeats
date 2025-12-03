@@ -73,8 +73,8 @@
             <h6 class="text-start mb-3 text-uppercase text-muted small">Insignias</h6>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
                 {% for badge in profile_user.profile.badges.all %}
-                    <span class="badge bg-warning text-dark">
-                        {{ badge.icon_name }} {{ badge.name }}
+                    <span class="badge bg-warning text-dark" title="{{ badge.description }}">
+                        <i class="{{ badge.icon_name }} me-1"></i> {{ badge.name }}
                     </span>
                 {% empty %}
                     <small class="text-muted fst-italic">Sin insignias aún.</small>

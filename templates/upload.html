@@ -2,29 +2,20 @@
 
 {% block content %}
 <style>
-    /* Hacer que los inputs sean oscuros */
+    /* Estilos Dark Mode Pro */
     .form-control, .form-select {
-        background-color: #2b2b2b; /* Gris oscuro */
-        border: 1px solid #444; /* Borde sutil */
-        color: #e0e0e0; /* Texto claro */
+        background-color: #2b2b2b;
+        border: 1px solid #444;
+        color: #e0e0e0;
     }
-    /* Al hacer clic en un input */
     .form-control:focus, .form-select:focus {
         background-color: #333;
-        border-color: #7c4dff; /* Borde morado NeuroBeats */
+        border-color: #7c4dff;
         box-shadow: 0 0 0 0.25rem rgba(124, 77, 255, 0.25);
         color: white;
     }
-    /* Etiquetas de los formularios */
-    .form-label {
-        color: #b0b0b0; /* Gris claro para etiquetas */
-        font-weight: 500;
-    }
-    /* Contenedor del Waveform */
-    #waveform-container {
-        background-color: #1a1a1a; /* Fondo casi negro */
-        border: 1px solid #333;
-    }
+    .form-label { color: #b0b0b0; font-weight: 500; }
+    #waveform-container { background-color: #1a1a1a; border: 1px solid #333; }
 </style>
 
 <div class="container mt-4">
@@ -45,8 +36,7 @@
                     <form method="post" enctype="multipart/form-data" id="upload-form">
                         {% csrf_token %}
                         
-                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-info-circle me-2"></i> Información de la Canción</h5>
-                        
+                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-info-circle me-2"></i> Información</h5>
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label">Título</label>
@@ -57,26 +47,23 @@
                                 {{ form.artist }}
                             </div>
                         </div>
-
                         <div class="mb-5">
-                            <label class="form-label">Género Musical</label>
+                            <label class="form-label">Género</label>
                             {{ form.genre }}
                         </div>
 
-                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-headphones me-2"></i> Audio y Recorte (30s)</h5>
-
+                        <h5 class="text-white mb-4 pb-2 border-bottom border-secondary"><i class="fas fa-headphones me-2"></i> Recorte (30s)</h5>
                         <div class="mb-4 p-4 rounded-3" style="background-color: #1a1a1a; border: 1px dashed #555;">
                             <label class="form-label text-primary fw-bold mb-3">
-                                <i class="fas fa-file-audio fa-lg me-2"></i> 1. Selecciona el archivo de audio
+                                <i class="fas fa-file-audio fa-lg me-2"></i> 1. Selecciona el archivo
                             </label>
                             {{ form.audio_file }}
                             
                             <div id="waveform-container" class="mt-4 p-3 rounded-3 d-none">
                                 <div class="d-flex align-items-center text-info small mb-2">
                                     <i class="fas fa-cut me-2"></i>
-                                    <span>Arrastra los bordes de la región azul para elegir los 30 segundos exactos.</span>
+                                    <span>Arrastra la caja azul para elegir el fragmento.</span>
                                 </div>
-                                
                                 <div id="waveform" class="mb-3"></div>
                                 
                                 <div class="d-flex justify-content-between align-items-center bg-black bg-opacity-25 p-2 rounded">
@@ -91,7 +78,7 @@
                         </div>
 
                         <div class="mb-5">
-                            <label class="form-label">Portada del Álbum</label>
+                            <label class="form-label">Portada</label>
                             {{ form.cover_image }}
                         </div>
 
@@ -100,7 +87,7 @@
 
                         <div class="d-grid gap-3 mt-5">
                             <button type="submit" class="btn btn-success btn-lg fw-bold py-3" style="background-color: #00c853; border: none;">
-                                <i class="fas fa-check-circle fa-lg me-2"></i> Procesar y Publicar Canción
+                                <i class="fas fa-check-circle fa-lg me-2"></i> Publicar Canción
                             </button>
                             <a href="{% url 'home' %}" class="btn btn-outline-secondary py-2">Cancelar</a>
                         </div>
@@ -120,8 +107,6 @@
         const container = document.getElementById('waveform-container');
         const playBtn = document.getElementById('btn-play');
         const timeDisplay = document.getElementById('time-display');
-        
-        // SELECTORES PRECISOS (Django genera IDs automáticamente)
         const inputStart = document.getElementById('id_start_time');
         const inputEnd = document.getElementById('id_end_time');
 
@@ -132,7 +117,6 @@
             const file = e.target.files[0];
             if (file) {
                 container.classList.remove('d-none');
-                
                 if (wavesurfer) wavesurfer.destroy();
 
                 wavesurfer = WaveSurfer.create({
@@ -148,38 +132,51 @@
                 wsRegions = wavesurfer.registerPlugin(WaveSurfer.Regions.create());
 
                 wavesurfer.on('decode', () => {
-                    // Limpiamos regiones viejas
                     wsRegions.clearRegions();
-
-                    // Creamos la región inicial
-                    const region = wsRegions.addRegion({
-                        start: 0,
-                        end: 30,
+                    wsRegions.addRegion({
+                        start: 0, end: 30,
                         color: 'rgba(0, 200, 83, 0.35)',
-                        drag: true,
-                        resize: true,
-                        maxLength: 30
+                        drag: true, resize: true, maxLength: 30
                     });
-
-                    // --- FIX CRÍTICO: Actualizar inputs INMEDIATAMENTE al cargar ---
-                    // Así, si el usuario no toca nada, se envía 0 y 30 correctamente.
+                    // Inicializar inputs
                     if(inputStart) inputStart.value = 0;
                     if(inputEnd) inputEnd.value = 30;
                 });
 
                 wsRegions.on('region-updated', (region) => {
-                    // Actualizamos inputs cada vez que se mueve
                     if(inputStart) inputStart.value = region.start.toFixed(2);
                     if(inputEnd) inputEnd.value = region.end.toFixed(2);
-                    
                     timeDisplay.innerHTML = `<i class="far fa-clock me-1"></i> ${region.start.toFixed(1)}s - ${region.end.toFixed(1)}s`;
                 });
 
+                // --- LÓGICA DE PLAY/PAUSE CORREGIDA ---
                 playBtn.onclick = () => {
-                    const regions = wsRegions.getRegions();
-                    if (regions.length > 0) regions[0].play();
-                    else wavesurfer.playPause();
+                    if (wavesurfer.isPlaying()) {
+                        // SI ESTÁ SONANDO -> PAUSAR
+                        wavesurfer.pause();
+                    } else {
+                        // SI ESTÁ PAUSADO -> REPRODUCIR LA REGIÓN
+                        const regions = wsRegions.getRegions();
+                        if (regions.length > 0) {
+                            regions[0].play();
+                        } else {
+                            wavesurfer.play();
+                        }
+                    }
                 };
+
+                // Eventos para cambiar el icono del botón automáticamente
+                wavesurfer.on('play', () => {
+                    playBtn.innerHTML = '<i class="fas fa-pause me-1"></i> Pausar';
+                    playBtn.classList.remove('btn-primary');
+                    playBtn.classList.add('btn-warning'); // Color amarillo para pausar
+                });
+
+                wavesurfer.on('pause', () => {
+                    playBtn.innerHTML = '<i class="fas fa-play me-1"></i> Preescuchar Recorte';
+                    playBtn.classList.remove('btn-warning');
+                    playBtn.classList.add('btn-primary'); // Volver a azul
+                });
             }
         });
     });

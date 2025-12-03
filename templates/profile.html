@@ -27,14 +27,14 @@
             {% endif %}
             <hr>
             
-            <h5 class="text-start mb-3">🏅 Insignias</h5>
+            <h5 class="text-start mb-3 small text-uppercase text-muted">🏅 Insignias</h5>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
                 {% for badge in user.profile.badges.all %}
                     <span class="badge bg-warning text-dark" title="{{ badge.description }}">
-                        {{ badge.icon_name }} {{ badge.name }}
+                        <i class="{{ badge.icon_name }} me-1"></i> {{ badge.name }}
                     </span>
                 {% empty %}
-                    <small class="text-muted">Escucha música para ganar insignias.</small>
+                    <small class="text-muted fst-italic">Aún no tienes insignias.</small>
                 {% endfor %}
             </div>
         </div>
