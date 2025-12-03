@@ -32,8 +32,11 @@ class Profile(models.Model):
         blank=True
     )
 
+# --- NUEVO: PERFIL PRIVADO ---
+    is_private = models.BooleanField(default=False, verbose_name="Perfil Privado")
+
     def __str__(self):
-        return f"Perfil de {self.user.username}"
+        return f'Perfil de {self.user.username}'
     
 # 3 Automatizacion: Crear Perfil Automaticamente cuando uno se registre
 @receiver(post_save, sender=User)

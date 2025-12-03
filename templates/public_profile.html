@@ -83,22 +83,32 @@
         </div>
     </div>
 
-    <div class="col-md-8">
-        <h3 class="mb-4 border-bottom pb-2 border-secondary text-white">
-            <i class="fas fa-compact-disc me-2"></i> Discografía
-        </h3>
+<div class="col-md-8">
         
-        <div class="row">
-            {% for song in songs %}
-                {% include 'partials/song_card.html' %}
-            {% empty %}
-                <div class="col-12 alert alert-dark text-center">
-                    Este usuario aún no ha subido música.
-                </div>
-            {% endfor %}
-        </div>
+        {% if is_locked %}
+            <div class="text-center py-5 mt-4 border border-secondary rounded-3 bg-dark bg-opacity-50">
+                <i class="fas fa-lock fa-4x text-secondary mb-3"></i>
+                <h3 class="fw-bold text-white">Esta cuenta es privada</h3>
+                <p class="text-muted">Sigue a este usuario para ver sus canciones.</p>
+            </div>
+        {% else %}
+            
+            <h3 class="mb-4 border-bottom pb-2 border-secondary text-white">
+                <i class="fas fa-compact-disc me-2"></i> Discografía
+            </h3>
+            
+            <div class="row">
+                {% for song in songs %}
+                    {% include 'partials/song_card.html' %}
+                {% empty %}
+                    <div class="col-12 alert alert-dark text-center">
+                        Este usuario aún no ha subido música.
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% endif %} </div>
     </div>
-</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -55,30 +55,35 @@ def sign_out(request):
 
 def public_profile(request, username):
     user_obj = get_object_or_404(User, username=username)
-    # Si soy yo mismo viéndome, veo TODO. Si es otro, solo PÚBLICAS.
-    if request.user == user_obj:
-        songs = Song.objects.filter(uploader=user_obj).order_by('-created_at')
-    else:
-        songs = Song.objects.filter(uploader=user_obj, is_private=False).order_by('-created_at')
     
+    # 1. Si soy yo mismo, voy a mi perfil privado
     if request.user.is_authenticated and request.user == user_obj:
         return redirect('profile')
 
-    songs = Song.objects.filter(uploader=user_obj).order_by('-created_at')
-    
+    # 2. Verificar si lo sigo
     is_following = False
-    liked_songs_ids = []  # <--- AGREGAMOS ESTO
-
+    liked_songs_ids = []
+    
     if request.user.is_authenticated:
         is_following = request.user.profile.follows.filter(id=user_obj.profile.id).exists()
-        # Obtenemos los likes del visitante para pintar los corazones
         liked_songs_ids = request.user.favorites.values_list('song_id', flat=True)
+
+    # 3. LÓGICA DE PRIVACIDAD (EL CANDADO) 🔒
+    # Si el perfil es privado Y (no lo sigo O no estoy logueado) -> BLOQUEADO
+    is_locked = False
+    if user_obj.profile.is_private and not is_following:
+        is_locked = True
+        songs = [] # No le mandamos canciones
+    else:
+        # Si es público O lo sigo -> Mostrar todo
+        songs = Song.objects.filter(uploader=user_obj).order_by('-created_at')
 
     return render(request, 'public_profile.html', {
         'profile_user': user_obj,
         'songs': songs,
         'is_following': is_following,
-        'liked_songs_ids': liked_songs_ids  # <--- Y LO PASAMOS AQUÍ
+        'liked_songs_ids': liked_songs_ids,
+        'is_locked': is_locked  # <--- Enviamos esta variable al HTML
     })
 
 # 3. Lógica del Botón Seguir (AJAX)
