@@ -112,10 +112,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Lógica de Seguir
+        // 1. Lógica de Seguir (ESTO SE QUEDA)
         const btnFollow = document.getElementById('btn-follow');
         const counter = document.getElementById('followers-count');
-
         if(btnFollow){
             btnFollow.addEventListener('click', function() {
                 const userId = this.dataset.id;
@@ -136,48 +135,9 @@
             });
         }
 
-        // 2. Lógica del Reproductor (La que faltaba)
-        const playButtons = document.querySelectorAll('.play-btn-center');
-        let currentlyPlayingAudio = null;
-        let currentlySpinningRecord = null;
-        let currentPlayBtn = null;
+        // --- AQUÍ BORRAMOS EL BLOQUE "2. Lógica del Reproductor" COMPLETO ---
 
-        playButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const songId = this.dataset.songId;
-                const audio = document.getElementById(`audio-${songId}`);
-                const record = document.getElementById(`record-${songId}`);
-                const icon = this.querySelector('i');
-
-                if (currentlyPlayingAudio && currentlyPlayingAudio !== audio) {
-                    currentlyPlayingAudio.pause();
-                    currentlySpinningRecord.classList.remove('spinning');
-                    currentPlayBtn.querySelector('i').classList.remove('fa-pause');
-                    currentPlayBtn.querySelector('i').classList.add('fa-play');
-                }
-
-                if (audio.paused) {
-                    audio.play();
-                    record.classList.add('spinning');
-                    icon.classList.remove('fa-play').add('fa-pause');
-                    currentlyPlayingAudio = audio;
-                    currentlySpinningRecord = record;
-                    currentPlayBtn = this;
-                } else {
-                    audio.pause();
-                    record.classList.remove('spinning');
-                    icon.classList.remove('fa-pause').add('fa-play');
-                    currentlyPlayingAudio = null;
-                }
-                audio.onended = () => {
-                    record.classList.remove('spinning');
-                    icon.classList.remove('fa-pause').add('fa-play');
-                    currentlyPlayingAudio = null;
-                };
-            });
-        });
-
-        // 3. Lógica de Likes
+        // 3. Lógica de Likes (ESTO SE QUEDA)
         const favButtons = document.querySelectorAll('.btn-favorite');
         favButtons.forEach(btn => {
             btn.addEventListener('click', function() {

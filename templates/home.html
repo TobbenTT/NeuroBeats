@@ -82,48 +82,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const playButtons = document.querySelectorAll('.play-btn-center');
-        let currentlyPlayingAudio = null;
-        let currentlySpinningRecord = null;
-        let currentPlayBtn = null;
-
-        playButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const songId = this.dataset.songId;
-                const audio = document.getElementById(`audio-${songId}`);
-                const record = document.getElementById(`record-${songId}`);
-                const icon = this.querySelector('i');
-
-                if (currentlyPlayingAudio && currentlyPlayingAudio !== audio) {
-                    currentlyPlayingAudio.pause();
-                    currentlySpinningRecord.classList.remove('spinning');
-                    currentPlayBtn.querySelector('i').classList.remove('fa-pause');
-                    currentPlayBtn.querySelector('i').classList.add('fa-play');
-                }
-
-                if (audio.paused) {
-                    audio.play();
-                    record.classList.add('spinning');
-                    icon.classList.remove('fa-play').add('fa-pause');
-                    currentlyPlayingAudio = audio;
-                    currentlySpinningRecord = record;
-                    currentPlayBtn = this;
-                } else {
-                    audio.pause();
-                    record.classList.remove('spinning');
-                    icon.classList.remove('fa-pause').add('fa-play');
-                    currentlyPlayingAudio = null;
-                }
-                audio.onended = () => {
-                    record.classList.remove('spinning');
-                    icon.classList.remove('fa-pause').add('fa-play');
-                    currentlyPlayingAudio = null;
-                };
-            });
-        });
-
-// Likes AJAX (CORREGIDO)
+    // Likes AJAX (CORREGIDO)
         const favButtons = document.querySelectorAll('.btn-favorite');
         favButtons.forEach(btn => {
             btn.addEventListener('click', function() 
@@ -143,6 +102,5 @@
                 fetch(`/favorite/${songId}/`).then(r => r.json());
             }); // 1. Cierra el click
         }); // 2. Cierra el forEach
-    }); // <--- 3. ¡AGREGA ESTO! Cierra el document.addEventListener
 </script>
 {% endblock %}

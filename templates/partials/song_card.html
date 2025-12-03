@@ -1,19 +1,20 @@
 <div class="col-md-3 col-sm-6 mb-5">
     <div class="d-flex flex-column align-items-center">
         
-        <div class="record-player-container mb-3">
+        <div class="record-player-container mb-3 shadow-lg">
             <div class="record" id="record-{{ song.id }}" style="background-image: url('{{ song.cover_image.url }}');"></div>
-            
             <div class="center-hole"></div>
 
-            <button class="play-btn-center" data-song-id="{{ song.id }}">
+            <button class="play-btn-center" 
+                    data-song-id="{{ song.id }}"
+                    data-url="{{ song.audio_file.url }}"
+                    data-title="{{ song.title }}"
+                    data-artist="{{ song.artist }}"
+                    data-cover="{{ song.cover_image.url }}">
                 <i class="fas fa-play"></i>
             </button>
-
-            <audio id="audio-{{ song.id }}" preload="none">
-                <source src="{{ song.audio_file.url }}" type="audio/mpeg">
-            </audio>
-        </div>
+            
+            </div>
 
         <div class="text-center w-100 px-2">
             <a href="{% url 'song_detail' song.id %}" class="text-decoration-none text-white">
@@ -39,8 +40,13 @@
                     </span>
                 {% endif %}
                 
-                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0" ... >
-                   </button>
+                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0" data-id="{{ song.id }}" style="width: 35px; height: 35px;">
+                    {% if song.id in liked_songs_ids %}
+                        <i class="fas fa-heart text-danger fs-5"></i>
+                    {% else %}
+                        <i class="far fa-heart text-danger fs-5"></i>
+                    {% endif %}
+                </button>
             </div>
         </div>
     </div>

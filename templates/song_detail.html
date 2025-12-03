@@ -5,7 +5,7 @@
     .record-player-container {
         position: relative;
         width: 100%;
-        padding-top: 100%; /* Truco para mantenerlo cuadrado/redondo */
+        padding-top: 100%;
         border-radius: 50%;
         overflow: hidden;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -19,8 +19,8 @@
         box-shadow: inset 0 0 0 3px rgba(255,255,255,0.05), inset 0 0 0 8px rgba(0,0,0,0.4);
         transition: transform 0.5s ease-out;
     }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .record.spinning { animation: spin 5s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     
     .play-btn-center {
         position: absolute; top: 50%; left: 50%;
@@ -29,6 +29,7 @@
         border-radius: 50%; border: none; color: white;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; z-index: 10; transition: all 0.2s;
+        width: 60px; height: 60px; font-size: 1.5rem;
     }
     .play-btn-center:hover { transform: translate(-50%, -50%) scale(1.1); background-color: #7c4dff; }
     
@@ -47,13 +48,14 @@
                     <div class="record" id="record-{{ song.id }}" style="background-image: url('{{ song.cover_image.url }}');"></div>
                     <div class="center-hole"></div>
                     
-                    <button class="play-btn-center" data-song-id="{{ song.id }}" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                    <button class="play-btn-center" 
+                            data-song-id="{{ song.id }}"
+                            data-url="{{ song.audio_file.url }}"
+                            data-title="{{ song.title }}"
+                            data-artist="{{ song.artist }}"
+                            data-cover="{{ song.cover_image.url }}">
                         <i class="fas fa-play"></i>
                     </button>
-                    
-                    <audio id="audio-{{ song.id }}" preload="none">
-                        <source src="{{ song.audio_file.url }}" type="audio/mpeg">
-                    </audio>
                 </div>
 
                 <h2 class="fw-bold text-white mb-1">{{ song.title }}</h2>
@@ -61,6 +63,13 @@
                 
                 <div class="d-flex justify-content-center gap-2 mb-4">
                     <span class="badge bg-neuro fs-6">{{ song.genre.name }}</span>
+                    
+                    {% if song.bpm %}
+                        <span class="badge bg-black border border-secondary text-info">
+                            <i class="fas fa-tachometer-alt me-1"></i>{{ song.bpm }}
+                        </span>
+                    {% endif %}
+
                     <button class="btn btn-outline-danger btn-favorite rounded-pill px-4" data-id="{{ song.id }}">
                         {% if is_liked %}
                             <i class="fas fa-heart me-2"></i> Te gusta
@@ -132,53 +141,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Lógica de Likes
+        // Solo dejamos la lógica de LIKES aquí.
+        // La lógica de reproducción se maneja 100% en base.html (Global Player)
+        
         const favButtons = document.querySelectorAll('.btn-favorite');
         favButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 const songId = this.dataset.id;
                 const icon = this.querySelector('i');
-                // Lógica Toggle
+                
                 if (icon.classList.contains('far')) {
-                    icon.classList.remove('far'); icon.classList.add('fas');
+                    icon.classList.remove('far'); 
+                    icon.classList.add('fas');
                     if(this.textContent.includes('Me gusta')) this.innerHTML = '<i class="fas fa-heart me-2"></i> Te gusta';
                 } else {
-                    icon.classList.remove('fas'); icon.classList.add('far');
+                    icon.classList.remove('fas'); 
+                    icon.classList.add('far');
                     if(this.textContent.includes('Te gusta')) this.innerHTML = '<i class="far fa-heart me-2"></i> Me gusta';
                 }
                 fetch(`/favorite/${songId}/`);
-            });
-        });
-
-        // Lógica del Reproductor (Vinilo)
-        const playButtons = document.querySelectorAll('.play-btn-center');
-        playButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const songId = this.dataset.songId;
-                const audio = document.getElementById(`audio-${songId}`);
-                const record = document.getElementById(`record-${songId}`);
-                const icon = this.querySelector('i');
-                
-                // Detener otros (solo uno a la vez)
-                document.querySelectorAll('audio').forEach(a => {
-                    if(a !== audio) { a.pause(); a.currentTime = 0; }
-                });
-                document.querySelectorAll('.record').forEach(r => {
-                   if(r !== record) r.classList.remove('spinning'); 
-                });
-                document.querySelectorAll('.play-btn-center i').forEach(i => {
-                    if(i !== icon) { i.classList.remove('fa-pause'); i.classList.add('fa-play'); }
-                });
-
-                if (audio.paused) {
-                    audio.play();
-                    record.classList.add('spinning');
-                    icon.classList.remove('fa-play').add('fa-pause');
-                } else {
-                    audio.pause();
-                    record.classList.remove('spinning');
-                    icon.classList.remove('fa-pause').add('fa-play');
-                }
             });
         });
     });
