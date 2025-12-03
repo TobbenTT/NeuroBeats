@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.admin.views.decorators import staff_member_required
 
 @login_required
 def profile(request):
@@ -108,4 +109,20 @@ def toggle_follow(request, user_id):
     return JsonResponse({
         'following': following, 
         'followers_count': target_profile.followed_by.count()
+    })
+
+# 1. LISTA DE TODOS LOS USUARIOS
+@staff_member_required # Solo tú puedes entrar aquí
+def admin_dashboard(request):
+    users = User.objects.all().order_by('-date_joined')
+    return render(request, 'admin_dashboard.html', {'users': users})
+
+# 2. DETALLE DE UN USUARIO (Para borrarle canciones)
+@staff_member_required
+def admin_user_detail(request, user_id):
+    target_user = get_object_or_404(User, id=user_id)
+    songs = Song.objects.filter(uploader=target_user).order_by('-created_at')
+    return render(request, 'admin_user_detail.html', {
+        'target_user': target_user,
+        'songs': songs
     })

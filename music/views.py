@@ -151,3 +151,20 @@ def song_detail(request, song_id):
         'form': form,
         'is_liked': is_liked
     })
+
+@login_required
+def delete_song(request, song_id):
+    # 1. Buscamos la canción sin restricciones de usuario primero
+    song = get_object_or_404(Song, id=song_id)
+    
+    # 2. VERIFICACIÓN DE SEGURIDAD 🛡️
+    # Solo permitimos borrar si es el dueño O si es el Superusuario (Tú)
+    if request.user == song.uploader or request.user.is_superuser:
+        song.delete()
+        # Si eres admin, te devolvemos al panel de ese usuario. Si no, a tu perfil.
+        if request.user.is_superuser and request.user != song.uploader:
+             return redirect('admin_user_detail', user_id=song.uploader.id)
+        return redirect('profile')
+    else:
+        # Si un hacker intenta borrar algo ajeno, lo mandamos al Home
+        return redirect('home')

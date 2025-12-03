@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-info"><i class="fas fa-user-shield me-2"></i>Panel de Control</h2>
+        <a href="{% url 'create_user_fast' %}" class="btn btn-outline-success btn-sm">
+            <i class="fas fa-plus me-1"></i> Crear Usuario Rápido
+        </a>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle">
+                    <thead class="bg-black text-secondary text-uppercase small">
+                        <tr>
+                            <th class="p-3">Usuario</th>
+                            <th>Email</th>
+                            <th>Canciones</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td class="p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ u.profile.avatar.url }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                    <div>
+                                        <div class="fw-bold text-white">{{ u.username }}</div>
+                                        <small class="text-muted">Se unió: {{ u.date_joined|date:"d/m/Y" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ u.email|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ u.uploaded_songs.count }}</span>
+                            </td>
+                            <td>
+                                {% if u.is_superuser %}
+                                    <span class="badge bg-danger">ADMIN</span>
+                                {% else %}
+                                    <span class="badge bg-success">USUARIO</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'admin_user_detail' u.id %}" class="btn btn-sm btn-neuro fw-bold">
+                                    INSPECCIONAR
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
