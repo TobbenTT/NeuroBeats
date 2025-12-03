@@ -189,7 +189,7 @@
         .container { padding-left: 20px; padding-right: 20px; }
         /* Espacio extra abajo para que el player no tape la última canción */
         .py-4 { padding-bottom: 90px !important; }
-        
+
         /* 1. ARREGLO PÁGINA DE DETALLE (Vinilo Gigante) */
         /* Hacemos que el disco no ocupe toda la pantalla en el cel */
         .record-player-container {
@@ -608,26 +608,43 @@
             }
         }
 
-        // --- 3. BARRA DE PROGRESO Y VOLUMEN ---
+        // --- 3. BARRA DE PROGRESO Y VOLUMEN (CORREGIDO) ---
+        
+        let isSeeking = false; // Bandera para saber si estás arrastrando
+
+        // A. El Audio actualiza la barra (Solo si NO la estás tocando)
         globalAudio.addEventListener('timeupdate', () => {
-            const progress = (globalAudio.currentTime / globalAudio.duration) * 100;
-            seekSlider.value = progress || 0;
-            currentTimeEl.textContent = formatTime(globalAudio.currentTime);
-            durationTimeEl.textContent = formatTime(globalAudio.duration || 0);
+            if (!isSeeking) {
+                const progress = (globalAudio.currentTime / globalAudio.duration) * 100;
+                seekSlider.value = progress || 0;
+                currentTimeEl.textContent = formatTime(globalAudio.currentTime);
+                durationTimeEl.textContent = formatTime(globalAudio.duration || 0);
+            }
         });
 
+        // B. Cuando empiezas a arrastrar (Pausamos la actualización visual)
         seekSlider.addEventListener('input', (e) => {
-            const time = (e.target.value / 100) * globalAudio.duration;
-            globalAudio.currentTime = time;
+            isSeeking = true;
+            // Solo actualizamos el numerito del tiempo para que veas dónde vas
+            const tempTime = (e.target.value / 100) * globalAudio.duration;
+            currentTimeEl.textContent = formatTime(tempTime || 0);
         });
 
+        // C. Cuando SUELTAS la barra (Saltamos al segundo exacto)
+        seekSlider.addEventListener('change', (e) => {
+            const seekTime = (e.target.value / 100) * globalAudio.duration;
+            globalAudio.currentTime = seekTime;
+            isSeeking = false; // Ya soltaste, el audio puede seguir moviendo la barra
+        });
+
+        // D. Volumen
         if (volumeSlider) {
             volumeSlider.addEventListener('input', (e) => {
                 globalAudio.volume = e.target.value;
             });
         }
 
-// --- 4. VISUALIZADOR DE ESPECTRO (MODO GOD: ONDA ESPEJO) ---
+        // --- 4. VISUALIZADOR DE ESPECTRO (MODO GOD: ONDA ESPEJO) ---
         let audioContext;
         let analyser;
         let source;
