@@ -69,7 +69,7 @@ def upload_song(request):
             song.uploader = request.user
             song.save() 
 
-            # --- 🤖 ZONA IA: ANÁLISIS AUTOMÁTICO ---
+            # --- ZONA IA: ANÁLISIS AUTOMÁTICO ---
             # Le pasamos la ruta real del archivo en el disco
             file_path = song.audio_file.path 
             bpm, energy = analyze_audio(file_path)
@@ -159,7 +159,7 @@ def delete_song(request, song_id):
     # 1. Buscamos la canción sin restricciones de usuario primero
     song = get_object_or_404(Song, id=song_id)
     
-    # 2. VERIFICACIÓN DE SEGURIDAD 🛡️
+    # 2. VERIFICACIÓN DE SEGURIDAD 
     # Solo permitimos borrar si es el dueño O si es el Superusuario (Tú)
     if request.user == song.uploader or request.user.is_superuser:
         song.delete()
