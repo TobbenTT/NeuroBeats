@@ -37,6 +37,12 @@ class Song(models.Model):
     def __str__(self):
         return f"{self.title} - {self.artist}"
 
+    @property
+    def average_rating(self):
+        avg_score = self.ratings.aggregate(Avg('score'))['score__avg']
+        return round(avg_score, 1) if avg_score else 0.0
+
+
 # 3. Interacciones: Clasificar
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
