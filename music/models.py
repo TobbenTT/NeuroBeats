@@ -17,6 +17,8 @@ class Song(models.Model):
 
     # Archivos multimedia
     cover_image = models.ImageField(upload_to='covers/', default='covers/default.png', verbose_name='Portada')
+    # Campo para la versión HQ completa del archivo (320 kbps)
+    full_audio_file = models.FileField(upload_to='tracks/full_hq/', null=True, blank=True)
     audio_file = models.FileField(upload_to='tracks/', verbose_name='Archivo de Audio (.mp3)')
 
     # Metadatos

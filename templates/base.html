@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,292 +8,431 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    
-<style>
-    /* CONFIGURACIÓN GLOBAL DE MODO OSCURO */
-    body {
-        background-color: #0d0d0d; /* Fondo casi negro */
-        color: #ffffff; /* Texto base BLANCO PURO */
-        font-family: 'Segoe UI', sans-serif;
-    }
 
-    /* --- ARREGLO CRÍTICO DE CONTRASTE --- */
-    .text-secondary, .text-muted, .small, small { color: #cccccc !important; }
-    h1, h2, h3, h4, h5, h6, .fw-bold, .display-5 { color: #ffffff !important; }
-    /* ------------------------------------ */
+    <style>
+        /* CONFIGURACIÓN GLOBAL DE MODO OSCURO */
+        body {
+            background-color: #0d0d0d;
+            /* Fondo casi negro */
+            color: #ffffff;
+            /* Texto base BLANCO PURO */
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    /* Componentes */
-    .navbar { background-color: #000000; border-bottom: 1px solid #222; }
-    .btn-neuro { background-color: #7c4dff; color: white; border: none; }
-    .btn-neuro:hover { background-color: #651fff; color: white; }
+        /* --- ARREGLO CRÍTICO DE CONTRASTE --- */
+        .text-secondary,
+        .text-muted,
+        .small,
+        small {
+            color: #cccccc !important;
+        }
 
-    /* Tarjetas y dropdowns oscuros */
-    .card, .dropdown-menu-dark {
-        background-color: #1a1a1a;
-        border: 1px solid #333;
-        color: #ffffff;
-    }
-    
-    /* Enlaces */
-    a { text-decoration: none; color: #7c4dff; }
-    a:hover { color: #9e7aff; }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .fw-bold,
+        .display-5 {
+            color: #ffffff !important;
+        }
 
-    /* Arreglo para inputs en modo oscuro */
-    .form-control, .form-select {
-        background-color: #2b2b2b;
-        border-color: #444;
-        color: #fff;
-    }
+        /* ------------------------------------ */
 
-    /* Estilos DJ Anita (Mínimos requeridos para el offcanvas) */
-    .neon-text-info { color: #0dcaf0; }
-    .neon-text-purple { color: #7c4dff; }
-    .ai-avatar-container { border: 2px solid rgba(13, 202, 240, 0.5); }
-    .progress-futuristic { height: 12px; background-color: #0a0a0a; border: 1px solid #333; border-radius: 6px; }
-    .progress-bar-glow { background: linear-gradient(90deg, #0dcaf0, #7c4dff) !important; }
-    .vip-holographic-card { background: rgba(124, 77, 255, 0.05); border: 1px solid rgba(124, 77, 255, 0.3); backdrop-filter: blur(5px); }
-</style>
-<style>
-/* =========================================
+        /* Componentes */
+        .navbar {
+            background-color: #000000;
+            border-bottom: 1px solid #222;
+        }
+
+        .btn-neuro {
+            background-color: #7c4dff;
+            color: white;
+            border: none;
+        }
+
+        .btn-neuro:hover {
+            background-color: #651fff;
+            color: white;
+        }
+
+        /* Tarjetas y dropdowns oscuros */
+        .card,
+        .dropdown-menu-dark {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: #ffffff;
+        }
+
+        /* Enlaces */
+        a {
+            text-decoration: none;
+            color: #7c4dff;
+        }
+
+        a:hover {
+            color: #9e7aff;
+        }
+
+        /* Arreglo para inputs en modo oscuro */
+        .form-control,
+        .form-select {
+            background-color: #2b2b2b;
+            border-color: #444;
+            color: #fff;
+        }
+
+        /* Estilos DJ Anita (Mínimos requeridos para el offcanvas) */
+        .neon-text-info {
+            color: #0dcaf0;
+        }
+
+        .neon-text-purple {
+            color: #7c4dff;
+        }
+
+        .ai-avatar-container {
+            border: 2px solid rgba(13, 202, 240, 0.5);
+        }
+
+        .progress-futuristic {
+            height: 12px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+        }
+
+        .progress-bar-glow {
+            background: linear-gradient(90deg, #0dcaf0, #7c4dff) !important;
+        }
+
+        .vip-holographic-card {
+            background: rgba(124, 77, 255, 0.05);
+            border: 1px solid rgba(124, 77, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+    <style>
+        /* =========================================
        ESTILOS DJ ANITA (NEURO CYBERPUNK) v2
        ========================================= */
-    .neon-text-info {
-        color: #0dcaf0;
-        text-shadow: 0 0 10px rgba(13, 202, 240, 0.7), 0 0 20px rgba(13, 202, 240, 0.5);
-    }
-    .neon-text-purple {
-        color: #7c4dff;
-        text-shadow: 0 0 10px rgba(124, 77, 255, 0.7), 0 0 20px rgba(124, 77, 255, 0.5);
-    }
+        .neon-text-info {
+            color: #0dcaf0;
+            text-shadow: 0 0 10px rgba(13, 202, 240, 0.7), 0 0 20px rgba(13, 202, 240, 0.5);
+        }
 
-    /* Avatar Pulsante */
-    .ai-avatar-container {
-        width: 100px; height: 100px;
-        margin: 0 auto;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(13,202,240,0.2) 0%, rgba(0,0,0,0) 70%);
-        border: 2px solid rgba(13, 202, 240, 0.5);
-        box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset;
-        animation: pulse-blue 3s infinite ease-in-out;
-    }
-    @keyframes pulse-blue { 
-        0% { box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset; } 
-        50% { box-shadow: 0 0 30px rgba(13, 202, 240, 0.6) inset, 0 0 20px rgba(13, 202, 240, 0.2); } 
-        100% { box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset; } 
-    }
+        .neon-text-purple {
+            color: #7c4dff;
+            text-shadow: 0 0 10px rgba(124, 77, 255, 0.7), 0 0 20px rgba(124, 77, 255, 0.5);
+        }
 
-    /* Tarjeta HUD (Heads-Up Display) */
-    .ai-hud-card {
-        background-color: #121212;
-        border: 1px solid #333;
-        border-left: 4px solid #0dcaf0;
-        border-radius: 10px;
-        position: relative;
-        overflow: hidden;
-    }
-    .ai-hud-card::before {
-        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(13, 202, 240, 0.05) 3px, rgba(13, 202, 240, 0.05) 4px);
-        pointer-events: none; z-index: 0;
-    }
+        /* Avatar Pulsante */
+        .ai-avatar-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(13, 202, 240, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            border: 2px solid rgba(13, 202, 240, 0.5);
+            box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset;
+            animation: pulse-blue 3s infinite ease-in-out;
+        }
 
-    /* Barra de Energía Glow (CORREGIDA) */
-    .progress-futuristic {
-        height: 12px; 
-        background-color: #0a0a0a; 
-        border: 1px solid #333;
-        border-radius: 6px; 
-        overflow: hidden; 
-        position: relative;
-        display: flex; /* <--- ¡ESTO FALTABA! */
-    }
-    .progress-bar-glow {
-        background: linear-gradient(90deg, #0dcaf0, #7c4dff) !important; /* !important para ganar a Bootstrap */
-        box-shadow: 0 0 15px rgba(13, 202, 240, 0.8);
-        position: relative;
-        height: 100%; /* Asegurar que llene el alto */
-    }
-    .progress-bar-glow::after {
-        content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-        animation: shimmer 2s infinite linear;
-    }
-    @keyframes shimmer { 100% { left: 100%; } }
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset;
+            }
 
-    /* Tarjeta VIP Holográfica */
-    .vip-holographic-card {
-        background: rgba(124, 77, 255, 0.05);
-        border: 1px solid rgba(124, 77, 255, 0.3);
-        box-shadow: inset 0 0 20px rgba(124, 77, 255, 0.1);
-        border-radius: 12px;
-        backdrop-filter: blur(5px);
-    }
-    
-    /* Scrollbar personalizado (Funciona en Chrome, Edge y Firefox) */
-    .custom-scrollbar {
-        scrollbar-width: thin; /* Para Firefox */
-        scrollbar-color: #333 #000; /* Para Firefox */
-    }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-</style>
+            50% {
+                box-shadow: 0 0 30px rgba(13, 202, 240, 0.6) inset, 0 0 20px rgba(13, 202, 240, 0.2);
+            }
+
+            100% {
+                box-shadow: 0 0 15px rgba(13, 202, 240, 0.3) inset;
+            }
+        }
+
+        /* Tarjeta HUD (Heads-Up Display) */
+        .ai-hud-card {
+            background-color: #121212;
+            border: 1px solid #333;
+            border-left: 4px solid #0dcaf0;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-hud-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(13, 202, 240, 0.05) 3px, rgba(13, 202, 240, 0.05) 4px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Barra de Energía Glow (CORREGIDA) */
+        .progress-futuristic {
+            height: 12px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            /* <--- ¡ESTO FALTABA! */
+        }
+
+        .progress-bar-glow {
+            background: linear-gradient(90deg, #0dcaf0, #7c4dff) !important;
+            /* !important para ganar a Bootstrap */
+            box-shadow: 0 0 15px rgba(13, 202, 240, 0.8);
+            position: relative;
+            height: 100%;
+            /* Asegurar que llene el alto */
+        }
+
+        .progress-bar-glow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes shimmer {
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Tarjeta VIP Holográfica */
+        .vip-holographic-card {
+            background: rgba(124, 77, 255, 0.05);
+            border: 1px solid rgba(124, 77, 255, 0.3);
+            box-shadow: inset 0 0 20px rgba(124, 77, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Scrollbar personalizado (Funciona en Chrome, Edge y Firefox) */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            /* Para Firefox */
+            scrollbar-color: #333 #000;
+            /* Para Firefox */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+    </style>
 </head>
+
 <body hx-boost="true">
 
-<nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top bg-black border-bottom border-secondary">
-    <div class="container">
-        <a class="navbar-brand fw-bold fs-4" href="{% url 'home' %}">
-            🧠 <span class="text-white">Neuro</span><span style="color: #7c4dff;">Beats</span>
-        </a>
-        
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-            
-            <div class="mx-auto d-none d-md-block" style="width: 40%;">
-                <form action="{% url 'search' %}" method="get" class="d-flex">
-                    <div class="input-group">
-                        <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-search"></i></span>
-                        <input type="search" name="q" class="form-control bg-dark text-white border-secondary" placeholder="Buscar canciones, artistas o usuarios..." value="{{ request.GET.q }}">
-                        <button class="btn btn-outline-secondary" type="submit">Ir</button>
-                    </div>
-                </form>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top bg-black border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="{% url 'home' %}">
+                🧠 <span class="text-white">Neuro</span><span style="color: #7c4dff;">Beats</span>
+            </a>
 
-            <div class="navbar-nav align-items-center gap-3 mt-3 mt-md-0">
-                {% if user.is_authenticated %}
-                    <button class="btn btn-sm btn-outline-info w-100 w-md-auto fw-bold mb-2 mb-md-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#djAnitaPanel">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+
+                <div class="mx-auto d-none d-md-block" style="width: 40%;">
+                    <form action="{% url 'search' %}" method="get" class="d-flex">
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                    class="fas fa-search"></i></span>
+                            <input type="search" name="q" class="form-control bg-dark text-white border-secondary"
+                                placeholder="Buscar canciones, artistas o usuarios..." value="{{ request.GET.q }}">
+                            <button class="btn btn-outline-secondary" type="submit">Ir</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="navbar-nav align-items-center gap-3 mt-3 mt-md-0">
+                    {% if user.is_authenticated %}
+                    <button class="btn btn-sm btn-outline-info w-100 w-md-auto fw-bold mb-2 mb-md-0" type="button"
+                        data-bs-toggle="offcanvas" data-bs-target="#djAnitaPanel">
                         🤖 DJ Anita
                     </button>
                     <a href="{% url 'upload' %}" class="btn btn-sm btn-outline-secondary w-100 w-md-auto">
                         <i class="fas fa-cloud-upload-alt"></i> Subir
                     </a>
-                    
+
                     <div class="dropdown w-100 w-md-auto">
-                        <a href="#" class="d-flex align-items-center text-white dropdown-toggle justify-content-center justify-content-md-start mt-2 mt-md-0" data-bs-toggle="dropdown">
-                            <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-2" width="32" height="32" style="object-fit: cover;">
+                        <a href="#"
+                            class="d-flex align-items-center text-white dropdown-toggle justify-content-center justify-content-md-start mt-2 mt-md-0"
+                            data-bs-toggle="dropdown">
+                            <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-2" width="32" height="32"
+                                style="object-fit: cover;">
                             <strong>{{ user.username }}</strong>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark shadow w-100 text-center text-md-start">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">👤 Mi Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">🚪 Salir</a></li>
                         </ul>
                     </div>
-                {% else %}
+                    {% else %}
                     <a href="{% url 'login' %}" class="btn btn-neuro px-4 w-100 mt-2 mt-md-0">Entrar</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</nav>
-<div style="margin-top: 80px;"></div>
-
-<div class="container py-4">
-    {% block content %}
-    {% endblock %}
-</div>
-<div id="master-player-bar" hx-preserve class="fixed-bottom bg-black border-top border-secondary p-2 d-none" style="z-index: 1040;">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            
-            <div class="col-md-3 col-4 d-flex align-items-center gap-3">
-                <img id="master-cover" src="" class="rounded" width="50" height="50" style="object-fit: cover; display: none;">
-                <div class="overflow-hidden">
-                    <h6 id="master-title" class="fw-bold text-white mb-0 text-truncate">Selecciona una canción</h6>
-                    <small id="master-artist" class="text-secondary text-truncate">NeuroBeats Player</small>
+                    {% endif %}
                 </div>
             </div>
+        </div>
+    </nav>
+    <div style="margin-top: 80px;"></div>
 
-            <div class="col-md-6 col-4 position-relative">
-                <div class="d-flex flex-column align-items-center">
-                    
-                    <canvas id="audio-visualizer" width="400" height="40" class="mb-1" style="width: 100%; max-width: 400px; height: 40px;"></canvas>
+    <div class="container py-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div id="master-player-bar" hx-preserve class="fixed-bottom bg-black border-top border-secondary p-2 d-none"
+        style="z-index: 1040;">
+        <div class="container-fluid">
+            <div class="row align-items-center">
 
-                    <div class="d-flex align-items-center gap-4 mb-1">
-                        <button class="btn btn-link text-secondary p-0"><i class="fas fa-step-backward"></i></button>
-                        
-                        <button id="master-play-btn" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; z-index: 10;">
-                            <i class="fas fa-play text-black"></i>
-                        </button>
-                        
-                        <button class="btn btn-link text-secondary p-0"><i class="fas fa-step-forward"></i></button>
-                    </div>
-
-                    <div class="w-100 d-flex align-items-center gap-2" style="max-width: 500px;">
-                        <span id="current-time" class="small text-muted" style="font-size: 0.7rem; width: 35px;">0:00</span>
-                        <input type="range" id="seek-slider" class="form-range custom-range" min="0" max="100" value="0">
-                        <span id="duration-time" class="small text-muted" style="font-size: 0.7rem; width: 35px;">0:00</span>
+                <div class="col-md-3 col-4 d-flex align-items-center gap-3">
+                    <img id="master-cover" src="" class="rounded" width="50" height="50"
+                        style="object-fit: cover; display: none;">
+                    <div class="overflow-hidden">
+                        <h6 id="master-title" class="fw-bold text-white mb-0 text-truncate">Selecciona una canción</h6>
+                        <small id="master-artist" class="text-secondary text-truncate">NeuroBeats Player</small>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-3 col-4 d-flex justify-content-end align-items-center">
-                <i class="fas fa-volume-up text-secondary me-2"></i>
-                <input type="range" class="form-range" style="width: 80px;" id="volume-slider" min="0" max="1" step="0.1" value="1">
+                <div class="col-md-6 col-4 position-relative">
+                    <div class="d-flex flex-column align-items-center">
+
+                        <canvas id="audio-visualizer" width="400" height="40" class="mb-1"
+                            style="width: 100%; max-width: 400px; height: 40px;"></canvas>
+
+                        <div class="d-flex align-items-center gap-4 mb-1">
+                            <button id="master-prev-btn" class="btn btn-link text-secondary p-0"><i
+                                    class="fas fa-step-backward"></i></button>
+
+                            <button id="master-play-btn"
+                                class="btn btn-light rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; z-index: 10;">
+                                <i class="fas fa-play text-black"></i>
+                            </button>
+
+                            <button id="master-next-btn" class="btn btn-link text-secondary p-0"><i
+                                    class="fas fa-step-forward"></i></button>
+                        </div>
+
+                        <div class="w-100 d-flex align-items-center gap-2" style="max-width: 500px;">
+                            <span id="current-time" class="small text-muted"
+                                style="font-size: 0.7rem; width: 35px;">0:00</span>
+                            <input type="range" id="seek-slider" class="form-range custom-range" min="0" max="100"
+                                value="0">
+                            <span id="duration-time" class="small text-muted"
+                                style="font-size: 0.7rem; width: 35px;">0:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-4 d-flex justify-content-end align-items-center">
+                    <i class="fas fa-volume-up text-secondary me-2"></i>
+                    <input type="range" class="form-range" style="width: 80px;" id="volume-slider" min="0" max="1"
+                        step="0.1" value="1">
+                </div>
             </div>
         </div>
-    </div>
-    <audio id="global-audio" preload="none" crossorigin="anonymous"></audio>
-</div>
-
-<style>
-    .custom-range::-webkit-slider-thumb { background: #7c4dff; }
-    .custom-range::-moz-range-thumb { background: #7c4dff; }
-</style>
-
-<div class="offcanvas offcanvas-end bg-black" tabindex="-1" id="djAnitaPanel" hx-preserve style="width: 380px; border-left: 2px solid #0dcaf0;">
-    
-    <div class="offcanvas-header border-bottom border-secondary p-4" style="background: #0a0a0a;">
-        <h4 class="offcanvas-title fw-bold neon-text-info m-0 d-flex align-items-center">
-            <i class="fas fa-robot me-3 fa-spin" style="--fa-animation-duration: 4s; font-size: 1.5rem;"></i> 
-            <span>DJ Anita <small style="font-size: 0.6em; opacity: 0.7;">AI CORE</small></span>
-        </h4>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" style="opacity: 1; text-shadow: 0 0 10px white;"></button>
+        <audio id="global-audio" preload="none" crossorigin="anonymous"></audio>
     </div>
 
-    <div class="offcanvas-body p-4 custom-scrollbar" style="background: radial-gradient(circle at top right, #1a1a2e, #000000);">
-        
-        <div class="text-center mb-5">
-            <div class="ai-avatar-container mb-3">
-                <i class="fas fa-microchip fa-4x text-info"></i>
-            </div>
-            <h6 class="text-white fw-bold">Sistema de Análisis Sónico</h6>
-            <p class="small text-info opacity-75 mb-0 fw-bold">v2.4.1 // CONECTADO</p>
+    <style>
+        .custom-range::-webkit-slider-thumb {
+            background: #7c4dff;
+        }
+
+        .custom-range::-moz-range-thumb {
+            background: #7c4dff;
+        }
+    </style>
+
+    <div class="offcanvas offcanvas-end bg-black" tabindex="-1" id="djAnitaPanel" hx-preserve
+        style="width: 380px; border-left: 2px solid #0dcaf0;">
+
+        <div class="offcanvas-header border-bottom border-secondary p-4" style="background: #0a0a0a;">
+            <h4 class="offcanvas-title fw-bold neon-text-info m-0 d-flex align-items-center">
+                <i class="fas fa-robot me-3 fa-spin" style="--fa-animation-duration: 4s; font-size: 1.5rem;"></i>
+                <span>DJ Anita <small style="font-size: 0.6em; opacity: 0.7;">AI CORE</small></span>
+            </h4>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                style="opacity: 1; text-shadow: 0 0 10px white;"></button>
         </div>
 
-        {% if user.is_authenticated %}
+        <div class="offcanvas-body p-4 custom-scrollbar"
+            style="background: radial-gradient(circle at top right, #1a1a2e, #000000);">
+
+            <div class="text-center mb-5">
+                <div class="ai-avatar-container mb-3">
+                    <i class="fas fa-microchip fa-4x text-info"></i>
+                </div>
+                <h6 class="text-white fw-bold">Sistema de Análisis Sónico</h6>
+                <p class="small text-info opacity-75 mb-0 fw-bold">v2.4.1 // CONECTADO</p>
+            </div>
+
+            {% if user.is_authenticated %}
             <div class="ai-hud-card p-4 mb-5 position-relative z-1">
                 <h6 class="text-uppercase neon-text-info small fw-bold mb-4 text-center">
                     <i class="fas fa-satellite-dish me-2"></i>Escaneo de Vibe Actual
                 </h6>
-                
+
                 <div class="row g-3 text-center mb-4">
                     <div class="col-6">
                         <div class="p-2 rounded" style="background: rgba(255,255,255,0.05);">
                             <small class="text-secondary d-block mb-1">Mood Detectado</small>
-                            <span class="fw-bold text-warning fs-5" style="text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);">{{ anita_mood }}</span>
+                            <span class="fw-bold text-warning fs-5"
+                                style="text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);">{{ anita_mood }}</span>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="p-2 rounded" style="background: rgba(255,255,255,0.05);">
                             <small class="text-secondary d-block mb-1">Ritmo Promedio</small>
-                            <span class="fw-bold text-info fs-5" style="text-shadow: 0 0 10px rgba(13, 202, 240, 0.5);">{{ anita_bpm }} <small>BPM</small></span>
+                            <span class="fw-bold text-info fs-5"
+                                style="text-shadow: 0 0 10px rgba(13, 202, 240, 0.5);">{{ anita_bpm }}
+                                <small>BPM</small></span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mb-2">
                     <div class="d-flex justify-content-between small mb-2 text-info fw-bold">
                         <span><i class="fas fa-bolt me-2"></i>Nivel de Energía</span>
                         <span>{{ anita_energy }}%</span>
                     </div>
                     <div class="progress-futuristic">
-                        <div class="progress-bar progress-bar-glow" role="progressbar" style="width: {{ anita_energy }}%"></div>
+                        <div class="progress-bar progress-bar-glow" role="progressbar"
+                            style="width: {{ anita_energy }}%"></div>
                     </div>
                 </div>
             </div>
@@ -303,282 +443,336 @@
                 </h6>
 
                 {% if anita_track %}
-                    <div class="vip-holographic-card p-3 d-flex align-items-center gap-3">
-                        <div class="position-relative">
-                            <img src="{{ anita_track.cover_image.url }}" class="rounded-3 shadow-lg" width="90" height="90" style="object-fit: cover; border: 2px solid #7c4dff;">
-                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-neuro border border-light rounded-circle">
-                                <span class="visually-hidden">New Alert</span>
-                            </span>
-                        </div>
-                        
-                        <div class="flex-grow-1 overflow-hidden">
-                            <h6 class="fw-bold text-white text-truncate mb-1">{{ anita_track.title }}</h6>
-                            <p class="text-secondary small mb-3 text-truncate">{{ anita_track.artist }}</p>
-                            <a href="{% url 'song_detail' anita_track.id %}" class="btn btn-sm btn-neuro w-100 fw-bold" style="box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);">
-                                <i class="fas fa-play me-2"></i> Iniciar Escucha
-                            </a>
-                        </div>
+                <div class="vip-holographic-card p-3 d-flex align-items-center gap-3">
+                    <div class="position-relative">
+                        <img src="{{ anita_track.cover_image.url }}" class="rounded-3 shadow-lg" width="90" height="90"
+                            style="object-fit: cover; border: 2px solid #7c4dff;">
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle p-2 bg-neuro border border-light rounded-circle">
+                            <span class="visually-hidden">New Alert</span>
+                        </span>
                     </div>
+
+                    <div class="flex-grow-1 overflow-hidden">
+                        <h6 class="fw-bold text-white text-truncate mb-1">{{ anita_track.title }}</h6>
+                        <p class="text-secondary small mb-3 text-truncate">{{ anita_track.artist }}</p>
+                        <a href="{% url 'song_detail' anita_track.id %}" class="btn btn-sm btn-neuro w-100 fw-bold"
+                            style="box-shadow: 0 0 15px rgba(124, 77, 255, 0.4);">
+                            <i class="fas fa-play me-2"></i> Iniciar Escucha
+                        </a>
+                    </div>
+                </div>
                 {% else %}
-                    <div class="text-center text-muted py-4 border border-secondary border-dashed rounded">
-                        <i class="fas fa-database fa-2x mb-3 opacity-50"></i>
-                        <p class="small mb-0">Datos insuficientes para generar recomendación.</p>
-                        <p class="small opacity-75">Interactúa más con la plataforma.</p>
-                    </div>
+                <div class="text-center text-muted py-4 border border-secondary border-dashed rounded">
+                    <i class="fas fa-database fa-2x mb-3 opacity-50"></i>
+                    <p class="small mb-0">Datos insuficientes para generar recomendación.</p>
+                    <p class="small opacity-75">Interactúa más con la plataforma.</p>
+                </div>
                 {% endif %}
             </div>
 
-        {% else %}
+            {% else %}
             <div class="text-center mt-5 pt-5">
                 <i class="fas fa-user-slash fa-4x text-secondary opacity-25 mb-4"></i>
                 <h5 class="fw-bold text-white">Enlace Neuronal Inactivo</h5>
                 <p class="text-muted mb-4">Inicia sesión para establecer conexión con el núcleo de IA.</p>
                 <a href="{% url 'login' %}" class="btn btn-outline-info px-4 fw-bold">Conectar Ahora</a>
             </div>
-        {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="p-3 text-center small text-secondary border-top border-secondary"
+            style="background: #0a0a0a; letter-spacing: 1px;">
+            <i class="fas fa-terminal me-2 text-info"></i> NEUROBEATS.AI.SYSTEMS // END_OF_LINE
+        </div>
     </div>
-    
-    <div class="p-3 text-center small text-secondary border-top border-secondary" style="background: #0a0a0a; letter-spacing: 1px;">
-        <i class="fas fa-terminal me-2 text-info"></i> NEUROBEATS.AI.SYSTEMS // END_OF_LINE
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- 1. VARIABLES GLOBALES ---
-        const globalAudio = document.getElementById('global-audio');
-        const masterBar = document.getElementById('master-player-bar');
-        const masterPlayBtn = document.getElementById('master-play-btn');
-        const masterTitle = document.getElementById('master-title');
-        const masterArtist = document.getElementById('master-artist');
-        const masterCover = document.getElementById('master-cover');
-        const seekSlider = document.getElementById('seek-slider');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationTimeEl = document.getElementById('duration-time');
-        const volumeSlider = document.getElementById('volume-slider');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- 1. VARIABLES GLOBALES ---
+            // Definimos las variables en el scope global (window) para que sean accesibles desde otros scripts
+            window.globalPlaylist = [];
+            window.currentTrackIndex = -1;
 
-        // Función para formatear tiempo (0:00)
-        const formatTime = (time) => {
-            const min = Math.floor(time / 60);
-            const sec = Math.floor(time % 60);
-            return `${min}:${sec < 10 ? '0' + sec : sec}`;
-        };
+            const globalAudio = document.getElementById('global-audio');
+            const masterBar = document.getElementById('master-player-bar');
+            const masterPlayBtn = document.getElementById('master-play-btn');
+            const masterTitle = document.getElementById('master-title');
+            const masterArtist = document.getElementById('master-artist');
+            const masterCover = document.getElementById('master-cover');
+            const seekSlider = document.getElementById('seek-slider');
+            const currentTimeEl = document.getElementById('current-time');
+            const durationTimeEl = document.getElementById('duration-time');
+            const volumeSlider = document.getElementById('volume-slider');
+            const masterNextBtn = document.getElementById('master-next-btn');
+            const masterPrevBtn = document.getElementById('master-prev-btn');
 
-        // --- 2. LÓGICA DE REPRODUCCIÓN (Delegación de eventos) ---
-        document.body.addEventListener('click', function(e) {
-            const btn = e.target.closest('.play-btn-center');
-            
-            if (btn) {
-                e.preventDefault(); 
-                
-                const songUrl = btn.dataset.url;
-                const songTitle = btn.dataset.title;
-                const songArtist = btn.dataset.artist;
-                const songCover = btn.dataset.cover;
-                const recordId = `record-${btn.dataset.songId}`;
-                
-                // Si es la misma canción, pausar/reanudar
-                if (globalAudio.src === songUrl || globalAudio.src.endsWith(songUrl)) {
-                    togglePlay();
-                } else {
-                    playNewSong(songUrl, songTitle, songArtist, songCover, recordId);
+            // Función para cambiar a la siguiente/anterior pista
+            function navigate(direction) {
+                if (window.globalPlaylist.length === 0) return;
+
+                let newIndex = window.currentTrackIndex + direction;
+
+                // Lógica de bucle para pasar de la última a la primera (o viceversa)
+                if (newIndex >= window.globalPlaylist.length) {
+                    newIndex = 0;
+                } else if (newIndex < 0) {
+                    newIndex = window.globalPlaylist.length - 1;
                 }
+
+                const nextTrack = window.globalPlaylist[newIndex];
+
+                // Reusamos la función existente para iniciar la nueva canción
+                playNewSong(
+                    nextTrack.url,
+                    nextTrack.title,
+                    nextTrack.artist,
+                    nextTrack.cover,
+                    `record-${nextTrack.id}`
+                );
             }
-        });
 
-        function playNewSong(url, title, artist, cover, recordId) {
-            masterBar.classList.remove('d-none');
-            
-            masterTitle.textContent = title;
-            masterArtist.textContent = artist;
-            masterCover.src = cover;
-            masterCover.style.display = 'block';
+            // --- 3. LÓGICA DE REPRODUCCIÓN (Agregar listeners de navegación) ---
+            if (masterNextBtn) {
+                masterNextBtn.addEventListener('click', () => navigate(1));
+            }
+            if (masterPrevBtn) {
+                masterPrevBtn.addEventListener('click', () => navigate(-1));
+            }
 
-            globalAudio.src = url;
-            globalAudio.play();
-            updatePlayIcon(true);
+            // --- AUTO-PLAY NEXT SONG ---
+            globalAudio.addEventListener('ended', () => {
+                navigate(1);
+            });
 
-            // Animar vinilos
-            document.querySelectorAll('.record').forEach(r => r.classList.remove('spinning')); 
-            const currentRecord = document.getElementById(recordId);
-            if(currentRecord) currentRecord.classList.add('spinning'); 
-        }
+            // Función para formatear tiempo (0:00)
+            const formatTime = (time) => {
+                const min = Math.floor(time / 60);
+                const sec = Math.floor(time % 60);
+                return `${min}:${sec < 10 ? '0' + sec : sec}`;
+            };
 
-        masterPlayBtn.addEventListener('click', togglePlay);
+            // --- 2. LÓGICA DE REPRODUCCIÓN (Delegación de eventos) ---
+            document.body.addEventListener('click', function (e) {
+                const btn = e.target.closest('.play-btn-center');
 
-        function togglePlay() {
-            if (globalAudio.paused) {
+                if (btn) {
+                    e.preventDefault();
+
+                    const songUrl = btn.dataset.url;
+                    const songTitle = btn.dataset.title;
+                    const songArtist = btn.dataset.artist;
+                    const songCover = btn.dataset.cover;
+                    const recordId = `record-${btn.dataset.songId}`;
+
+                    // Si es la misma canción, pausar/reanudar
+                    if (globalAudio.src === songUrl || globalAudio.src.endsWith(songUrl)) {
+                        togglePlay();
+                    } else {
+                        playNewSong(songUrl, songTitle, songArtist, songCover, recordId);
+                    }
+                }
+            });
+
+            function playNewSong(url, title, artist, cover, recordId) {
+                masterBar.classList.remove('d-none');
+
+                masterTitle.textContent = title;
+                masterArtist.textContent = artist;
+                masterCover.src = cover;
+                masterCover.style.display = 'block';
+
+                globalAudio.src = url;
                 globalAudio.play();
                 updatePlayIcon(true);
-                // Intentar animar el vinilo si está en pantalla
-                const activeRecord = document.querySelector('.record[style*="' + masterCover.getAttribute('src') + '"]'); 
-                if(activeRecord) activeRecord.classList.add('spinning');
-            } else {
-                globalAudio.pause();
-                updatePlayIcon(false);
+
+                // --- NUEVA LÓGICA: Encontrar y Establecer el Índice Actual ---
+                window.currentTrackIndex = window.globalPlaylist.findIndex(track => track.url === url);
+                // -----------------------------------------------------------
+
+                // Animar vinilos
                 document.querySelectorAll('.record').forEach(r => r.classList.remove('spinning'));
+                const currentRecord = document.getElementById(recordId);
+                if (currentRecord) currentRecord.classList.add('spinning');
             }
-        }
 
-        function updatePlayIcon(isPlaying) {
-            if (isPlaying) {
-                masterPlayBtn.innerHTML = '<i class="fas fa-pause text-black"></i>';
-            } else {
-                masterPlayBtn.innerHTML = '<i class="fas fa-play text-black"></i>';
+            masterPlayBtn.addEventListener('click', togglePlay);
+
+            function togglePlay() {
+                if (globalAudio.paused) {
+                    globalAudio.play();
+                    updatePlayIcon(true);
+                    // Intentar animar el vinilo si está en pantalla
+                    const activeRecord = document.querySelector('.record[style*="' + masterCover.getAttribute('src') + '"]');
+                    if (activeRecord) activeRecord.classList.add('spinning');
+                } else {
+                    globalAudio.pause();
+                    updatePlayIcon(false);
+                    document.querySelectorAll('.record').forEach(r => r.classList.remove('spinning'));
+                }
             }
-        }
 
-        // --- 3. BARRA DE PROGRESO Y VOLUMEN (CORREGIDO) ---
-        
-        let isSeeking = false; // Bandera para saber si estás arrastrando
-
-        // A. El Audio actualiza la barra (Solo si NO la estás tocando)
-        globalAudio.addEventListener('timeupdate', () => {
-            if (!isSeeking) {
-                const progress = (globalAudio.currentTime / globalAudio.duration) * 100;
-                seekSlider.value = progress || 0;
-                currentTimeEl.textContent = formatTime(globalAudio.currentTime);
-                durationTimeEl.textContent = formatTime(globalAudio.duration || 0);
+            function updatePlayIcon(isPlaying) {
+                if (isPlaying) {
+                    masterPlayBtn.innerHTML = '<i class="fas fa-pause text-black"></i>';
+                } else {
+                    masterPlayBtn.innerHTML = '<i class="fas fa-play text-black"></i>';
+                }
             }
-        });
 
-        // B. Cuando empiezas a arrastrar (Pausamos la actualización visual)
-        seekSlider.addEventListener('input', (e) => {
-            isSeeking = true;
-            // Solo actualizamos el numerito del tiempo para que veas dónde vas
-            const tempTime = (e.target.value / 100) * globalAudio.duration;
-            currentTimeEl.textContent = formatTime(tempTime || 0);
-        });
+            // --- 3. BARRA DE PROGRESO Y VOLUMEN (CORREGIDO) ---
 
-        // C. Cuando SUELTAS la barra (Saltamos al segundo exacto)
-        seekSlider.addEventListener('change', (e) => {
-            const seekTime = (e.target.value / 100) * globalAudio.duration;
-            globalAudio.currentTime = seekTime;
-            isSeeking = false; // Ya soltaste, el audio puede seguir moviendo la barra
-        });
+            let isSeeking = false; // Bandera para saber si estás arrastrando
 
-        // D. Volumen
-        if (volumeSlider) {
-            volumeSlider.addEventListener('input', (e) => {
-                globalAudio.volume = e.target.value;
+            // A. El Audio actualiza la barra (Solo si NO la estás tocando)
+            globalAudio.addEventListener('timeupdate', () => {
+                if (!isSeeking) {
+                    const progress = (globalAudio.currentTime / globalAudio.duration) * 100;
+                    seekSlider.value = progress || 0;
+                    currentTimeEl.textContent = formatTime(globalAudio.currentTime);
+                    durationTimeEl.textContent = formatTime(globalAudio.duration || 0);
+                }
             });
-        }
 
-        // --- 4. VISUALIZADOR DE ESPECTRO (MODO GOD: ONDA ESPEJO) ---
-        let audioContext;
-        let analyser;
-        let source;
-        const canvas = document.getElementById('audio-visualizer');
-        let isVisualizerInit = false;
+            // B. Cuando empiezas a arrastrar (Pausamos la actualización visual)
+            seekSlider.addEventListener('input', (e) => {
+                isSeeking = true;
+                // Solo actualizamos el numerito del tiempo para que veas dónde vas
+                const tempTime = (e.target.value / 100) * globalAudio.duration;
+                currentTimeEl.textContent = formatTime(tempTime || 0);
+            });
 
-        function initVisualizer() {
-            if (isVisualizerInit || !canvas) return;
-            const canvasCtx = canvas.getContext('2d');
-            
-            // 1. Configuración de Audio
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            source = audioContext.createMediaElementSource(globalAudio);
-            source.connect(analyser);
-            analyser.connect(audioContext.destination);
+            // C. Cuando SUELTAS la barra (Saltamos al segundo exacto)
+            seekSlider.addEventListener('change', (e) => {
+                const seekTime = (e.target.value / 100) * globalAudio.duration;
+                globalAudio.currentTime = seekTime;
+                isSeeking = false; // Ya soltaste, el audio puede seguir moviendo la barra
+            });
 
-            // 2. Ajustes para que NO se sature
-            analyser.fftSize = 64; // Barras más gruesas y estéticas
-            // analyser.minDecibels = -90; // Sensibilidad base
-            // analyser.maxDecibels = -10; // Tope para que no se llene siempre
-            analyser.smoothingTimeConstant = 0.85; // Suavizado (0.8 = robótico, 0.9 = muy suave)
+            // D. Volumen
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', (e) => {
+                    globalAudio.volume = e.target.value;
+                });
+            }
 
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
+            // --- 4. VISUALIZADOR DE ESPECTRO (MODO GOD: ONDA ESPEJO) ---
+            let audioContext;
+            let analyser;
+            let source;
+            const canvas = document.getElementById('audio-visualizer');
+            let isVisualizerInit = false;
 
-            function draw() {
-                requestAnimationFrame(draw);
-                analyser.getByteFrequencyData(dataArray);
+            function initVisualizer() {
+                if (isVisualizerInit || !canvas) return;
+                const canvasCtx = canvas.getContext('2d');
 
-                // Limpiar fondo
-                canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                // 1. Configuración de Audio
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                source = audioContext.createMediaElementSource(globalAudio);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
 
-                const barWidth = (canvas.width / bufferLength) * 0.8; // Ancho de barra con espacio
-                let barHeight;
-                let x = 0;
-                
-                // Centro vertical del canvas
-                const centerY = canvas.height / 2;
+                // 2. Ajustes para que NO se sature
+                analyser.fftSize = 64; // Barras más gruesas y estéticas
+                // analyser.minDecibels = -90; // Sensibilidad base
+                // analyser.maxDecibels = -10; // Tope para que no se llene siempre
+                analyser.smoothingTimeConstant = 0.85; // Suavizado (0.8 = robótico, 0.9 = muy suave)
 
-                for(let i = 0; i < bufferLength; i++) {
-                    // MÁGICA MATEMÁTICA: Escalar el valor (0-255) a la altura del canvas
-                    // Multiplicamos por 0.8 para dejar un margen y que no toque los bordes
-                    let percent = dataArray[i] / 255;
-                    
-                    // Potenciamos los bajos y suavizamos los altos para mejor efecto visual
-                    percent = percent * percent; 
-                    
-                    barHeight = (percent * canvas.height) * 1.5; 
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
 
-                    // Definir color basado en la intensidad
-                    // Bajo: Morado oscuro | Medio: Morado Neón | Alto: Cian/Blanco
-                    const r = 124 + (131 * percent); // De 124 a 255
-                    const g = 77 + (125 * percent);  // De 77 a 202
-                    const b = 255;                   // Siempre azul alto
-                    
-                    canvasCtx.fillStyle = `rgb(${r},${g},${b})`;
-                    
-                    // Diseño redondeado
-                    // Dibujar desde el centro hacia arriba y abajo (Espejo)
-                    
-                    // Parte de Arriba
-                    canvasCtx.fillRect(x, centerY - (barHeight / 2), barWidth, barHeight / 2);
-                    
-                    // Parte de Abajo
-                    canvasCtx.fillRect(x, centerY, barWidth, barHeight / 2);
-                    
-                    // (Opcional) Pequeños "caps" blancos en las puntas para efecto pro
-                    if (barHeight > 5) {
-                        canvasCtx.fillStyle = '#ffffff';
-                        canvasCtx.fillRect(x, centerY - (barHeight / 2) - 2, barWidth, 2); // Cap arriba
-                        canvasCtx.fillRect(x, centerY + (barHeight / 2), barWidth, 2);     // Cap abajo
+                function draw() {
+                    requestAnimationFrame(draw);
+                    analyser.getByteFrequencyData(dataArray);
+
+                    // Limpiar fondo
+                    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const barWidth = (canvas.width / bufferLength) * 0.8; // Ancho de barra con espacio
+                    let barHeight;
+                    let x = 0;
+
+                    // Centro vertical del canvas
+                    const centerY = canvas.height / 2;
+
+                    for (let i = 0; i < bufferLength; i++) {
+                        // MÁGICA MATEMÁTICA: Escalar el valor (0-255) a la altura del canvas
+                        // Multiplicamos por 0.8 para dejar un margen y que no toque los bordes
+                        let percent = dataArray[i] / 255;
+
+                        // Potenciamos los bajos y suavizamos los altos para mejor efecto visual
+                        percent = percent * percent;
+
+                        barHeight = (percent * canvas.height) * 1.5;
+
+                        // Definir color basado en la intensidad
+                        // Bajo: Morado oscuro | Medio: Morado Neón | Alto: Cian/Blanco
+                        const r = 124 + (131 * percent); // De 124 a 255
+                        const g = 77 + (125 * percent);  // De 77 a 202
+                        const b = 255;                   // Siempre azul alto
+
+                        canvasCtx.fillStyle = `rgb(${r},${g},${b})`;
+
+                        // Diseño redondeado
+                        // Dibujar desde el centro hacia arriba y abajo (Espejo)
+
+                        // Parte de Arriba
+                        canvasCtx.fillRect(x, centerY - (barHeight / 2), barWidth, barHeight / 2);
+
+                        // Parte de Abajo
+                        canvasCtx.fillRect(x, centerY, barWidth, barHeight / 2);
+
+                        // (Opcional) Pequeños "caps" blancos en las puntas para efecto pro
+                        if (barHeight > 5) {
+                            canvasCtx.fillStyle = '#ffffff';
+                            canvasCtx.fillRect(x, centerY - (barHeight / 2) - 2, barWidth, 2); // Cap arriba
+                            canvasCtx.fillRect(x, centerY + (barHeight / 2), barWidth, 2);     // Cap abajo
+                        }
+
+                        x += barWidth + 4; // Espacio entre barras
                     }
-
-                    x += barWidth + 4; // Espacio entre barras
                 }
+                draw();
+                isVisualizerInit = true;
             }
-            draw(); 
-            isVisualizerInit = true;
-        }
 
-        globalAudio.addEventListener('play', () => {
-            // Si nunca hemos encendido el visualizador, lo encendemos
-            if (!isVisualizerInit) {
-                initVisualizer();
-            }
-            // Si el navegador suspendió el audio (ahorro de energía), lo reactivamos
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-        });
-
-        // --- 5. LÓGICA GLOBAL DE LIKES ---
-        document.body.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn-favorite');
-            if (btn) {
-                e.preventDefault(); 
-                const songId = btn.dataset.id;
-                const icon = btn.querySelector('i');
-                
-                if (icon.classList.contains('far')) { 
-                    icon.classList.remove('far'); icon.classList.add('fas');
-                    if(btn.textContent.includes('Me gusta')) btn.innerHTML = '<i class="fas fa-heart me-2"></i> Te gusta';
-                } else { 
-                    icon.classList.remove('fas'); icon.classList.add('far');
-                    if(btn.textContent.includes('Te gusta')) btn.innerHTML = '<i class="far fa-heart me-2"></i> Me gusta';
+            globalAudio.addEventListener('play', () => {
+                // Si nunca hemos encendido el visualizador, lo encendemos
+                if (!isVisualizerInit) {
+                    initVisualizer();
                 }
-                fetch(`/favorite/${songId}/`);
-            }
-        });
+                // Si el navegador suspendió el audio (ahorro de energía), lo reactivamos
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            });
 
-    }); 
-</script>
+            // --- 5. LÓGICA GLOBAL DE LIKES ---
+            document.body.addEventListener('click', function (e) {
+                const btn = e.target.closest('.btn-favorite');
+                if (btn) {
+                    e.preventDefault();
+                    const songId = btn.dataset.id;
+                    const icon = btn.querySelector('i');
+
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far'); icon.classList.add('fas');
+                        if (btn.textContent.includes('Me gusta')) btn.innerHTML = '<i class="fas fa-heart me-2"></i> Te gusta';
+                    } else {
+                        icon.classList.remove('fas'); icon.classList.add('far');
+                        if (btn.textContent.includes('Te gusta')) btn.innerHTML = '<i class="far fa-heart me-2"></i> Me gusta';
+                    }
+                    fetch(`/favorite/${songId}/`);
+                }
+            });
+
+        }); 
+    </script>
+    {% block page_scripts %}{% endblock %}
 </body>
+
 </html>
