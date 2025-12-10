@@ -1,0 +1,126 @@
+# Guía de Despliegue: NeuroBeats en bitware.site
+
+Esta guía te llevará paso a paso para desplegar tu proyecto en tu VPS de Hostinger y conectarlo con tu dominio `bitware.site`.
+
+## 1. Configuración de DNS (Hostinger)
+
+Antes de tocar el servidor, apunta tu dominio a la IP de tu VPS.
+1.  Ve al panel de **Hostinger > Dominios > bitware.site > DNS / Nameservers**.
+2.  Agrega (o edita) los registros **A**:
+    *   **Tipo**: A | **Nombre**: @ | **Apunta a**: `TU_IP_VPS` | **TTL**: 3600
+    *   **Tipo**: A | **Nombre**: www | **Apunta a**: `TU_IP_VPS` | **TTL**: 3600
+
+## 2. Acceso al VPS
+Conéctate por SSH:
+```bash
+ssh root@TU_IP_VPS
+```
+
+## 3. Preparación del Sistema
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install python3-pip python3-venv python3-dev libmysqlclient-dev pkg-config nginx git -y
+```
+
+## 4. Base de Datos (MySQL)
+```bash
+sudo apt install mysql-server -y
+sudo mysql_secure_installation
+```
+Crear DB y Usuario:
+```sql
+sudo mysql -u root -p
+
+CREATE DATABASE neurobeats_db CHARACTER SET utf8mb4;
+CREATE USER 'neuro_user'@'localhost' IDENTIFIED BY 'tu_contraseña_segura';
+GRANT ALL PRIVILEGES ON neurobeats_db.* TO 'neuro_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+## 5. Configuración del Proyecto
+
+### Clonar y Entorno Virtual
+```bash
+cd /var/www
+git clone https://github.com/TobbenTT/NeuroBeats.git
+cd NeuroBeats
+
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install gunicorn
+```
+
+### Configuración Final
+Asegúrate de configurar tus variables o editar `settings.py` (si no usas variables de entorno aún) para conectar a la DB que creaste.
+```bash
+python manage.py migrate
+python manage.py collectstatic
+```
+
+## 6. Configuración de Gunicorn
+```bash
+sudo nano /etc/systemd/system/gunicorn.service
+```
+Contenido:
+```ini
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/var/www/NeuroBeats
+ExecStart=/var/www/NeuroBeats/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/var/www/NeuroBeats/neurobeats.sock config.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+Activar:
+```bash
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+```
+
+## 7. Configuración de Nginx para bitware.site
+```bash
+sudo nano /etc/nginx/sites-available/neurobeats
+```
+Contenido para tu dominio:
+```nginx
+server {
+    listen 80;
+    server_name bitware.site www.bitware.site TU_IP_VPS;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    
+    location /static/ {
+        root /var/www/NeuroBeats;
+    }
+
+    location /media/ {
+        root /var/www/NeuroBeats;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/var/www/NeuroBeats/neurobeats.sock;
+    }
+}
+```
+Activar:
+```bash
+sudo ln -s /etc/nginx/sites-available/neurobeats /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+## 8. HTTPS (Candado de Seguridad)
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d bitware.site -d www.bitware.site
+```
+
+¡Felicidades! **bitware.site** debería estar en línea.
