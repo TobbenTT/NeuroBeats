@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from PIL import Image  # Necesario para la optimización
 # Create your models here.
 
 # 1 Modelo de insignias
@@ -38,7 +39,25 @@ class Profile(models.Model):
     def __str__(self):
         return f'Perfil de {self.user.username}'
     
-# 3 Automatizacion: Crear Perfil Automaticamente cuando uno se registre
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # OPTIMIZACIÓN DE IMAGEN (PILLOW)
+        if self.avatar:
+            try:
+                img = Image.open(self.avatar.path)
+                
+                # 1. Si es muy grande, redimensionar
+                if img.height > 800 or img.width > 800:
+                    output_size = (800, 800)
+                    img.thumbnail(output_size)
+                    
+                    # 2. Guardar optimizada
+                    img.save(self.avatar.path, quality=70, optimize=True)
+            except Exception as e:
+                print(f"Error optimizando imagen: {e}")
+                pass # Si falla, no rompemos nada, solo no se optimiza
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

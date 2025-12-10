@@ -104,7 +104,7 @@ server {
     location = /favicon.ico { access_log off; log_not_found off; }
     
     location /static/ {
-        root /var/www/NeuroBeats;
+        alias /var/www/NeuroBeats/staticfiles/;
     }
 
     location /media/ {

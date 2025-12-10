@@ -294,6 +294,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark shadow w-100 text-center text-md-start">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">👤 Mi Perfil</a></li>
+                            {% if user.is_staff %}
+                            <li><a class="dropdown-item text-warning" href="{% url 'admin_dashboard' %}">⚡ God Mode</a></li>
+                            {% endif %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
