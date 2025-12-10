@@ -38,7 +38,7 @@ def edit_profile(request):
 def is_superuser(user):
     return user.is_superuser
 
-@user_passes_test(is_superuser)  # <--- CANDADO DE SEGURIDAD 🔒
+@staff_member_required  # <--- AHORA PERMITE STAFF TAMBIÉN
 def create_user_fast(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)

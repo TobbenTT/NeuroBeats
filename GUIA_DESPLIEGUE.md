@@ -19,7 +19,7 @@ ssh root@TU_IP_VPS
 ## 3. Preparación del Sistema
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install python3-pip python3-venv python3-dev libmysqlclient-dev pkg-config nginx git -y
+sudo apt install python3-pip python3-venv python3-dev libmysqlclient-dev pkg-config nginx git ffmpeg -y
 ```
 
 ## 4. Base de Datos (MySQL)
@@ -77,7 +77,7 @@ After=network.target
 User=root
 Group=www-data
 WorkingDirectory=/var/www/NeuroBeats
-ExecStart=/var/www/NeuroBeats/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/var/www/NeuroBeats/neurobeats.sock config.wsgi:application
+ExecStart=/var/www/NeuroBeats/venv/bin/gunicorn --access-logfile - --workers 3 --timeout 120 --bind unix:/var/www/NeuroBeats/neurobeats.sock config.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
