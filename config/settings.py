@@ -25,8 +25,10 @@ SECRET_KEY = 'django-insecure-nf$(5p5lqaj(!$@*nhrez3avzgov^j*tz5-lr=t@s(g%m!h4_k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['bitware.site', 'www.bitware.site', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = [
+    'https://bitware.site',
+    'https://www.bitware.site',
     'https://*.ngrok-free.dev', 
     'https://*.ngrok-free.app',
 ]
@@ -132,6 +134,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Configuración de Archivos Subidos (Media)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
