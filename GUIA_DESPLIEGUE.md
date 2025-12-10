@@ -58,6 +58,10 @@ Asegúrate de configurar tus variables o editar `settings.py` (si no usas variab
 python manage.py migrate
 python manage.py collectstatic
 ```
+*(Si tienes problemas de permisos con la carpeta media)*:
+```bash
+sudo chmod -R 777 /var/www/NeuroBeats/media
+```
 
 ## 6. Configuración de Gunicorn
 ```bash
@@ -88,11 +92,14 @@ sudo systemctl enable gunicorn
 ```bash
 sudo nano /etc/nginx/sites-available/neurobeats
 ```
-Contenido para tu dominio:
+Contenido para tu dominio (¡Nota el cambio en client_max_body_size!):
 ```nginx
 server {
     listen 80;
     server_name bitware.site www.bitware.site TU_IP_VPS;
+
+    # Permitir subida de archivos grandes (50MB)
+    client_max_body_size 50M;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     
@@ -123,4 +130,15 @@ sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx -d bitware.site -d www.bitware.site
 ```
 
-¡Felicidades! **bitware.site** debería estar en línea.
+## 9. Cómo Actualizar tu Proyecto
+Cada vez que hagas cambios en tu PC y los subas a GitHub, corre esto en el VPS:
+
+```bash
+cd /var/www/NeuroBeats
+git pull
+source venv/bin/activate
+pip install -r requirements.txt  # Solo si instalaste nuevas librerías
+python manage.py migrate         # Solo si cambiaste la base de datos
+python manage.py collectstatic   # Solo si cambiaste estilos/JS
+sudo systemctl restart gunicorn  # ¡OBLIGATORIO para ver los cambios!
+```
