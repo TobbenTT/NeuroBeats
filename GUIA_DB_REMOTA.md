@@ -34,10 +34,10 @@ El usuario `root` a veces está bloqueado para acceso remoto por seguridad. Mejo
 2.  Ejecuta estos comandos (cambia `tu_password_segura`):
     ```sql
     -- Crear usuario que puede conectarse desde cualquier IP (%)
-    CREATE USER 'admin_remoto'@'%' IDENTIFIED BY 'tu_password_segura';
+    CREATE USER 'TobbenTT'@'%' IDENTIFIED BY 'Rocky26..';
 
     -- Darle permisos totales sobre tu base de datos
-    GRANT ALL PRIVILEGES ON neurobeats_db.* TO 'admin_remoto'@'%';
+    GRANT ALL PRIVILEGES ON neurobeats_db.* TO 'TobbenTT'@'%';
 
     -- Aplicar cambios
     FLUSH PRIVILEGES;
@@ -57,7 +57,7 @@ sudo ufw allow 3306/tcp
 Ahora abre tu programa favorito (DBeaver, MySQL Workbench, HeidiSQL) y usa:
 *   **Host/IP**: `bitware.site` (o la IP de tu VPS)
 *   **Puerto**: `3306`
-*   **Usuario**: `admin_remoto`
-*   **Password**: `tu_password_segura`
+*   **Usuario**: `TobbenTT`
+*   **Password**: `Rocky26..`
 
 ¡Listo!
