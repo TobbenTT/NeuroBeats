@@ -20,13 +20,12 @@ def process_audio_task(song_id, temp_file_path, start_sec, end_sec):
         # Cargar audio con Pydub (puede ser muy pesado, por eso usamos Celery)
         audio = AudioSegment.from_file(temp_file_path)
         
-        original_filename = os.path.basename(temp_file_path)
-
-        # --- EXPORTAR 2 VERSIONES ---
+        # Helper para asegurar extensión .mp3
+        base_name = os.path.splitext(original_filename)[0]
         
         # A) Versión 1: Clip (30s) OPTIMIZADO para preview (128 kbps)
         cut_audio = audio[int(start_sec * 1000) : int(end_sec * 1000)]
-        clip_filename = f"clip_{uuid.uuid4().hex[:8]}_{original_filename}"
+        clip_filename = f"clip_{uuid.uuid4().hex[:8]}_{base_name}.mp3" # FORCE .mp3
         clip_save_path = os.path.join(settings.MEDIA_ROOT, 'tracks', clip_filename)
         os.makedirs(os.path.dirname(clip_save_path), exist_ok=True)
         
@@ -34,7 +33,7 @@ def process_audio_task(song_id, temp_file_path, start_sec, end_sec):
         cut_audio.export(clip_save_path, format="mp3", parameters=["-b:a", "128k"]) 
         
         # B) Versión 2: Pista Completa (HQ) para streaming (320 kbps)
-        hq_filename = f"hq_{uuid.uuid4().hex[:8]}_{original_filename}"
+        hq_filename = f"hq_{uuid.uuid4().hex[:8]}_{base_name}.mp3" # FORCE .mp3
         hq_save_path = os.path.join(settings.MEDIA_ROOT, 'tracks', 'full_hq', hq_filename)
         os.makedirs(os.path.dirname(hq_save_path), exist_ok=True)
         
