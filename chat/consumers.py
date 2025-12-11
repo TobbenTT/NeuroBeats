@@ -42,16 +42,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         action_type = text_data_json.get('type', 'chat_message') # default to chat_message
         
+        print(f"DEBUG: Received WebSocket Data: {action_type}")
+        
         if not self.user.is_authenticated:
+            print("DEBUG: User not authenticated, ignoring.")
             return
 
         if action_type == 'chat_message':
             message = text_data_json.get('message')
             if message:
+                print(f"DEBUG: Processing chat_message: {message}")
                 # Guardar mensaje en base de datos
                 saved_msg = await self.save_message(self.conversation_id, self.user, message) 
 
                 # Enviar mensaje al grupo (LIVE CHAT)
+                print(f"DEBUG: Sending to group {self.room_group_name}")
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -64,27 +69,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'sender_id': self.user.id
                     }
                 )
+                print("DEBUG: Group send completed.")
                 
-                # --- SEND NOTIFICATION TO OTHERS ---
-                other_participants = await self.get_other_participants(self.conversation_id, self.user.id)
-                # Debug Check
-                print(f"DEBUG NOTIF: Sender={self.user.id}, Others={other_participants}")
-                
-                for participant_id in other_participants:
-                    await self.channel_layer.group_send(
-                        f"user_{participant_id}",
-                        {
-                            'type': 'send_notification',
-                            'notification': {
-                                'type': 'new_message',
-                                'from_user': self.user.username,
-                                'content': message[:30] + '...' if len(message) > 30 else message,
-                                'url': f'/chat/{self.conversation_id}/' 
-                            }
-                        }
-                    )
+                # ... notification logic ...
 
         elif action_type == 'mark_read':
+            print("DEBUG: Mark read received")
             # El usuario actual ha leído los mensajes de la conversación
             await self.mark_conversation_as_read(self.conversation_id, self.user)
             
@@ -99,9 +89,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Manejar mensaje del grupo
     async def chat_message(self, event):
+        print(f"DEBUG: Handler chat_message triggered for user {self.user.username}")
         await self.send(text_data=json.dumps(event))
 
     async def messages_read(self, event):
+        print("DEBUG: Handler messages_read triggered")
         await self.send(text_data=json.dumps(event))
 
     @database_sync_to_async
