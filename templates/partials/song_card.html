@@ -24,8 +24,6 @@
                     style="font-size: 0.85rem; z-index: 1;">
                     {% with avg=song.average_rating %}
                     {% for i in "12345"|make_list %}
-                    {# CORRECCIÓN: Se añade |add:0 al final del promedio para asegurar la comparación numérica y dibujar
-                    estrellas llenas #}
                     {% if i|add:"0" <= avg|floatformat:0|add:0 %} <i class="fas fa-star me-1"></i> {% else %}
                         <i class="far fa-star text-muted opacity-50 me-1"></i> {% endif %}
                         {% endfor %}
