@@ -601,17 +601,27 @@
                 if (btn) {
                     e.preventDefault();
 
-                    const songUrl = btn.dataset.url;
-                    const songTitle = btn.dataset.title;
-                    const songArtist = btn.dataset.artist;
-                    const songCover = btn.dataset.cover;
-                    const recordId = `record-${btn.dataset.songId}`;
+                    try {
+                        const songUrl = btn.dataset.url;
+                        if (!songUrl) throw new Error("URL de canción no encontrada");
 
-                    // Si es la misma canción, pausar/reanudar
-                    if (globalAudio.src === songUrl || globalAudio.src.endsWith(songUrl)) {
-                        togglePlay();
-                    } else {
-                        playNewSong(songUrl, songTitle, songArtist, songCover, recordId);
+                        const songTitle = btn.dataset.title || "Canción";
+                        const songArtist = btn.dataset.artist || "Artista";
+                        const songCover = btn.dataset.cover || "";
+                        const recordId = `record-${btn.dataset.songId}`;
+
+                        // Debug Alert
+                        // alert("Reproduciendo: " + songTitle); 
+
+                        // Si es la misma canción, pausar/reanudar
+                        if (globalAudio.src === songUrl || globalAudio.src.endsWith(songUrl)) {
+                            togglePlay();
+                        } else {
+                            playNewSong(songUrl, songTitle, songArtist, songCover, recordId);
+                        }
+                    } catch (err) {
+                        console.error("Error playback:", err);
+                        // alert("Error: " + err.message);
                     }
                 }
             });
