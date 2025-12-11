@@ -19,7 +19,13 @@
         {% endif %}
         {% endfor %}
 
-        <button class="btn-close btn-close-white ms-auto"
+        <button class="btn btn-sm btn-link text-danger ms-auto me-2"
+            hx-post="{% url 'leave_conversation' conversation.id %}"
+            hx-confirm="¿Seguro que quieres eliminar este chat de tu lista?" hx-target="#chat-popup-content">
+            <i class="fas fa-trash"></i>
+        </button>
+
+        <button class="btn-close btn-close-white"
             onclick="document.getElementById('neuro-chat-popup').style.display='none'"></button>
     </div>
 

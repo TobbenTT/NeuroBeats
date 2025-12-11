@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.conversations_list, name='conversations_list'),
     path('<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
     path('start/<int:user_id>/', views.start_chat, name='start_chat'),
+    path('leave/<int:conversation_id>/', views.leave_conversation, name='leave_conversation'),
 ]
