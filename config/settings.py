@@ -162,6 +162,9 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+# Forzar ejecución síncrona en desarrollo (para que procese sin worker separado)
+CELERY_TASK_ALWAYS_EAGER = True 
+CELERY_TASK_EAGER_PROPAGATES = True
 
 # Channels Configuration (Redis Layer)
 CHANNEL_LAYERS = {
