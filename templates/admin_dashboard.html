@@ -27,7 +27,8 @@
                         <tr>
                             <td class="p-3">
                                 <div class="d-flex align-items-center gap-3">
-                                    <img src="{{ u.profile.avatar.url }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                    <img src="{{ u.profile.avatar.url }}" class="rounded-circle" width="40" height="40"
+                                        style="object-fit: cover;">
                                     <div>
                                         <div class="fw-bold text-white">{{ u.username }}</div>
                                         <small class="text-muted">Se unió: {{ u.date_joined|date:"d/m/Y" }}</small>
@@ -39,11 +40,25 @@
                                 <span class="badge bg-secondary">{{ u.uploaded_songs.count }}</span>
                             </td>
                             <td>
-                                {% if u.is_superuser %}
-                                    <span class="badge bg-danger">ADMIN</span>
+                                {% load custom_tags %} {# Cargaremos un tag custom si es necesario, o usaremos lógica en
+                                template #}
+
+                                {# LOGICA DE ESTADO ONLINE #}
+                                {% with last_active=u.profile.last_activity %}
+                                {% if last_active %}
+                                {% if last_active|is_online %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-circle me-1 small"></i> Online
+                                </span>
                                 {% else %}
-                                    <span class="badge bg-success">USUARIO</span>
+                                <span class="badge bg-secondary" title="{{ last_active }}">
+                                    Hace {{ last_active|timesince|split:","|first }}
+                                </span>
                                 {% endif %}
+                                {% else %}
+                                <span class="badge bg-dark text-muted border border-secondary">Offline</span>
+                                {% endif %}
+                                {% endwith %}
                             </td>
                             <td>
                                 <a href="{% url 'admin_user_detail' u.id %}" class="btn btn-sm btn-neuro fw-bold">
