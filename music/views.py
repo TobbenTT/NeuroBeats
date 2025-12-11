@@ -56,7 +56,20 @@ def upload_song(request):
                 filename_temp = f"temp_{uuid.uuid4().hex[:8]}_{uploaded_audio_file.name}"
                 temp_path = os.path.join(settings.MEDIA_ROOT, 'temp', filename_temp)
                 os.makedirs(os.path.dirname(temp_path), exist_ok=True)
-                
+
+                # --- SELF-HEAL: Ensure processing.mp3 exists in MEDIA ---
+                processing_dest = os.path.join(settings.MEDIA_ROOT, 'tracks', 'processing.mp3')
+                if not os.path.exists(processing_dest):
+                    os.makedirs(os.path.dirname(processing_dest), exist_ok=True)
+                    # Try to copy from static
+                    import shutil
+                    static_processing = os.path.join(settings.BASE_DIR, 'static', 'audio', 'processing.mp3')
+                    if os.path.exists(static_processing):
+                        shutil.copy(static_processing, processing_dest)
+                    else:
+                        # Fallback creation if even static is missing (should not happen properly deployed)
+                        with open(processing_dest, 'wb') as f: f.write(b'\0' * 1024)
+
                 with open(temp_path, 'wb+') as destination:
                     for chunk in uploaded_audio_file.chunks():
                         destination.write(chunk)
