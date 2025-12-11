@@ -374,23 +374,48 @@
         <audio id="global-audio" preload="none" crossorigin="anonymous"></audio>
     </div>
 
-    <!-- Botón Flotante de Chat Privado -->
-    <a href="{% url 'conversations_list' %}"
+    <!-- Botón Flotante de Chat Privado (Popup) -->
+    <button onclick="toggleChatPopup()"
         class="btn btn-neuro rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg"
         style="bottom: 90px; right: 20px; width: 60px; height: 60px; z-index: 1050; transition: transform 0.3s;"
         onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
         <i class="fas fa-comments fa-lg"></i>
-    </a>
+    </button>
+
+    <!-- Contenedor del Popup de Chat -->
+    <div id="neuro-chat-popup" class="card position-fixed shadow-lg border border-secondary"
+        style="display: none; bottom: 160px; right: 20px; width: 350px; height: 500px; z-index: 1060; background: #0d0d0d; overflow: hidden; border-radius: 15px;">
+        <div id="chat-popup-content" class="h-100 w-100">
+            <!-- El contenido se cargará aquí vía HTMX -->
+            <div class="h-100 d-flex justify-content-center align-items-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleChatPopup() {
+            const popup = document.getElementById('neuro-chat-popup');
+            if (popup.style.display === 'none') {
+                popup.style.display = 'block';
+                // Load conversation list if empty or just refreshed
+                htmx.ajax('GET', '{% url "conversations_list" %}', '#chat-popup-content');
+            } else {
+                popup.style.display = 'none';
+            }
+        }
+    </script>
 
     <style>
         .custom-range::-webkit-slider-thumb {
-            .custom-range::-webkit-slider-thumb {
-                background: #7c4dff;
-            }
+            background: #7c4dff;
+        }
 
-            .custom-range::-moz-range-thumb {
-                background: #7c4dff;
-            }
+        .custom-range::-moz-range-thumb {
+            background: #7c4dff;
+        }
     </style>
 
     <div class="offcanvas offcanvas-end bg-black" tabindex="-1" id="djAnitaPanel" hx-preserve

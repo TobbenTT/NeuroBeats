@@ -9,7 +9,8 @@ User = get_user_model()
 @login_required
 def conversations_list(request):
     conversations = request.user.conversations.all().order_by('-created_at')
-    return render(request, 'chat/conversations_list.html', {'conversations': conversations})
+    template = 'chat/partials/conversation_list_partial.html' if request.headers.get('HX-Request') else 'chat/conversations_list.html'
+    return render(request, template, {'conversations': conversations})
 
 @login_required
 def conversation_detail(request, conversation_id):
@@ -20,7 +21,10 @@ def conversation_detail(request, conversation_id):
         return redirect('conversations_list')
         
     messages = conversation.messages.all().order_by('timestamp')
-    return render(request, 'chat/conversation_detail.html', {
+    
+    template = 'chat/partials/conversation_detail_partial.html' if request.headers.get('HX-Request') else 'chat/conversation_detail.html'
+    
+    return render(request, template, {
         'conversation': conversation, 
         'messages': messages,
         'current_user': request.user
@@ -34,13 +38,22 @@ def start_chat(request, user_id):
         return redirect('conversations_list')
         
     # Check if conversation already exists
-    # Filtering conversations that have BOTH participants
     conversations = Conversation.objects.filter(participants=request.user).filter(participants=target_user)
     
     if conversations.exists():
-        return redirect('conversation_detail', conversation_id=conversations.first().id)
+        conversation = conversations.first()
+    else:
+        # Create new conversation
+        conversation = Conversation.objects.create()
+        conversation.participants.add(request.user, target_user)
     
-    # Create new conversation
-    conversation = Conversation.objects.create()
-    conversation.participants.add(request.user, target_user)
+    # If HTMX (from popup), render the detail partial directly
+    if request.headers.get('HX-Request'):
+        messages = conversation.messages.all().order_by('timestamp')
+        return render(request, 'chat/partials/conversation_detail_partial.html', {
+            'conversation': conversation, 
+            'messages': messages,
+            'current_user': request.user
+        })
+        
     return redirect('conversation_detail', conversation_id=conversation.id)

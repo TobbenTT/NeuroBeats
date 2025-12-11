@@ -1,0 +1,116 @@
+<div class="d-flex flex-column h-100" style="height: 500px;">
+    <!-- Header -->
+    <div class="d-flex align-items-center p-2 border-bottom border-secondary bg-dark">
+        <button class="btn btn-sm btn-link text-white me-2" hx-get="{% url 'conversations_list' %}"
+            hx-target="#chat-popup-content">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+
+        {% for participant in conversation.participants.all %}
+        {% if participant != request.user %}
+        <div class="d-flex align-items-center">
+            {% if participant.profile.avatar %}
+            <img src="{{ participant.profile.avatar.url }}" class="rounded-circle me-2" width="30" height="30">
+            {% else %}
+            <div class="rounded-circle me-2 bg-secondary" style="width: 30px; height: 30px;"></div>
+            {% endif %}
+            <span class="fw-bold text-white">{{ participant.username }}</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <button class="btn-close btn-close-white ms-auto"
+            onclick="document.getElementById('neuro-chat-popup').style.display='none'"></button>
+    </div>
+
+    <!-- Chat Log -->
+    <div id="chat-popup-log" class="flex-grow-1 overflow-auto p-3 custom-scrollbar"
+        style="background: #000; height: 380px;">
+        {% for message in messages %}
+        <div
+            class="d-flex mb-2 {% if message.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+            <div class="p-2 rounded {% if message.sender == request.user %}bg-primary text-white{% else %}bg-secondary text-light{% endif %}"
+                style="max-width: 75%; font-size: 0.9em; border-radius: 12px;">
+                <p class="mb-0">{{ message.content }}</p>
+                <small class="d-block text-end opacity-50" style="font-size: 0.7em; margin-top: 2px;">
+                    {{ message.timestamp|date:"H:i" }}
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Footer / Input -->
+    <div class="p-2 border-top border-secondary bg-dark">
+        <div class="input-group">
+            <input type="text" id="popup-chat-input" class="form-control bg-black text-white border-secondary"
+                placeholder="Escribe..." autocomplete="off">
+            <button id="popup-chat-submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // Cleaning previous socket if exists
+        if (window.currentChatSocket) {
+            console.log("Closing previous socket");
+            window.currentChatSocket.close();
+        }
+
+        const conversationId = "{{ conversation.id }}";
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const socketUrl = protocol + window.location.host + '/ws/chat/' + conversationId + '/';
+
+        console.log("Connecting to " + socketUrl);
+        window.currentChatSocket = new WebSocket(socketUrl);
+
+        const chatLog = document.getElementById('chat-popup-log');
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        window.currentChatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+            const sender = data.username;
+            const isMe = sender === "{{ request.user.username }}";
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `d-flex mb-2 ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
+
+            msgDiv.innerHTML = `
+                <div class="p-2 rounded ${isMe ? 'bg-primary text-white' : 'bg-secondary text-light'}" 
+                     style="max-width: 75%; font-size: 0.9em; border-radius: 12px;">
+                    <p class="mb-0">${message}</p>
+                    <small class="d-block text-end opacity-50" style="font-size: 0.7em; margin-top: 2px;">
+                        ${data.timestamp}
+                    </small>
+                </div>
+            `;
+
+            chatLog.appendChild(msgDiv);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        const inputDom = document.getElementById('popup-chat-input');
+        const submitBtn = document.getElementById('popup-chat-submit');
+
+        // Handle Enter key
+        inputDom.onkeyup = function (e) {
+            if (e.keyCode === 13) {
+                submitBtn.click();
+            }
+        };
+
+        submitBtn.onclick = function (e) {
+            const message = inputDom.value;
+            if (message.trim() !== "") {
+                window.currentChatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                inputDom.value = '';
+            }
+        };
+    })();
+</script>
