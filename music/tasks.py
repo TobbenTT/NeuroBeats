@@ -20,6 +20,8 @@ def process_audio_task(song_id, temp_file_path, start_sec, end_sec):
         # Cargar audio con Pydub (puede ser muy pesado, por eso usamos Celery)
         audio = AudioSegment.from_file(temp_file_path)
         
+        original_filename = os.path.basename(temp_file_path)
+
         # Helper para asegurar extensión .mp3
         base_name = os.path.splitext(original_filename)[0]
         
