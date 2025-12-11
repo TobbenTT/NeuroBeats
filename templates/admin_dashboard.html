@@ -40,10 +40,9 @@
                                 <span class="badge bg-secondary">{{ u.uploaded_songs.count }}</span>
                             </td>
                             <td>
-                                {% load custom_tags %} {# Cargaremos un tag custom si es necesario, o usaremos lógica en
-                                template #}
+                                {% load custom_tags %}
 
-                                {# LOGICA DE ESTADO ONLINE #}
+
                                 {% with last_active=u.profile.last_activity %}
                                 {% if last_active %}
                                 {% if last_active|is_online %}

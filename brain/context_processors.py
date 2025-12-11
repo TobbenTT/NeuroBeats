@@ -29,9 +29,22 @@ def dj_anita_status(request):
     # Busca algo que NO hayas escuchado y que coincida con tu Vibe
     vip_track = Song.objects.filter(is_private=False).exclude(id__in=liked_songs).order_by('?').first()
 
+    # DEBUG LOGS
+    print(f"--- ANITA DEBUG ---")
+    print(f"User: {request.user.username}")
+    print(f"Liked Songs Count: {len(liked_songs)}")
+    print(f"Public Songs Total: {Song.objects.filter(is_private=False).count()}")
+    print(f"VIP Track Found (First Try): {vip_track}")
+
+    # FALLBACK: Si ya escuchaste todo (o no hay nada nuevo), te muestra cualquier cancion publica
+    if not vip_track:
+         print("Triggering Fallback Logic...")
+         vip_track = Song.objects.filter(is_private=False).order_by('?').first()
+         print(f"VIP Track (Fallback): {vip_track}")
+
     return {
-        'anita_bpm': current_bpm,
-        'anita_energy': round(current_energy * 100), # Porcentaje
-        'anita_mood': mood,
+        'anita_bpm': current_bpm if current_bpm > 0 else "---",
+        'anita_energy': round(current_energy * 100) if current_energy else 0,
+        'anita_mood': (mood if current_energy > 0 else "Escaneando...") + " (v2.5)",
         'anita_track': vip_track
     }

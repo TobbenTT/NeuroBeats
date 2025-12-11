@@ -27,6 +27,8 @@ def get_recommended_songs(user):
     # Buscamos canciones que:
     # A) No sean privadas
     # B) No las haya escuchado aún (excluir liked_ids)
+    # A) No sean privadas
+    # B) No las haya escuchado aún (excluir liked_ids)
     recommendations = Song.objects.filter(is_private=False).exclude(id__in=liked_songs_ids)
 
     if target_bpm and target_energy:
@@ -34,13 +36,21 @@ def get_recommended_songs(user):
         # Buscamos canciones que estén en un rango cercano (+- 20 BPM y +- 0.2 Energía)
         print(f"🧠 CEREBRO: Buscando música estilo -> BPM: {int(target_bpm)} | Energía: {round(target_energy, 2)}")
         
-        recommendations = recommendations.filter(
+        # Intentamos filtrar. Si nos quedamos sin canciones, el if de abajo nos salvará.
+        filtered_recommendations = recommendations.filter(
             bpm__range=(target_bpm - 20, target_bpm + 20),
             energy__range=(target_energy - 0.2, target_energy + 0.2)
         )
-    
-    # Si la IA fue muy estricta y no encontró nada, relajamos el filtro y devolvemos recientes
-    if not recommendations.exists():
-        return Song.objects.filter(is_private=False).exclude(id__in=liked_songs_ids).order_by('?')[:8]
+        # Solo aplicamos el filtro si devuelve ALGO. Si no, usamos la base (recommendations) sin filtro estricto.
+        if filtered_recommendations.exists():
+            recommendations = filtered_recommendations
 
-    return recommendations.order_by('?')[:8]
+    # --- LÓGICA DE SALVACIÓN (FALLBACKS) ---
+    
+    # 1. Si tenemos recomendaciones validas (ya sean filtradas o solo "no escuchadas")
+    if recommendations.exists():
+        return recommendations.order_by('?')[:8]
+
+    # 2. Si NO hay recomendaciones (ej: escuchó todo lo que existe), devolvemos CUALQUIER COSA pública
+    # "Redescubrimiento"
+    return Song.objects.filter(is_private=False).order_by('?')[:8]

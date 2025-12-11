@@ -78,8 +78,8 @@ def public_profile(request, username):
         is_locked = True
         songs = [] # No le mandamos canciones
     else:
-        # Si es público O lo sigo -> Mostrar todo
-        songs = Song.objects.filter(uploader=user_obj).order_by('-created_at')
+        # Si es público O lo sigo -> Mostrar todo (MENOS LAS PRIVADAS)
+        songs = Song.objects.filter(uploader=user_obj, is_private=False).order_by('-created_at')
 
     return render(request, 'public_profile.html', {
         'profile_user': user_obj,
