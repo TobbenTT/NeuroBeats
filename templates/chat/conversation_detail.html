@@ -3,106 +3,18 @@
 {% block content %}
 <div class="container mt-4">
     <div class="card bg-dark text-white border-secondary" style="height: 80vh;">
-        <div class="card-header border-secondary d-flex align-items-center">
-            <a href="{% url 'conversations_list' %}" class="btn btn-sm btn-outline-light me-3">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            {% for participant in conversation.participants.all %}
-            {% if participant != request.user %}
-            <h5 class="mb-0">{{ participant.username }}</h5>
-            {% endif %}
-            {% endfor %}
-        </div>
-
-        <div class="card-body overflow-auto" id="chat-log" style="flex: 1;">
-            {% for message in messages %}
-            <div
-                class="d-flex mb-3 {% if message.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
-                {% if message.sender != request.user %}
-                {% if message.sender.profile.avatar %}
-                <img src="{{ message.sender.profile.avatar.url }}" class="rounded-circle me-2" width="30" height="30">
-                {% else %}
-                <div class="rounded-circle me-2 bg-secondary" style="width: 30px; height: 30px;"></div>
-                {% endif %}
-                {% endif %}
-
-                <div class="p-2 rounded {% if message.sender == request.user %}bg-primary{% else %}bg-secondary{% endif %}"
-                    style="max-width: 70%;">
-                    <p class="mb-0">{{ message.content }}</p>
-                    <small class="text-white-50" style="font-size: 0.7em;">{{ message.timestamp|date:"H:i" }}</small>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="card-footer border-secondary">
-            <div class="input-group">
-                <input type="text" id="chat-message-input" class="form-control bg-dark text-white border-secondary"
-                    placeholder="Escribe un mensaje...">
-                <button id="chat-message-submit" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
+        <!-- Reuse the exact same partial for the content -->
+        {% include 'chat/partials/conversation_detail_partial.html' %}
     </div>
 </div>
 
-<script>
-    const conversationId = "{{ conversation.id }}";
-    const chatSocket = new WebSocket(
-        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/chat/' + conversationId + '/'
-    );
-
-    const chatLog = document.querySelector('#chat-log');
-    chatLog.scrollTop = chatLog.scrollHeight;
-
-    chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        const message = data.message;
-        const sender = data.username;
-        const isMe = sender === "{{ request.user.username }}";
-
-        // Simple HTML construction for new message
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `d-flex mb-3 ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
-
-        let avatarHtml = '';
-        if (!isMe) {
-            avatarHtml = `<img src="${data.avatar_url || '/static/img/default.jpg'}" class="rounded-circle me-2" width="30" height="30">`;
-        }
-
-        msgDiv.innerHTML = `
-            ${avatarHtml}
-            <div class="p-2 rounded ${isMe ? 'bg-primary' : 'bg-secondary'}" style="max-width: 70%;">
-                <p class="mb-0">${message}</p>
-                <small class="text-white-50" style="font-size: 0.7em;">${data.timestamp}</small>
-            </div>
-        `;
-
-        chatLog.appendChild(msgDiv);
-        chatLog.scrollTop = chatLog.scrollHeight;
-    };
-
-    chatSocket.onclose = function (e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-
-    document.querySelector('#chat-message-input').onkeyup = function (e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit').click();
-        }
-    };
-
-    document.querySelector('#chat-message-submit').onclick = function (e) {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-
-        if (message.trim() !== "") {
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        }
-    };
-</script>
+<!-- Estilos adicionales para ajustar el partial al contenedor de página completa -->
+<style>
+    /* Ajustes para que el partial ocupe toda la tarjeta en modo página completa */
+    #chat-popup-log {
+        height: auto !important;
+        /* Override fixed height from popup */
+        flex: 1;
+    }
+</style>
 {% endblock %}
