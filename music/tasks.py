@@ -63,38 +63,21 @@ def process_audio_task(song_id, temp_file_path, start_sec, end_sec):
 
     except Exception as e:
         import traceback
-        traceback.print_exc()
-        print(f"CRITICAL ERROR processing song {song_id}: {e}")
+        import shutil
         
-        # --- FALLBACK: SI FALLA EL PROCESAMIENTO, USAR ARCHIVO ORIGINAL ---
-        try:
-            if os.path.exists(temp_file_path):
-                song = Song.objects.get(id=song_id)
-                # Usar extensión original si falla la conversión
-                original_ext = os.path.splitext(temp_file_path)[1]
-                fallback_filename = f"fallback_{uuid.uuid4().hex[:8]}{original_ext}"
-                
-                # Guardar en 'full_hq' como destino final
-                dest_path = os.path.join(settings.MEDIA_ROOT, 'tracks', 'full_hq', fallback_filename)
-                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-                
-                import shutil
-                shutil.copy(temp_file_path, dest_path)
-                
-                # Actualizar Song para apuntar al archivo original
-                # Usamos el mismo archivo para clip y full (mejor que nada)
-                rel_path = f"tracks/full_hq/{fallback_filename}"
-                song.audio_file = rel_path      
-                song.full_audio_file = rel_path
-                song.save()
-                
-                print(f"Fallback applied: Used original file for {song_id}")
-                
-                # Cleanup
-                os.remove(temp_file_path)
-        except Exception as fallback_e:
-            print(f"Fallback failed: {fallback_e}")
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
-                
+        # --- DIAGNOIS: REPORTAR POR QUÉ FALLÓ ---
+        # Esto ayudará a ver si ffmpeg realmente es visible o no
+        ffmpeg_path = shutil.which("ffmpeg")
+        env_path = os.environ.get('PATH')
+        
+        print(f"CRITICAL ERROR processing song {song_id}: {e}")
+        print(f"DIAGNOSTIC - FFmpeg path found: {ffmpeg_path}")
+        print(f"DIAGNOSTIC - System PATH: {env_path}")
+        
+        traceback.print_exc()
+
+        # Limpiar archivo temporal si falló
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+            
         return f"Error: {e}"
