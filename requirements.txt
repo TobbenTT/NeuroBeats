@@ -1,3 +1,5 @@
+python-dotenv>=1.0.0
+
 absl-py>=2.3.1
 asgiref>=3.11.0
 astunparse>=1.6.3
@@ -40,3 +42,6 @@ tzdata>=2025.2
 urllib3>=2.5.0
 Werkzeug>=3.1.4
 wrapt>=2.0.1
+celery>=5.3.6
+redis>=5.0.1
+

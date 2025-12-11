@@ -72,3 +72,15 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comentario de {self.user.username} en {self.song.title}"
+
+# 6. Playlists
+class Playlist(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nombre de la Playlist")
+    description = models.TextField(blank=True, null=True, verbose_name="Descripción")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='playlists')
+    songs = models.ManyToManyField(Song, related_name='in_playlists', blank=True)
+    is_public = models.BooleanField(default=False, verbose_name="Pública")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.owner.username})"

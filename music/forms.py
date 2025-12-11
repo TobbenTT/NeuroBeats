@@ -1,5 +1,5 @@
 from django import forms
-from .models import Song, Comment
+from .models import Song, Comment, Playlist
 
 class SongForm(forms.ModelForm):
     # Campos ocultos (el usuario no los ve, JS los llena)
@@ -41,4 +41,14 @@ class SongEditForm(forms.ModelForm):
             'artist': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Artista o Banda'}),
             'genre': forms.Select(attrs={'class': 'form-select bg-dark text-white border-secondary'}),
             'cover_image': forms.FileInput(attrs={'class': 'form-control bg-dark text-white border-secondary'}),
+        }
+
+class PlaylistForm(forms.ModelForm):
+    class Meta:
+        model = Playlist
+        fields = ['name', 'description', 'is_public']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control bg-dark text-white', 'placeholder': 'Nombre de tu Playlist'}),
+            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-white', 'rows': 2, 'placeholder': 'Descripción (Opcional)'}),
+            'is_public': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }

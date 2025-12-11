@@ -2,6 +2,13 @@
 
 Esta guía te llevará paso a paso para desplegar tu proyecto en tu VPS de Hostinger y conectarlo con tu dominio `bitware.site`.
 
+## 0. Variables de Entorno (Seguridad)
+El proyecto ahora usa variables de entorno. En el VPS, crea el archivo `.env`:
+```bash
+nano /var/www/NeuroBeats/.env
+```
+Pega el contenido del archivo `.env.example` de tu proyecto y RELLENA los datos reales (contraseña DB, Secret Key nueva).
+
 ## 1. Configuración de DNS (Hostinger)
 
 Antes de tocar el servidor, apunta tu dominio a la IP de tu VPS.
@@ -142,3 +149,48 @@ python manage.py migrate         # Solo si cambiaste la base de datos
 python manage.py collectstatic   # Solo si cambiaste estilos/JS
 sudo systemctl restart gunicorn  # ¡OBLIGATORIO para ver los cambios!
 ```
+
+## 10. Tareas en Segundo Plano (Celery + Redis)
+
+Para que las subidas de audio no congelen la pantalla, necesitamos esto.
+
+### A. Instalar Redis
+```bash
+sudo apt install redis-server -y
+sudo systemctl enable redis-server
+sudo systemctl start redis-server
+```
+
+### B. Servicio Systemd para Celery
+```bash
+sudo nano /etc/systemd/system/neurobeats-celery.service
+```
+Contenido (Copia y pega):
+```ini
+[Unit]
+Description=Celery Service for NeuroBeats
+After=network.target
+
+[Service]
+Type=forking
+User=root
+Group=www-data
+WorkingDirectory=/var/www/NeuroBeats
+ExecStart=/var/www/NeuroBeats/venv/bin/celery -A config worker --loglevel=info --detach --pidfile=/var/www/NeuroBeats/celery_worker.pid
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+Activar:
+```bash
+sudo systemctl start neurobeats-celery
+sudo systemctl enable neurobeats-celery
+```
+
+### C. Reiniciar todo tras actualizar
+Cuando hagas cambios en el código de tareas (`tasks.py`), corre:
+```bash
+sudo systemctl restart neurobeats-celery
+```
+

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card bg-dark border-secondary p-4 shadow-lg">
+            <h2 class="text-info fw-bold mb-4 text-center">
+                <i class="fas fa-list-music me-2"></i>Nueva Playlist
+            </h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="text-muted small mb-1">Nombre</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="text-muted small mb-1">Descripción</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="form-check mb-4">
+                    {{ form.is_public }}
+                    <label class="form-check-label text-white">¿Hacer pública?</label>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-info fw-bold">Crear Playlist</button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

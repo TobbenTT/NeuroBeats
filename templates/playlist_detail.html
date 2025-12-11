@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-dark rounded p-3 d-flex align-items-center justify-content-center shadow"
+        style="width: 100px; height: 100px;">
+        <i class="fas fa-music text-info fa-3x"></i>
+    </div>
+    <div>
+        <h6 class="text-uppercase text-muted mb-1 small fw-bold">Playlist</h6>
+        <h1 class="fw-bold mb-1 display-5">{{ playlist.name }}</h1>
+        <p class="text-secondary mb-0">Creada por <strong class="text-white">{{ playlist.owner.username }}</strong> • {{
+            playlist.songs.count }} canciones</p>
+    </div>
+</div>
+
+<div class="mb-5">
+    {% if playlist.description %}
+    <p class="text-muted">{{ playlist.description }}</p>
+    {% endif %}
+
+    <button class="btn btn-info rounded-pill px-4 fw-bold me-2">
+        <i class="fas fa-play me-2"></i>Reproducir
+    </button>
+</div>
+
+<!-- Lista de Canciones -->
+<div class="row">
+    {% for song in playlist.songs.all %}
+    {% include 'partials/song_card.html' %}
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <h4 class="text-muted">Aún no hay canciones aquí</h4>
+        <a href="{% url 'home' %}" class="btn btn-outline-info mt-3">Explorar Música</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

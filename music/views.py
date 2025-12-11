@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.conf import settings 
 from .models import Song, Rating, Favorite
 from .forms import SongForm, CommentForm, SongEditForm
-from pydub import AudioSegment
+
 from .analysis import analyze_audio
 import os
 import uuid
@@ -52,63 +52,34 @@ def upload_song(request):
                 if (end_sec - start_sec) > 32: 
                     end_sec = start_sec + 30
                     
-                # 2. PROCESAMIENTO INICIAL: Guardar el archivo subido temporalmente para Pydub
-                filename_temp = uploaded_audio_file.name
+                # 2. GUARDADO TEMPORAL PARA CELERY
+                filename_temp = f"temp_{uuid.uuid4().hex[:8]}_{uploaded_audio_file.name}"
                 temp_path = os.path.join(settings.MEDIA_ROOT, 'temp', filename_temp)
                 os.makedirs(os.path.dirname(temp_path), exist_ok=True)
                 
                 with open(temp_path, 'wb+') as destination:
                     for chunk in uploaded_audio_file.chunks():
                         destination.write(chunk)
-                        
-                audio = AudioSegment.from_file(temp_path)
                 
-                # --- 3. EXPORTAR 2 VERSIONES ---
-                
-                # A) Versión 1: Clip (30s) OPTIMIZADO para preview (128 kbps)
-                cut_audio = audio[int(start_sec * 1000) : int(end_sec * 1000)]
-                clip_filename = f"clip_{uuid.uuid4().hex[:8]}_{uploaded_audio_file.name}"
-                clip_save_path = os.path.join(settings.MEDIA_ROOT, 'tracks', clip_filename)
-                os.makedirs(os.path.dirname(clip_save_path), exist_ok=True)
-                
-                # Exportar clip a 128 kbps (MUY PEQUEÑO)
-                cut_audio.export(clip_save_path, format="mp3", parameters=["-b:a", "128k"]) 
-                
-                # B) Versión 2: Pista Completa (HQ) para streaming (320 kbps)
-                hq_filename = f"hq_{uuid.uuid4().hex[:8]}_{uploaded_audio_file.name}"
-                hq_save_path = os.path.join(settings.MEDIA_ROOT, 'tracks', 'full_hq', hq_filename)
-                os.makedirs(os.path.dirname(hq_save_path), exist_ok=True)
-                
-                # Exportar pista completa a 320 kbps (ALTA CALIDAD)
-                audio.export(hq_save_path, format="mp3", parameters=["-b:a", "320k"])
-                
-                # 4. LIMPIEZA Y GUARDADO
-                os.remove(temp_path)
-                temp_path = None 
-
+                # 3. CREAR OBJETO CANCIÓN (Estado "Procesando")
                 song = form.save(commit=False)
-                song.audio_file = f"tracks/{clip_filename}"             # Clip (30s, 128k)
-                song.full_audio_file = f"tracks/full_hq/{hq_filename}" # Pista Completa (320k)
                 song.uploader = request.user
-                song.save() 
+                song.audio_file = "tracks/processing.mp3" # Placeholder
+                song.full_audio_file = "tracks/processing.mp3" # Placeholder
+                song.save()
                 
-                # 5. ZONA IA (Análisis del archivo CORTADO)
-                file_path_for_ia = song.audio_file.path 
-                bpm, energy = analyze_audio(file_path_for_ia)
-
-                if bpm:
-                    song.bpm = bpm
-                    song.energy = energy
-                    song.save()
+                # 4. LANZAR TAREA SEGUNDO PLANO
+                from .tasks import process_audio_task
+                process_audio_task.delay(song.id, temp_path, start_sec, end_sec)
 
                 check_and_award_badges(request.user)
-                messages.success(request, "¡Canción publicada con calidad dual optimizada!")
+                messages.success(request, "¡Canción recibida! Se está procesando en segundo plano y aparecerá pronto.")
                 
                 return redirect('home')
 
             except Exception as e:
-                print(f"Error fatal durante el procesamiento de audio: {e}")
-                messages.error(request, f"Error al procesar el audio (Verifica FFmpeg/Archivo): {e}")
+                print(f"Error inicial en upload_song: {e}")
+                messages.error(request, f"Ocurrió un error al subir el archivo: {e}")
                 
                 if temp_path and os.path.exists(temp_path):
                     os.remove(temp_path)
@@ -250,3 +221,40 @@ def edit_song(request, song_id):
         form = SongEditForm(instance=song)
 
     return render(request, 'edit_song.html', {'form': form, 'song': song})
+
+# --- PLAYLISTS ---
+from .models import Playlist
+from .forms import PlaylistForm
+
+@login_required
+def create_playlist(request):
+    if request.method == 'POST':
+        form = PlaylistForm(request.POST)
+        if form.is_valid():
+            playlist = form.save(commit=False)
+            playlist.owner = request.user
+            playlist.save()
+            messages.success(request, "Playlist creada con éxito")
+            return redirect('profile')
+    else:
+        form = PlaylistForm()
+    
+    return render(request, 'create_playlist.html', {'form': form})
+
+@login_required
+def playlist_detail(request, playlist_id):
+    playlist = get_object_or_404(Playlist, id=playlist_id)
+    # Seguridad: Si es privada y NO SOY el dueño, bloqueo
+    if not playlist.is_public and request.user != playlist.owner:
+        return redirect('home')
+        
+    return render(request, 'playlist_detail.html', {'playlist': playlist})
+
+@login_required
+def add_to_playlist(request, song_id, playlist_id):
+    song = get_object_or_404(Song, id=song_id)
+    playlist = get_object_or_404(Playlist, id=playlist_id, owner=request.user)
+    
+    playlist.songs.add(song)
+    messages.success(request, f"Añadida a: {playlist.name}")
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
