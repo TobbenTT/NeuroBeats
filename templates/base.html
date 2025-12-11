@@ -396,17 +396,48 @@
         </div>
     </div>
 
+    <div id="neuro-notification-badge"
+        class="position-fixed bg-danger rounded-circle text-white shadow fw-bold d-flex align-items-center justify-content-center"
+        style="bottom: 135px; right: 20px; width: 25px; height: 25px; z-index: 1060; font-size: 0.8em; display: none;">!
+    </div>
+
     <script>
         function toggleChatPopup() {
             const popup = document.getElementById('neuro-chat-popup');
+            const badge = document.getElementById('neuro-notification-badge');
+
             if (popup.style.display === 'none') {
                 popup.style.display = 'block';
                 // Load conversation list if empty or just refreshed
                 htmx.ajax('GET', '{% url "conversations_list" %}', '#chat-popup-content');
+
+                // Hide badge when opening chat
+                if (badge) badge.style.display = 'none';
             } else {
                 popup.style.display = 'none';
             }
         }
+
+        // Notification Socket
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if user.is_authenticated %}
+            const proto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+            const notifySocket = new WebSocket(proto + window.location.host + '/ws/notifications/');
+
+            notifySocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                // Show notification badge
+                const badge = document.getElementById('neuro-notification-badge');
+                if (badge) {
+                    badge.style.display = 'flex';
+                    badge.classList.add('animate__animated', 'animate__bounceIn');
+                }
+
+                // Optional: Play sound or show toast
+                // new Audio('/static/sounds/notification.mp3').play();
+            };
+            {% endif %}
+        });
     </script>
 
     <style>

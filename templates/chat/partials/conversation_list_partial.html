@@ -24,11 +24,12 @@
         <div class="w-100 overflow-hidden">
             <div class="d-flex w-100 justify-content-between">
                 <h6 class="mb-1 text-truncate">{{ participant.username }}</h6>
-                <small class="text-secondary" style="font-size: 0.7em;">{{
-                    conversation.messages.last.timestamp|date:"H:i" }}</small>
+                <small class="text-secondary" style="font-size: 0.7em;">
+                    {{ conversation.last_msg_time|date:"H:i" }}
+                </small>
             </div>
             <p class="mb-0 text-muted small text-truncate">
-                {{ conversation.messages.last.content|default:"Iniciar conversación..." }}
+                {{ conversation.last_msg_content|default:"Iniciar conversación..." }}
             </p>
         </div>
     </a>

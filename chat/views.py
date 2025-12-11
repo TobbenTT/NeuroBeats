@@ -6,9 +6,21 @@ from .models import Conversation
 
 User = get_user_model()
 
+from django.db.models import Max, OuterRef, Subquery
+from .models import Conversation, Message
+
 @login_required
 def conversations_list(request):
-    conversations = request.user.conversations.all().order_by('-created_at')
+    # Subquery to get the last message for each conversation
+    last_message_subquery = Message.objects.filter(
+        conversation=OuterRef('pk')
+    ).order_by('-timestamp')
+
+    conversations = request.user.conversations.annotate(
+        last_msg_content=Subquery(last_message_subquery.values('content')[:1]),
+        last_msg_time=Subquery(last_message_subquery.values('timestamp')[:1])
+    ).order_by('-last_msg_time')
+    
     template = 'chat/partials/conversation_list_partial.html' if request.headers.get('HX-Request') else 'chat/conversations_list.html'
     return render(request, template, {'conversations': conversations})
 
