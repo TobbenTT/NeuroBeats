@@ -35,6 +35,9 @@ class Profile(models.Model):
 
 # --- NUEVO: PERFIL PRIVADO ---
     is_private = models.BooleanField(default=False, verbose_name="Perfil Privado")
+    
+    # Campo para rastrear la última actividad
+    last_activity = models.DateTimeField(null=True, blank=True, verbose_name="Última Actividad")
 
     def __str__(self):
         return f'Perfil de {self.user.username}'

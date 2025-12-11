@@ -120,27 +120,7 @@
     </div>
 </div>
 
-<script>
-    // Likes AJAX (CORREGIDO)
-    const favButtons = document.querySelectorAll('.btn-favorite');
-    favButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const songId = this.dataset.id;
-            const icon = this.querySelector('i');
 
-            // CORRECCIÓN: Hacemos remove y add en líneas separadas
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far'); // Línea separada
-                icon.classList.add('fas');    // Línea separada
-            } else {
-                icon.classList.remove('fas'); // Línea separada
-                icon.classList.add('far');    // Línea separada
-            }
-
-            fetch(`/favorite/${songId}/`).then(r => r.json());
-        }); // 1. Cierra el click
-    }); // 2. Cierra el forEach
-</script>
 {% endblock %}
 {% block page_scripts %}
 {{ block.super }}
