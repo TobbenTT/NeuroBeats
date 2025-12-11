@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-white">Mis Conversaciones</h2>
+
+    <div class="list-group">
+        {% for conversation in conversations %}
+        {% for participant in conversation.participants.all %}
+        {% if participant != request.user %}
+        <a href="{% url 'conversation_detail' conversation.id %}"
+            class="list-group-item list-group-item-action bg-dark text-white border-secondary mb-2 rounded d-flex align-items-center">
+            {% if participant.profile.avatar %}
+            <img src="{{ participant.profile.avatar.url }}" class="rounded-circle me-3" width="50" height="50"
+                style="object-fit: cover;">
+            {% else %}
+            <div class="rounded-circle me-3 bg-secondary d-flex justify-content-center align-items-center"
+                style="width: 50px; height: 50px;">
+                <i class="fas fa-user"></i>
+            </div>
+            {% endif %}
+
+            <div class="w-100">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ participant.username }}</h5>
+                    <small class="text-muted">{{ conversation.messages.last.timestamp|date:"H:i" }}</small>
+                </div>
+                <p class="mb-1 text-truncate" style="max-width: 80%;">
+                    {{ conversation.messages.last.content|default:"Iniciar conversación..." }}
+                </p>
+            </div>
+        </a>
+        {% endif %}
+        {% endfor %}
+        {% empty %}
+        <div class="alert alert-dark text-center">
+            No tienes conversaciones activas. ¡Visita el perfil de alguien para enviar un mensaje!
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

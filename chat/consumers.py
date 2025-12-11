@@ -9,9 +9,18 @@ User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = 'public_chat' # Sala global por ahora
-        self.room_group_name = f'chat_{self.room_name}'
+        self.conversation_id = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f'chat_{self.conversation_id}'
         self.user = self.scope["user"]
+
+        if not self.user.is_authenticated:
+            await self.close()
+            return
+
+        # Verificar si el usuario pertenece a la conversación
+        if not await self.can_access_conversation(self.conversation_id, self.user):
+            await self.close()
+            return
 
         # Unirse a la sala
         await self.channel_layer.group_add(
@@ -21,36 +30,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        if self.user.is_authenticated:
-            # Marcar como Online en Redis (o memoria temporal)
-            # En producción, usaríamos Redis directamente. Aquí, simulamos boradcast.
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'user_status',
-                    'user_id': self.user.id,
-                    'username': self.user.username,
-                    'status': 'online'
-                }
-            )
-
     async def disconnect(self, close_code):
         # Salir de la sala
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-        
-        if self.user.is_authenticated:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'user_status',
-                    'user_id': self.user.id,
-                    'username': self.user.username,
-                    'status': 'offline'
-                }
-            )
 
     # Recibir mensaje del WebSocket
     async def receive(self, text_data):
@@ -61,8 +46,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         if message:
-            # Guardar mensaje (placeholder: en este MVP es chat público efímero o persistente simple)
-            # await self.save_message(message) 
+            # Guardar mensaje en base de datos
+            await self.save_message(self.conversation_id, self.user, message) 
 
             # Enviar mensaje al grupo
             await self.channel_layer.group_send(
@@ -86,10 +71,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'timestamp': event['timestamp']
         }))
 
-    async def user_status(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'user_status',
-            'user_id': event['user_id'],
-            'username': event['username'],
-            'status': event['status']
-        }))
+    @database_sync_to_async
+    def can_access_conversation(self, conversation_id, user):
+        try:
+            conversation = Conversation.objects.get(id=conversation_id)
+            return conversation.participants.filter(id=user.id).exists()
+        except Conversation.DoesNotExist:
+            return False
+
+    @database_sync_to_async
+    def save_message(self, conversation_id, user, content):
+        conversation = Conversation.objects.get(id=conversation_id)
+        return Message.objects.create(conversation=conversation, sender=user, content=content)

@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -59,6 +59,9 @@ urlpatterns = [
     path('god-mode/dashboard/', admin_dashboard, name='admin_dashboard'),
     path('god-mode/inspect/<int:user_id>/', admin_user_detail, name='admin_user_detail'),
     path('god-mode/edit/<int:user_id>/', admin_edit_user, name='admin_edit_user'),
+    
+    # Chat
+    path('chat/', include('chat.urls')),
 ]
 
 if settings.DEBUG:

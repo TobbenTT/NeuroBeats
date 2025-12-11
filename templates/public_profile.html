@@ -11,29 +11,69 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         background-color: #1a1a1a;
     }
+
     .record {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background-size: cover; background-position: center;
-        border-radius: 50%; border: 8px solid #0a0a0a;
-        box-shadow: inset 0 0 0 3px rgba(255,255,255,0.05), inset 0 0 0 8px rgba(0,0,0,0.4);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        border-radius: 50%;
+        border: 8px solid #0a0a0a;
+        box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.05), inset 0 0 0 8px rgba(0, 0, 0, 0.4);
         transition: transform 0.5s ease-out;
     }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .record.spinning { animation: spin 5s linear infinite; }
-    
-    .play-btn-center {
-        position: absolute; top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: 45px; height: 45px;
-        background-color: rgba(124, 77, 255, 0.9);
-        border-radius: 50%; border: none; color: white;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; z-index: 10; transition: all 0.2s;
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
     }
-    .play-btn-center:hover { transform: translate(-50%, -50%) scale(1.1); background-color: #7c4dff; }
+
+    .record.spinning {
+        animation: spin 5s linear infinite;
+    }
+
+    .play-btn-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 45px;
+        height: 45px;
+        background-color: rgba(124, 77, 255, 0.9);
+        border-radius: 50%;
+        border: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.2s;
+    }
+
+    .play-btn-center:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+        background-color: #7c4dff;
+    }
+
     .center-hole {
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 12px; height: 12px; background-color: #0a0a0a; border-radius: 50%; z-index: 5;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        background-color: #0a0a0a;
+        border-radius: 50%;
+        z-index: 5;
     }
 </style>
 
@@ -41,12 +81,13 @@
     <div class="col-md-4 mb-4">
         <div class="card text-center p-4 bg-dark border-secondary position-sticky" style="top: 20px;">
             <div class="mb-3 position-relative d-inline-block">
-                <img src="{{ profile_user.profile.avatar.url }}" class="rounded-circle border border-3 border-neuro" width="150" height="150" style="object-fit: cover; border-color: #7c4dff;">
+                <img src="{{ profile_user.profile.avatar.url }}" class="rounded-circle border border-3 border-neuro"
+                    width="150" height="150" style="object-fit: cover; border-color: #7c4dff;">
             </div>
-            
+
             <h3 class="fw-bold text-white">{{ profile_user.username }}</h3>
             <p class="text-secondary small">{{ profile_user.profile.bio|default:"Amante de la música." }}</p>
-            
+
             <div class="d-flex justify-content-center gap-4 my-3 text-white">
                 <div class="text-center">
                     <h5 class="mb-0 fw-bold" id="followers-count">{{ profile_user.profile.followed_by.count }}</h5>
@@ -59,86 +100,90 @@
             </div>
 
             {% if user.is_authenticated %}
-                <button id="btn-follow" 
-                        class="btn w-100 fw-bold {% if is_following %}btn-outline-secondary{% else %}btn-neuro{% endif %}"
-                        data-id="{{ profile_user.id }}">
-                    {% if is_following %}Dejar de Seguir{% else %}Seguir{% endif %}
-                </button>
+            <button id="btn-follow"
+                class="btn w-100 fw-bold {% if is_following %}btn-outline-secondary{% else %}btn-neuro{% endif %}"
+                data-id="{{ profile_user.id }}">
+                {% if is_following %}Dejar de Seguir{% else %}Seguir{% endif %}
+            </button>
+            <a href="{% url 'start_chat' profile_user.id %}" class="btn btn-outline-light w-100 fw-bold mt-2">
+                <i class="fas fa-comment-alt me-2"></i> Enviar Mensaje
+            </a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline-light w-100">Inicia sesión para seguir</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light w-100">Inicia sesión para seguir</a>
             {% endif %}
-            
+
             <hr class="border-secondary mt-4">
-            
+
             <h6 class="text-start mb-3 text-uppercase text-muted small">Insignias</h6>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
                 {% for badge in profile_user.profile.badges.all %}
-                    <span class="badge bg-warning text-dark" title="{{ badge.description }}">
-                        <i class="{{ badge.icon_name }} me-1"></i> {{ badge.name }}
-                    </span>
+                <span class="badge bg-warning text-dark" title="{{ badge.description }}">
+                    <i class="{{ badge.icon_name }} me-1"></i> {{ badge.name }}
+                </span>
                 {% empty %}
-                    <small class="text-muted fst-italic">Sin insignias aún.</small>
+                <small class="text-muted fst-italic">Sin insignias aún.</small>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-<div class="col-md-8">
-        
-        {% if is_locked %}
-            <div class="text-center py-5 mt-4 border border-secondary rounded-3 bg-dark bg-opacity-50">
-                <i class="fas fa-lock fa-4x text-secondary mb-3"></i>
-                <h3 class="fw-bold text-white">Esta cuenta es privada</h3>
-                <p class="text-muted">Sigue a este usuario para ver sus canciones.</p>
-            </div>
-        {% else %}
-            
-            <h3 class="mb-4 border-bottom pb-2 border-secondary text-white">
-                <i class="fas fa-compact-disc me-2"></i> Discografía
-            </h3>
-            
-            <div class="row">
-                {% for song in songs %}
-                    {% include 'partials/song_card.html' %}
-                {% empty %}
-                    <div class="col-12 alert alert-dark text-center">
-                        Este usuario aún no ha subido música.
-                    </div>
-                {% endfor %}
-            </div>
+    <div class="col-md-8">
 
-        {% endif %} </div>
+        {% if is_locked %}
+        <div class="text-center py-5 mt-4 border border-secondary rounded-3 bg-dark bg-opacity-50">
+            <i class="fas fa-lock fa-4x text-secondary mb-3"></i>
+            <h3 class="fw-bold text-white">Esta cuenta es privada</h3>
+            <p class="text-muted">Sigue a este usuario para ver sus canciones.</p>
+        </div>
+        {% else %}
+
+        <h3 class="mb-4 border-bottom pb-2 border-secondary text-white">
+            <i class="fas fa-compact-disc me-2"></i> Discografía
+        </h3>
+
+        <div class="row">
+            {% for song in songs %}
+            {% include 'partials/song_card.html' %}
+            {% empty %}
+            <div class="col-12 alert alert-dark text-center">
+                Este usuario aún no ha subido música.
+            </div>
+            {% endfor %}
+        </div>
+
+        {% endif %}
     </div>
+</div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // 1. Lógica de Seguir (ESTO SE QUEDA)
         const btnFollow = document.getElementById('btn-follow');
         const counter = document.getElementById('followers-count');
-        if(btnFollow){
-            btnFollow.addEventListener('click', function() {
+        if (btnFollow) {
+            btnFollow.addEventListener('click', function () {
                 const userId = this.dataset.id;
                 fetch(`/follow/${userId}/`)
-                .then(r => r.json())
-                .then(data => {
-                    if(data.following) {
-                        this.textContent = "Dejar de Seguir";
-                        this.classList.remove('btn-neuro');
-                        this.classList.add('btn-outline-secondary');
-                    } else {
-                        this.textContent = "Seguir";
-                        this.classList.remove('btn-outline-secondary');
-                        this.classList.add('btn-neuro');
-                    }
-                    counter.textContent = data.followers_count;
-                });
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.following) {
+                            this.textContent = "Dejar de Seguir";
+                            this.classList.remove('btn-neuro');
+                            this.classList.add('btn-outline-secondary');
+                        } else {
+                            this.textContent = "Seguir";
+                            this.classList.remove('btn-outline-secondary');
+                            this.classList.add('btn-neuro');
+                        }
+                        counter.textContent = data.followers_count;
+                    });
             });
         }
 
         // 2. Lógica de Likes (ESTO SE QUEDA)
         const favButtons = document.querySelectorAll('.btn-favorite');
         favButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const songId = this.dataset.id;
                 const icon = this.querySelector('i');
                 if (icon.classList.contains('far')) icon.classList.remove('far').add('fas');
