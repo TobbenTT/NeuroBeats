@@ -32,9 +32,17 @@
             <div class="p-2 rounded {% if message.sender == request.user %}bg-primary text-white{% else %}bg-secondary text-light{% endif %}"
                 style="max-width: 75%; font-size: 0.9em; border-radius: 12px;">
                 <p class="mb-0">{{ message.content }}</p>
-                <small class="d-block text-end opacity-50" style="font-size: 0.7em; margin-top: 2px;">
-                    {{ message.timestamp|date:"H:i" }}
-                </small>
+                <div class="d-flex justify-content-end align-items-center"
+                    style="opacity: 0.7; font-size: 0.7em; margin-top: 2px;">
+                    <small class="me-1">{{ message.timestamp|date:"H:i" }}</small>
+                    {% if message.sender == request.user %}
+                    {% if message.is_read %}
+                    <i class="fas fa-check-double text-info msg-status-icon"></i>
+                    {% else %}
+                    <i class="fas fa-check msg-status-icon"></i>
+                    {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endfor %}
@@ -54,9 +62,7 @@
 
 <script>
     (function () {
-        // Cleaning previous socket if exists
         if (window.currentChatSocket) {
-            console.log("Closing previous socket");
             window.currentChatSocket.close();
         }
 
@@ -70,22 +76,54 @@
         const chatLog = document.getElementById('chat-popup-log');
         chatLog.scrollTop = chatLog.scrollHeight;
 
+        window.currentChatSocket.onopen = function (e) {
+            // Cuando abro el chat, marco todo como leído inmediatamente
+            window.currentChatSocket.send(JSON.stringify({
+                'type': 'mark_read'
+            }));
+        };
+
         window.currentChatSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
+
+            if (data.type === 'messages_read') {
+                // Si alguien leyó mis mensajes, cambio mis iconos a doble check azul
+                // (Solo si el que leyó no soy yo mismo, aunque el backend ya filtra)
+                if (data.reader_id != "{{ request.user.id }}") {
+                    const icons = document.querySelectorAll('.msg-status-icon');
+                    icons.forEach(icon => {
+                        icon.classList.remove('fa-check');
+                        icon.classList.add('fa-check-double', 'text-info');
+                    });
+                }
+                return;
+            }
+
             const message = data.message;
             const sender = data.username;
             const isMe = sender === "{{ request.user.username }}";
 
+            // Si recibo mensaje de OTRO y tengo el chat abierto, marco visto
+            if (!isMe) {
+                window.currentChatSocket.send(JSON.stringify({
+                    'type': 'mark_read'
+                }));
+            }
+
             const msgDiv = document.createElement('div');
             msgDiv.className = `d-flex mb-2 ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
+
+            // Icon logic for new message
+            const statusIcon = isMe ? '<i class="fas fa-check msg-status-icon"></i>' : '';
 
             msgDiv.innerHTML = `
                 <div class="p-2 rounded ${isMe ? 'bg-primary text-white' : 'bg-secondary text-light'}" 
                      style="max-width: 75%; font-size: 0.9em; border-radius: 12px;">
                     <p class="mb-0">${message}</p>
-                    <small class="d-block text-end opacity-50" style="font-size: 0.7em; margin-top: 2px;">
-                        ${data.timestamp}
-                    </small>
+                    <div class="d-flex justify-content-end align-items-center" style="opacity: 0.7; font-size: 0.7em; margin-top: 2px;">
+                        <small class="me-1">${data.timestamp}</small>
+                        ${statusIcon}
+                    </div>
                 </div>
             `;
 
@@ -96,17 +134,15 @@
         const inputDom = document.getElementById('popup-chat-input');
         const submitBtn = document.getElementById('popup-chat-submit');
 
-        // Handle Enter key
         inputDom.onkeyup = function (e) {
-            if (e.keyCode === 13) {
-                submitBtn.click();
-            }
+            if (e.keyCode === 13) submitBtn.click();
         };
 
         submitBtn.onclick = function (e) {
             const message = inputDom.value;
             if (message.trim() !== "") {
                 window.currentChatSocket.send(JSON.stringify({
+                    'type': 'chat_message', // Specify type explicitly
                     'message': message
                 }));
                 inputDom.value = '';
