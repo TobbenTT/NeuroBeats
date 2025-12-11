@@ -443,6 +443,14 @@
                 // We only show badge if the user is NOT looking at the chat
                 const userIsViewingChat = isChatPage || isPopupOpen;
 
+                console.log("--- NOTIFICATION DEBUG ---");
+                console.log("Msg URL:", data.url);
+                console.log("Current Path:", currentPath);
+                console.log("Is Chat Page?", isChatPage);
+                console.log("Popup Display Style:", popup ? popup.style.display : 'N/A');
+                console.log("Is Popup Open?", isPopupOpen);
+                console.log("Should Show Badge?", !userIsViewingChat);
+
                 if (!userIsViewingChat && badge) {
                     badge.style.display = 'flex';
                     badge.classList.add('animate__animated', 'animate__bounceIn');
