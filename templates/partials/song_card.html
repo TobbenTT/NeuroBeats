@@ -1,16 +1,13 @@
-<div class="col-md-3 col-sm-6 mb-5">
+<div class="col-6 col-md-4 col-lg-3 mb-4">
     <div class="d-flex flex-column align-items-center">
-        
+
         <div class="record-player-container mb-3 shadow-lg">
-            <div class="record" id="record-{{ song.id }}" style="background-image: url('{{ song.cover_image.url }}');"></div>
+            <div class="record" id="record-{{ song.id }}" style="background-image: url('{{ song.cover_image.url }}');">
+            </div>
             <div class="center-hole"></div>
 
-            <button class="play-btn-center" 
-                data-song-id="{{ song.id }}"
-                data-url="{{ song.audio_file.url }}"
-                data-title="{{ song.title }}"
-                data-artist="{{ song.artist }}"
-                data-cover="{{ song.cover_image.url }}">
+            <button class="play-btn-center" data-song-id="{{ song.id }}" data-url="{{ song.audio_file.url }}"
+                data-title="{{ song.title }}" data-artist="{{ song.artist }}" data-cover="{{ song.cover_image.url }}">
                 <i class="fas fa-play"></i>
             </button>
         </div>
@@ -20,45 +17,50 @@
                 <h5 class="fw-bold text-truncate mb-1 hover-link" title="{{ song.title }}">{{ song.title }}</h5>
             </a>
             <p class="text-secondary small mb-2">{{ song.artist }}</p>
-            
+
             <div class="d-flex justify-content-center align-items-center mb-3 gap-2">
-                
-                <div class="rating-display d-flex align-items-center text-warning" style="font-size: 0.85rem; z-index: 1;">
+
+                <div class="rating-display d-flex align-items-center text-warning"
+                    style="font-size: 0.85rem; z-index: 1;">
                     {% with avg=song.average_rating %}
-                        {% for i in "12345"|make_list %}
-                            {# CORRECCIÓN: Se añade |add:0 al final del promedio para asegurar la comparación numérica y dibujar estrellas llenas #}
-                            {% if i|add:"0" <= avg|floatformat:0|add:0 %}
-                                <i class="fas fa-star me-1"></i> {% else %}
-                                <i class="far fa-star text-muted opacity-50 me-1"></i> {% endif %}
+                    {% for i in "12345"|make_list %}
+                    {# CORRECCIÓN: Se añade |add:0 al final del promedio para asegurar la comparación numérica y dibujar
+                    estrellas llenas #}
+                    {% if i|add:"0" <= avg|floatformat:0|add:0 %} <i class="fas fa-star me-1"></i> {% else %}
+                        <i class="far fa-star text-muted opacity-50 me-1"></i> {% endif %}
                         {% endfor %}
                         <span class="text-white small ms-1" style="font-size: 0.75rem;">({{ avg }})</span>
-                    {% endwith %}
+                        {% endwith %}
                 </div>
-                
-                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0 ms-2" data-id="{{ song.id }}" style="width: 30px; height: 30px;">
+
+                <button class="btn btn-sm rounded-circle btn-favorite p-0 border-0 ms-2" data-id="{{ song.id }}"
+                    style="width: 30px; height: 30px;">
                     {% if song.id in liked_songs_ids %}
-                        <i class="fas fa-heart text-danger fs-6"></i>
+                    <i class="fas fa-heart text-danger fs-6"></i>
                     {% else %}
-                        <i class="far fa-heart text-danger fs-6"></i>
+                    <i class="far fa-heart text-danger fs-6"></i>
                     {% endif %}
                 </button>
             </div>
-            
+
             <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
-                <span class="badge bg-dark border border-secondary rounded-pill text-light" style="padding: 0.4em 0.8em;">
+                <span class="badge bg-dark border border-secondary rounded-pill text-light"
+                    style="padding: 0.4em 0.8em;">
                     {{ song.genre.name }}
                 </span>
-                
+
                 {% if song.bpm %}
-                    <span class="badge bg-black border border-info text-info fw-bold" title="Velocidad detectada por IA" style="padding: 0.4em 0.8em;">
-                        <i class="fas fa-tachometer-alt me-1"></i>{{ song.bpm }}
-                    </span>
+                <span class="badge bg-black border border-info text-info fw-bold" title="Velocidad detectada por IA"
+                    style="padding: 0.4em 0.8em;">
+                    <i class="fas fa-tachometer-alt me-1"></i>{{ song.bpm }}
+                </span>
                 {% endif %}
             </div>
 
             <p class="text-muted small mb-0" style="font-size: 0.8rem;">
-                Subido por: 
-                <a href="{% url 'public_profile' song.uploader.username %}" class="text-decoration-none text-info fw-bold hover-link">
+                Subido por:
+                <a href="{% url 'public_profile' song.uploader.username %}"
+                    class="text-decoration-none text-info fw-bold hover-link">
                     {{ song.uploader.username }}
                 </a>
             </p>

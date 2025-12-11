@@ -295,7 +295,8 @@
                         <ul class="dropdown-menu dropdown-menu-dark shadow w-100 text-center text-md-start">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">👤 Mi Perfil</a></li>
                             {% if user.is_staff %}
-                            <li><a class="dropdown-item text-warning" href="{% url 'admin_dashboard' %}">⚡ God Mode</a></li>
+                            <li><a class="dropdown-item text-warning" href="{% url 'admin_dashboard' %}">⚡ God Mode</a>
+                            </li>
                             {% endif %}
                             <li>
                                 <hr class="dropdown-divider">
@@ -310,7 +311,8 @@
             </div>
         </div>
     </nav>
-    <div style="margin-top: 80px;"></div>
+    <div class="mt-5 pt-4 d-md-none"></div> <!-- Espaciador Móvil -->
+    <div class="d-none d-md-block" style="margin-top: 80px;"></div> <!-- Espaciador Desktop -->
 
     <div class="container py-4">
         {% block content %}
@@ -321,7 +323,7 @@
         <div class="container-fluid">
             <div class="row align-items-center">
 
-                <div class="col-md-3 col-4 d-flex align-items-center gap-3">
+                <div class="col-md-3 col-8 d-flex align-items-center gap-3">
                     <img id="master-cover" src="" class="rounded" width="50" height="50"
                         style="object-fit: cover; display: none;">
                     <div class="overflow-hidden">
@@ -333,7 +335,7 @@
                 <div class="col-md-6 col-4 position-relative">
                     <div class="d-flex flex-column align-items-center">
 
-                        <canvas id="audio-visualizer" width="400" height="40" class="mb-1"
+                        <canvas id="audio-visualizer" width="400" height="40" class="mb-1 d-none d-md-block"
                             style="width: 100%; max-width: 400px; height: 40px;"></canvas>
 
                         <div class="d-flex align-items-center gap-4 mb-1">
@@ -361,7 +363,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 col-4 d-flex justify-content-end align-items-center">
+                <div class="col-md-3 d-none d-md-flex justify-content-end align-items-center">
                     <i class="fas fa-volume-up text-secondary me-2"></i>
                     <input type="range" class="form-range" style="width: 80px;" id="volume-slider" min="0" max="1"
                         step="0.1" value="1">
@@ -382,7 +384,7 @@
     </style>
 
     <div class="offcanvas offcanvas-end bg-black" tabindex="-1" id="djAnitaPanel" hx-preserve
-        style="width: 380px; border-left: 2px solid #0dcaf0;">
+        style="width: 380px; max-width: 85vw; border-left: 2px solid #0dcaf0;">
 
         <div class="offcanvas-header border-bottom border-secondary p-4" style="background: #0a0a0a;">
             <h4 class="offcanvas-title fw-bold neon-text-info m-0 d-flex align-items-center">
