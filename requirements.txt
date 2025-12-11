@@ -46,4 +46,6 @@ celery>=5.3.6
 redis>=5.0.1
 channels[daphne]>=4.0.0
 channels_redis>=4.1.0
+librosa>=0.10.0
+numpy>=1.23.0
 
