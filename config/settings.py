@@ -40,7 +40,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne', # Debe ser la PRIMERA app para interceptar ASGI
+    'daphne', # Debe ser la PRIMERA app para interceptar ASGI (Force Update)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
