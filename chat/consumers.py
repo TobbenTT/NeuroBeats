@@ -120,6 +120,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         conversation = Conversation.objects.get(id=conversation_id)
         return list(conversation.participants.exclude(id=user_id).values_list('id', flat=True))
 
+    @database_sync_to_async
+    def get_user_avatar(self, user):
+        if hasattr(user, 'profile') and user.profile.avatar:
+            return user.profile.avatar.url
+        return '/static/img/default.jpg' # Fallback URL
+
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
