@@ -55,6 +55,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # Guardar mensaje en base de datos
                 saved_msg = await self.save_message(self.conversation_id, self.user, message) 
 
+                # Safe Avatar Access
+                avatar_url = await self.get_user_avatar(self.user)
+
                 # Enviar mensaje al grupo (LIVE CHAT)
                 print(f"DEBUG: Sending to group {self.room_group_name}")
                 await self.channel_layer.group_send(
@@ -63,7 +66,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'chat_message',
                         'message': message,
                         'username': self.user.username,
-                        'avatar_url': self.user.profile.avatar.url if hasattr(self.user, 'profile') else '',
+                        'avatar_url': avatar_url,
                         'timestamp': saved_msg.timestamp.strftime("%H:%M"),
                         'message_id': saved_msg.id,
                         'sender_id': self.user.id
