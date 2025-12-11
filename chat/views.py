@@ -16,7 +16,9 @@ def conversations_list(request):
         conversation=OuterRef('pk')
     ).order_by('-timestamp')
 
-    conversations = request.user.conversations.annotate(
+    conversations = request.user.conversations.exclude(
+        hidden_by=request.user
+    ).annotate(
         last_msg_content=Subquery(last_message_subquery.values('content')[:1]),
         last_msg_time=Subquery(last_message_subquery.values('timestamp')[:1])
     ).order_by('-last_msg_time')
@@ -54,6 +56,9 @@ def start_chat(request, user_id):
     
     if conversations.exists():
         conversation = conversations.first()
+        # Revive conversation if hidden
+        if request.user in conversation.hidden_by.all():
+            conversation.hidden_by.remove(request.user)
     else:
         # Create new conversation
         conversation = Conversation.objects.create()
@@ -75,9 +80,10 @@ def leave_conversation(request, conversation_id):
     if request.method == 'POST':
         conversation = get_object_or_404(Conversation, id=conversation_id)
         if request.user in conversation.participants.all():
-            conversation.participants.remove(request.user)
-            # Remove chat from user logic
-            # If HTMX, return the updated list
+            # SOFT DELETE: Only hide it for this user
+            conversation.hidden_by.add(request.user)
+            
+            # If HTMX, return the conversations list to swap the content
             if request.headers.get('HX-Request'):
                  return conversations_list(request)
                  

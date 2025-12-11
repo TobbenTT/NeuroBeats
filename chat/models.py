@@ -3,6 +3,7 @@ from django.conf import settings
 
 class Conversation(models.Model):
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='conversations')
+    hidden_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='hidden_conversations', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
