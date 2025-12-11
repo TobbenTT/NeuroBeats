@@ -426,15 +426,17 @@
 
             notifySocket.onmessage = function (e) {
                 const data = JSON.parse(e.data);
-                // Show notification badge
+                // Show notification badge ONLY if popup is closed
                 const badge = document.getElementById('neuro-notification-badge');
-                if (badge) {
+                const popup = document.getElementById('neuro-chat-popup');
+
+                if (badge && popup && popup.style.display === 'none') {
                     badge.style.display = 'flex';
                     badge.classList.add('animate__animated', 'animate__bounceIn');
-                }
 
-                // Optional: Play sound or show toast
-                // new Audio('/static/sounds/notification.mp3').play();
+                    // Optional sound
+                    // new Audio('/static/sounds/notification.mp3').play();
+                }
             };
             {% endif %}
         });
