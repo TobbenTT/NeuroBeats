@@ -426,15 +426,26 @@
 
             notifySocket.onmessage = function (e) {
                 const data = JSON.parse(e.data);
-                // Show notification badge ONLY if popup is closed
                 const badge = document.getElementById('neuro-notification-badge');
+
+                // --- SMART BADGE LOGIC ---
                 const popup = document.getElementById('neuro-chat-popup');
 
-                if (badge && popup && popup.style.display === 'none') {
+                // 1. If Popup is OPEN (and presumably user is focused on it)
+                const isPopupOpen = popup && (popup.style.display === 'block' || popup.style.display === '');
+
+                // 2. If Current Page is the chat (Full Screen)
+                // Notification URL looks like: /chat/15/
+                const currentPath = window.location.pathname;
+                // Normalize slashes for comparison
+                const isChatPage = (currentPath.replace(/\/$/, "") === data.url.replace(/\/$/, ""));
+
+                // We only show badge if the user is NOT looking at the chat
+                const userIsViewingChat = isChatPage || isPopupOpen;
+
+                if (!userIsViewingChat && badge) {
                     badge.style.display = 'flex';
                     badge.classList.add('animate__animated', 'animate__bounceIn');
-
-                    // Optional sound
                     // new Audio('/static/sounds/notification.mp3').play();
                 }
             };
