@@ -62,14 +62,39 @@ def process_audio_task(song_id, temp_file_path, start_sec, end_sec):
         return f"Successfully processed song {song_id}"
 
     except Exception as e:
-        # En caso de error, intentamos limpiar y registrar
         import traceback
-        traceback.print_exc() # Print full stack trace to console
+        traceback.print_exc()
         print(f"CRITICAL ERROR processing song {song_id}: {e}")
         
-        # Self-heal: If processing fails, at least point to the placeholder so it doesn't 404
-        # (Already handled by views.py logic, but we could enforce it here too)
-        
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+        # --- FALLBACK: SI FALLA EL PROCESAMIENTO, USAR ARCHIVO ORIGINAL ---
+        try:
+            if os.path.exists(temp_file_path):
+                song = Song.objects.get(id=song_id)
+                # Usar extensión original si falla la conversión
+                original_ext = os.path.splitext(temp_file_path)[1]
+                fallback_filename = f"fallback_{uuid.uuid4().hex[:8]}{original_ext}"
+                
+                # Guardar en 'full_hq' como destino final
+                dest_path = os.path.join(settings.MEDIA_ROOT, 'tracks', 'full_hq', fallback_filename)
+                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                
+                import shutil
+                shutil.copy(temp_file_path, dest_path)
+                
+                # Actualizar Song para apuntar al archivo original
+                # Usamos el mismo archivo para clip y full (mejor que nada)
+                rel_path = f"tracks/full_hq/{fallback_filename}"
+                song.audio_file = rel_path      
+                song.full_audio_file = rel_path
+                song.save()
+                
+                print(f"Fallback applied: Used original file for {song_id}")
+                
+                # Cleanup
+                os.remove(temp_file_path)
+        except Exception as fallback_e:
+            print(f"Fallback failed: {fallback_e}")
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+                
         return f"Error: {e}"
