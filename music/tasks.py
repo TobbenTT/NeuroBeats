@@ -63,7 +63,13 @@ def process_audio_task(song_id, temp_file_path, start_sec, end_sec):
 
     except Exception as e:
         # En caso de error, intentamos limpiar y registrar
-        print(f"Error processing song {song_id}: {e}")
+        import traceback
+        traceback.print_exc() # Print full stack trace to console
+        print(f"CRITICAL ERROR processing song {song_id}: {e}")
+        
+        # Self-heal: If processing fails, at least point to the placeholder so it doesn't 404
+        # (Already handled by views.py logic, but we could enforce it here too)
+        
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
         return f"Error: {e}"
