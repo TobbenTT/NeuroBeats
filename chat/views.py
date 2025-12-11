@@ -76,6 +76,20 @@ def leave_conversation(request, conversation_id):
         conversation = get_object_or_404(Conversation, id=conversation_id)
         if request.user in conversation.participants.all():
             conversation.participants.remove(request.user)
+            # Remove chat from user logic
+            # If HTMX, return the updated list
+            if request.headers.get('HX-Request'):
+                 return conversations_list(request)
+                 
+        return redirect('conversations_list')
+    return redirect('conversations_list')
+
+@login_required
+def leave_conversation(request, conversation_id):
+    if request.method == 'POST':
+        conversation = get_object_or_404(Conversation, id=conversation_id)
+        if request.user in conversation.participants.all():
+            conversation.participants.remove(request.user)
             # Optional: If no participants left, delete the conversation?
             # if conversation.participants.count() == 0:
             #     conversation.delete()
