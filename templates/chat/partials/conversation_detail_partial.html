@@ -145,13 +145,22 @@
         };
 
         submitBtn.onclick = function (e) {
+            e.preventDefault(); // Ensure no form submit
             const message = inputDom.value;
+            console.log("Send button clicked. Message:", message);
+
             if (message.trim() !== "") {
-                window.currentChatSocket.send(JSON.stringify({
-                    'type': 'chat_message', // Specify type explicitly
-                    'message': message
-                }));
-                inputDom.value = '';
+                if (window.currentChatSocket && window.currentChatSocket.readyState === WebSocket.OPEN) {
+                    window.currentChatSocket.send(JSON.stringify({
+                        'type': 'chat_message',
+                        'message': message
+                    }));
+                    inputDom.value = '';
+                    console.log("Message sent to socket");
+                } else {
+                    console.error("Socket not open. State:", window.currentChatSocket ? window.currentChatSocket.readyState : 'NULL');
+                    alert("Error de conexión. Intenta recargar el chat.");
+                }
             }
         };
     })();

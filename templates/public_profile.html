@@ -105,7 +105,7 @@
                 data-id="{{ profile_user.id }}">
                 {% if is_following %}Dejar de Seguir{% else %}Seguir{% endif %}
             </button>
-            <button onclick="toggleChatPopup()" hx-get="{% url 'start_chat' profile_user.id %}"
+            <button onclick="openChatPopup()" hx-get="{% url 'start_chat' profile_user.id %}"
                 hx-target="#chat-popup-content" class="btn btn-outline-light w-100 fw-bold mt-2">
                 <i class="fas fa-comment-alt me-2"></i> Enviar Mensaje
             </button>

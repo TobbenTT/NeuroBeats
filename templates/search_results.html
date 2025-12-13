@@ -179,7 +179,7 @@
                     <h5 class="fw-bold text-white text-truncate mb-1">{{ u.username }}</h5>
                     <p class="small text-secondary mb-3">{{ u.uploaded_songs.count }} canciones</p>
 
-                    <button onclick="toggleChatPopup()" hx-get="{% url 'start_chat' u.id %}"
+                    <button onclick="openChatPopup()" hx-get="{% url 'start_chat' u.id %}"
                         hx-target="#chat-popup-content" class="btn btn-sm btn-neuro w-100 rounded-pill fw-bold mb-2">
                         <i class="fas fa-comment-alt me-1"></i> Enviar Mensaje
                     </button>

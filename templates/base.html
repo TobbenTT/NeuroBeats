@@ -402,20 +402,30 @@
     </div>
 
     <script>
-        function toggleChatPopup() {
+        function toggleChatPopup(loadDefault = true) {
             const popup = document.getElementById('neuro-chat-popup');
             const badge = document.getElementById('neuro-notification-badge');
 
             if (popup.style.display === 'none') {
                 popup.style.display = 'block';
-                // Load conversation list if empty or just refreshed
-                htmx.ajax('GET', '{% url "conversations_list" %}', '#chat-popup-content');
+
+                // Only load conversation list if requested (avoid racing with HTMX buttons)
+                if (loadDefault) {
+                    htmx.ajax('GET', '{% url "conversations_list" %}', '#chat-popup-content');
+                }
 
                 // Hide badge when opening chat
                 if (badge) badge.style.display = 'none';
             } else {
+                // If it's open and we just want to ensure it's open (e.g. from search), do nothing
+                if (!loadDefault) return;
                 popup.style.display = 'none';
             }
+        }
+
+        // Helper specifically for "Send Message" buttons that provide their own content via HTMX
+        function openChatPopup() {
+            toggleChatPopup(false);
         }
 
         // Notification Socket
