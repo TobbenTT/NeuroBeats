@@ -59,7 +59,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 avatar_url = await self.get_user_avatar(self.user)
 
                 # Enviar mensaje al grupo (LIVE CHAT)
-                print(f"DEBUG: Sending to group {self.room_group_name}")
+                print(f"DEBUG: ChatConsumer - Sending to group {self.room_group_name}")
+                print(f"DEBUG: ChatConsumer - Sender ID: {self.user.id}, Username: {self.user.username}")
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -76,9 +77,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 
                 # Notification Logic
                 other_participants = await self.get_other_participants(self.conversation_id, self.user.id)
+                print(f"DEBUG: ChatConsumer - Found participants to notify: {other_participants}")
                 for participant_id in other_participants:
                     notification_group = f"user_{participant_id}"
-                    print(f"DEBUG: Sending notification to {notification_group}")
+                    print(f"DEBUG: ChatConsumer - Sending notification to group: {notification_group}")
                     await self.channel_layer.group_send(
                         notification_group,
                         {
@@ -153,10 +155,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             return
 
         self.group_name = f"user_{self.user.id}"
+        print(f"DEBUG: NotificationConsumer - User Connected: {self.user.username} (ID: {self.user.id})")
+        print(f"DEBUG: NotificationConsumer - Subscribing to group: {self.group_name}")
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
+        print(f"DEBUG: NotificationConsumer - User Disconnected: {self.user.username} (ID: {self.user.id})")
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def send_notification(self, event):
