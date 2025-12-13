@@ -56,5 +56,6 @@ def dj_anita_status(request):
         'anita_bpm': current_bpm if current_bpm > 0 else "---",
         'anita_energy': round(current_energy * 100) if current_energy else 0,
         'anita_mood': (mood if current_energy > 0 else "Escaneando...") + " (v2.5)",
-        'anita_track': vip_track
+        'anita_track': vip_track,
+        'total_unread_messages': total_unread_messages,
     }
