@@ -37,10 +37,10 @@ def dj_anita_status(request):
     print(f"VIP Track Found (First Try): {vip_track}")
 
     # FALLBACK: Si ya escuchaste todo (o no hay nada nuevo), te muestra cualquier cancion publica
-     if not vip_track:
-          print("Triggering Fallback Logic...")
-          vip_track = Song.objects.filter(is_private=False).order_by('?').first()
-          print(f"VIP Track (Fallback): {vip_track}")
+    if not vip_track:
+        print("Triggering Fallback Logic...")
+        vip_track = Song.objects.filter(is_private=False).order_by('?').first()
+        print(f"VIP Track (Fallback): {vip_track}")
 
     # 4. Notificaciones No Leidas (Global)
     # Contar mensajes donde soy participante, NO soy el sender, y is_read=False
