@@ -29,13 +29,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-nf$(5p5lqaj(!$@*nhrez
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['bitware.site', 'www.bitware.site', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['bitware.site', 'www.bitware.site', 'localhost', '127.0.0.1', 'ip-72-60-252-211.hrsnnj.spcsdns.net']
 CSRF_TRUSTED_ORIGINS = [
     'https://bitware.site',
     'https://www.bitware.site',
     'https://*.ngrok-free.dev', 
     'https://*.ngrok-free.app',
-    'ip-72-60-252-211.hrsnnj.spcsdns.net',
+    'https://ip-72-60-252-211.hrsnnj.spcsdns.net',
 ]
 
 # Application definition
