@@ -74,7 +74,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
                 print("DEBUG: Group send completed.")
                 
-                # ... notification logic ...
+                # Notification Logic
+                other_participants = await self.get_other_participants(self.conversation_id, self.user.id)
+                for participant_id in other_participants:
+                    notification_group = f"user_{participant_id}"
+                    print(f"DEBUG: Sending notification to {notification_group}")
+                    await self.channel_layer.group_send(
+                        notification_group,
+                        {
+                            'type': 'send_notification',
+                            'notification': {
+                                'type': 'new_message',
+                                'url': f"/chat/{self.conversation_id}/",
+                                'message': f"Nuevo mensaje de {self.user.username}",
+                                'sender': self.user.username
+                            }
+                        }
+                    )
 
         elif action_type == 'mark_read':
             print("DEBUG: Mark read received")

@@ -66,7 +66,13 @@ def start_chat(request, user_id):
     
     # If HTMX (from popup), render the detail partial directly
     if request.headers.get('HX-Request'):
-        messages = conversation.messages.all().order_by('timestamp')
+        from .models import ChatClearHistory
+        last_clear = ChatClearHistory.objects.filter(conversation=conversation, user=request.user).first()
+        if last_clear:
+             messages = conversation.messages.filter(timestamp__gt=last_clear.cleared_at).order_by('timestamp')
+        else:
+             messages = conversation.messages.all().order_by('timestamp')
+             
         return render(request, 'chat/partials/conversation_detail_partial.html', {
             'conversation': conversation, 
             'messages': messages,
@@ -80,7 +86,18 @@ def leave_conversation(request, conversation_id):
     if request.method == 'POST':
         conversation = get_object_or_404(Conversation, id=conversation_id)
         if request.user in conversation.participants.all():
-            # SOFT DELETE: Only hide it for this user
+            # SOFT DELETE / CLEAR HISTORY
+            from .models import ChatClearHistory
+            from django.utils import timezone
+            
+            # Update or create the clear history record
+            ChatClearHistory.objects.update_or_create(
+                conversation=conversation,
+                user=request.user,
+                defaults={'cleared_at': timezone.now()}
+            )
+            
+            # Also hide it from the list
             conversation.hidden_by.add(request.user)
             
             # If HTMX, return the conversations list to swap the content

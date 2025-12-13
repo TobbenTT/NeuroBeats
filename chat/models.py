@@ -18,3 +18,11 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['timestamp']
+
+class ChatClearHistory(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='clear_histories')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cleared_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('conversation', 'user')
