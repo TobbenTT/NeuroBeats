@@ -51,6 +51,6 @@ def get_recommended_songs(user):
     if recommendations.exists():
         return recommendations.order_by('?')[:8]
 
-    # 2. Si NO hay recomendaciones (ej: escuchó todo lo que existe), devolvemos CUALQUIER COSA pública
-    # "Redescubrimiento"
-    return Song.objects.filter(is_private=False).order_by('?')[:8]
+    # 2. Si NO hay recomendaciones nuevas (ej: escuchó todo), devolvemos VACÍO para que el Home muestre "La IA está aprendiendo"
+    # en lugar de repetir canciones viejas.
+    return []

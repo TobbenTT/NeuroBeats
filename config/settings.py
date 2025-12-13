@@ -35,6 +35,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.bitware.site',
     'https://*.ngrok-free.dev', 
     'https://*.ngrok-free.app',
+    'ip-72-60-252-211.hrsnnj.spcsdns.net',
 ]
 
 # Application definition
